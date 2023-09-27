@@ -63,7 +63,7 @@ def _stage_DelayedArray_dense(
 
     fpath = os.path.join(dir, newpath)
     with _open_writeable_hdf5_handle(fpath, cache_size) as fhandle:
-        dset = fhandle.create_dataset("data", shape=t.shape, chunks=chunks, dtype=_choose_file_dtype(t.dtype))
+        dset = fhandle.create_dataset("data", shape=t.shape, chunks=chunks, dtype=_choose_file_dtype(t.dtype), compression="gzip")
 
         num_chunks = []
         subset_as_slices = []

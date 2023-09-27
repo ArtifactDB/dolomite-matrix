@@ -61,7 +61,7 @@ def stage_ndarray(
 
     fpath = os.path.join(dir, newpath)
     with _open_writeable_hdf5_handle(fpath, cache_size) as fhandle:
-        fhandle.create_dataset("data", data=t, chunks=chunks, dtype=_choose_file_dtype(t.dtype))
+        fhandle.create_dataset("data", data=t, chunks=chunks, dtype=_choose_file_dtype(t.dtype), compression="gzip")
 
     return { 
         "$schema": "hdf5_dense_array/v1.json",

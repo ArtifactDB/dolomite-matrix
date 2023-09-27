@@ -101,6 +101,7 @@ def test_stage_DelayedArray_low_block_size():
     assert copy.dtype == y.dtype
     assert (copy == numpy.array(y)).all()
 
+def test_stage_DelayedArray_custom_chunks():
     # Chunky boi (I)
     x = numpy.random.rand(100, 200, 300)
 
