@@ -4,7 +4,7 @@ from dolomite_base import stage_object
 import os
 
 from .choose_dense_chunk_sizes import choose_dense_chunk_sizes
-from ._utils import _translate_array_type, _open_writeable_hdf5_handle
+from ._utils import _translate_array_type, _open_writeable_hdf5_handle, _choose_file_dtype
 
 
 @stage_object.register
@@ -34,7 +34,8 @@ def stage_ndarray(
             `:py:meth:`~dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes`.
 
         cache_size:
-            Size of the HDF5 cache size, in bytes.
+            Size of the HDF5 cache size, in bytes. Larger values improve speed
+            at the cost of memory.
 
         kwargs: Further arguments, ignored.
 
@@ -58,14 +59,9 @@ def stage_ndarray(
     t = x.T
     chunks = (*list(reversed(chunks)),)
 
-    # Save booleans as integers for simplicity.
-    savetype = t.dtype
-    if savetype == bool_:
-        savetype = uint8 
-
     fpath = os.path.join(dir, newpath)
     with _open_writeable_hdf5_handle(fpath, cache_size) as fhandle:
-        fhandle.create_dataset("data", data=t, chunks=chunks, dtype=savetype)
+        fhandle.create_dataset("data", data=t, chunks=chunks, dtype=_choose_file_dtype(t.dtype))
 
     return { 
         "$schema": "hdf5_dense_array/v1.json",
