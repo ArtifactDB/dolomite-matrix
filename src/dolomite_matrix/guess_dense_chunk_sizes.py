@@ -1,5 +1,6 @@
 from typing import Tuple
 
+
 def guess_dense_chunk_sizes(shape: Tuple[int], size: int, min_extent: int = 100, memory: int = 1e7) -> Tuple[int]:
     """Guess some chunk sizes to use for a dense HDF5 dataset. For each
     dimension, we consider a slice of the array that consists of the full
@@ -29,15 +30,18 @@ def guess_dense_chunk_sizes(shape: Tuple[int], size: int, min_extent: int = 100,
     num_elements = int(memory / size)
     chunks = []
 
-    for d in range(len(shape)):
+    for d, s in enumerate(shape):
         otherdim = 1
         for d2, s2 in enumerate(shape): # just calculating it again to avoid overflow issues.
             if d2 != d:
                 otherdim *= s2
 
         proposed = int(num_elements / otherdim)
-        if proposed < min_extent:
+        if proposed > s:
+            proposed = s
+        elif proposed < min_extent:
             proposed = min_extent
+
         chunks.append(proposed)
 
     return (*chunks,)

@@ -14,3 +14,7 @@ except PackageNotFoundError:  # pragma: no cover
     __version__ = "unknown"
 finally:
     del version, PackageNotFoundError
+
+
+from .guess_dense_chunk_sizes import guess_dense_chunk_sizes
+from .stage_ndarray import stage_ndarray

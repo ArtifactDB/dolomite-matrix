@@ -1,10 +1,11 @@
-from typing import Tuple, Optional
-from numpy import ndarray, bool_
+from typing import Tuple, Optional, Any
+from numpy import ndarray, bool_, uint8
 from dolomite_base import stage_object
 from h5py import File
+import os
 
 from .guess_dense_chunk_sizes import guess_dense_chunk_sizes
-from _utils import _translate_array_type
+from ._utils import _translate_array_type
 
 
 @stage_object.register
@@ -41,23 +42,31 @@ def stage_ndarray(x: ndarray, dir: str, path: str, is_child: bool = False, chunk
     t = x.T
 
     # Coming up with a decent chunk size.
-    chunks = guess_dense_chunk_sizes(t.shape, x.dtype.itemsize)
+    if chunks is None:
+        chunks = guess_dense_chunk_sizes(t.shape, x.dtype.itemsize)
+    else:
+        capped = []
+        for i, d in enumerate(t.shape):
+            capped.append(min(d, chunks[i]))
+        chunks = (*capped,)
 
+    # Save booleans as integers for simplicity.
     savetype = t.dtype
-    if savetype == numpy.bool_:
-        savetype = numpy.uint8
+    if savetype == bool_:
+        savetype = uint8 
 
-    f.create_dataset("data", data=t, chunks=chunks, dtype=savetype)
+    fhandle.create_dataset("data", data=t, chunks=chunks, dtype=savetype)
+    fhandle.close()
 
     return { 
         "$schema": "hdf5_dense_array/v1.json",
         "path": newpath,
         "is_child": is_child,
-        "array" = {
-            "type": _translate_array_type(x),
-            "dimensions": x.shape,
+        "array": {
+            "type": _translate_array_type(x.dtype),
+            "dimensions": list(x.shape),
         },
-        "hdf5_dense_array" = {
+        "hdf5_dense_array": {
             "dataset": "data",
-        )
+        } 
     }

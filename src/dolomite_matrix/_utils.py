@@ -6,6 +6,6 @@ def _translate_array_type(dtype):
         return "integer"
     if issubdtype(dtype, floating):
         return "number"
-    if isinstance(dtype, bool_):
+    if dtype == bool_:
         return "boolean"
     raise NotImplementedError("staging of '" + str(type(dtype)) + "' arrays not yet supported")
