@@ -1,12 +1,12 @@
 from typing import Tuple
 
 
-def guess_dense_chunk_sizes(shape: Tuple[int], size: int, min_extent: int = 100, memory: int = 1e7) -> Tuple[int]:
-    """Guess some chunk sizes to use for a dense HDF5 dataset. For each
+def choose_dense_chunk_sizes(shape: Tuple[int], size: int, min_extent: int = 100, memory: int = 1e7) -> Tuple[int]:
+    """Chosen some chunk sizes to use for a dense HDF5 dataset. For each
     dimension, we consider a slice of the array that consists of the full
     extent of all other dimensions. We want this slice to occupy less than
     ``memory`` in memory, and we resize the slice along the current dimension
-    to achieve this. The guessed chunk size is then defined as the size of the
+    to achieve this. The chosen chunk size is then defined as the size of the
     slice along the current dimension. This ensures that efficient iteration
     along each dimension will not use any more than ``memory`` bytes.
 

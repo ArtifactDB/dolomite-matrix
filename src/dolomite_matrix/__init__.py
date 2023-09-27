@@ -16,5 +16,5 @@ finally:
     del version, PackageNotFoundError
 
 
-from .guess_dense_chunk_sizes import guess_dense_chunk_sizes
+from .choose_dense_chunk_sizes import choose_dense_chunk_sizes
 from .stage_ndarray import stage_ndarray

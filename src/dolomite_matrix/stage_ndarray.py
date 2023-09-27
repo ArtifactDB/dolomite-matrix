@@ -1,15 +1,22 @@
 from typing import Tuple, Optional, Any
 from numpy import ndarray, bool_, uint8
 from dolomite_base import stage_object
-from h5py import File
 import os
 
-from .guess_dense_chunk_sizes import guess_dense_chunk_sizes
-from ._utils import _translate_array_type
+from .choose_dense_chunk_sizes import choose_dense_chunk_sizes
+from ._utils import _translate_array_type, _open_writeable_hdf5_handle
 
 
 @stage_object.register
-def stage_ndarray(x: ndarray, dir: str, path: str, is_child: bool = False, chunks: Optional[Tuple[int]] = None, **kwargs) -> dict[str, Any]:
+def stage_ndarray(
+    x: ndarray, 
+    dir: str, 
+    path: str, 
+    is_child: bool = False, 
+    chunks: Optional[Tuple[int, ...]] = None, 
+    cache_size: int = 1e8, 
+    **kwargs
+) -> dict[str, Any]:
     """Method for saving :py:class:`~numpy.ndarray` objects to file, see
     :py:meth:`~dolomite_base.stage_object.stage_object` for details.
 
@@ -23,8 +30,11 @@ def stage_ndarray(x: ndarray, dir: str, path: str, is_child: bool = False, chunk
         is_child: Is ``x`` a child of another object?
 
         chunks: 
-            Chunk dimensions. If not provided, we guess some chunk sizes with 
-            `:py:meth:`~dolomite_matrix.guess_dense_chunk_sizes.guess_dense_chunk_sizes`.
+            Chunk dimensions. If not provided, we choose some chunk sizes with 
+            `:py:meth:`~dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes`.
+
+        cache_size:
+            Size of the HDF5 cache size, in bytes.
 
         kwargs: Further arguments, ignored.
 
@@ -35,28 +45,27 @@ def stage_ndarray(x: ndarray, dir: str, path: str, is_child: bool = False, chunk
     os.mkdir(os.path.join(dir, path))
     newpath = path + "/array.h5"
 
-    fpath = os.path.join(dir, newpath)
-    fhandle = File(fpath, "w", )
+    # Coming up with a decent chunk size.
+    if chunks is None:
+        chunks = choose_dense_chunk_sizes(x.shape, x.dtype.itemsize)
+    else:
+        capped = []
+        for i, d in enumerate(x.shape):
+            capped.append(min(d, chunks[i]))
+        chunks = (*capped,)
 
     # Transposing it so that we save it in the right order.
     t = x.T
-
-    # Coming up with a decent chunk size.
-    if chunks is None:
-        chunks = guess_dense_chunk_sizes(t.shape, x.dtype.itemsize)
-    else:
-        capped = []
-        for i, d in enumerate(t.shape):
-            capped.append(min(d, chunks[i]))
-        chunks = (*capped,)
+    chunks = (*list(reversed(chunks)),)
 
     # Save booleans as integers for simplicity.
     savetype = t.dtype
     if savetype == bool_:
         savetype = uint8 
 
-    fhandle.create_dataset("data", data=t, chunks=chunks, dtype=savetype)
-    fhandle.close()
+    fpath = os.path.join(dir, newpath)
+    with _open_writeable_hdf5_handle(fpath, cache_size) as fhandle:
+        fhandle.create_dataset("data", data=t, chunks=chunks, dtype=savetype)
 
     return { 
         "$schema": "hdf5_dense_array/v1.json",
