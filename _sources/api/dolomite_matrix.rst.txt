@@ -1,0 +1,45 @@
+dolomite\_matrix package
+========================
+
+Submodules
+----------
+
+dolomite\_matrix.choose\_dense\_chunk\_sizes module
+---------------------------------------------------
+
+.. automodule:: dolomite_matrix.choose_dense_chunk_sizes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dolomite\_matrix.load\_hdf5\_dense\_array module
+------------------------------------------------
+
+.. automodule:: dolomite_matrix.load_hdf5_dense_array
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dolomite\_matrix.stage\_DelayedArray module
+-------------------------------------------
+
+.. automodule:: dolomite_matrix.stage_DelayedArray
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dolomite\_matrix.stage\_ndarray module
+--------------------------------------
+
+.. automodule:: dolomite_matrix.stage_ndarray
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dolomite_matrix
+   :members:
+   :undoc-members:
+   :show-inheritance:
