@@ -1,5 +1,5 @@
 import scipy.sparse
-from dolomite_base import stage_object, write_metadata
+from dolomite_base import stage_object, write_metadata, load_object
 import dolomite_matrix
 from tempfile import mkdtemp
 import filebackedarray
@@ -14,7 +14,7 @@ def test_stage_scipy_csc():
     write_metadata(meta, dir=dir)
     assert meta["array"]["type"] == "number"
 
-    roundtrip = dolomite_matrix.load_hdf5_sparse_matrix(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5CompressedSparseMatrix)
@@ -31,7 +31,7 @@ def test_stage_scipy_csr():
     write_metadata(meta, dir=dir)
     assert meta["array"]["type"] == "integer"
 
-    roundtrip = dolomite_matrix.load_hdf5_sparse_matrix(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.integer)
     assert isinstance(roundtrip, filebackedarray.Hdf5CompressedSparseMatrix)
@@ -47,7 +47,7 @@ def test_stage_ndarray_boolean():
     write_metadata(meta, dir=dir)
     assert meta["array"]["type"] == "boolean"
 
-    roundtrip = dolomite_matrix.load_hdf5_sparse_matrix(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5CompressedSparseMatrix)

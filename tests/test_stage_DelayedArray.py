@@ -1,5 +1,5 @@
 import numpy
-from dolomite_base import stage_object, write_metadata
+from dolomite_base import stage_object, write_metadata, load_object
 from delayedarray import wrap
 import delayedarray as da
 import dolomite_matrix
@@ -29,7 +29,7 @@ def test_stage_DelayedArray_simple():
     assert copy.dtype == y.dtype
     assert (copy == x + 1).all()
 
-    roundtrip = dolomite_matrix.load_hdf5_dense_array(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
@@ -47,7 +47,7 @@ def test_stage_DelayedArray_booleans():
     write_metadata(meta, dir=dir)
     assert meta["array"]["type"] == "boolean"
 
-    roundtrip = dolomite_matrix.load_hdf5_dense_array(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == numpy.bool_
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
@@ -111,7 +111,7 @@ def test_stage_DelayedArray_low_block_size_C_contiguous():
     handle = h5py.File(fpath, "r")
     dset = handle[meta["hdf5_dense_array"]["dataset"]]
 
-    roundtrip = dolomite_matrix.load_hdf5_dense_array(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
@@ -125,7 +125,7 @@ def test_stage_DelayedArray_low_block_size_F_contiguous():
     dir = mkdtemp()
     meta = stage_object(y, dir=dir, path="foobar", block_size=8000)
 
-    roundtrip = dolomite_matrix.load_hdf5_dense_array(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
@@ -140,7 +140,7 @@ def test_stage_DelayedArray_custom_chunks():
     dir = mkdtemp()
     meta = stage_object(y, dir=dir, path="foobar", block_size=8 * 5000)
 
-    roundtrip = dolomite_matrix.load_hdf5_dense_array(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
@@ -151,7 +151,7 @@ def test_stage_DelayedArray_custom_chunks():
     dir = mkdtemp()
     meta = stage_object(y, dir=dir, path="foobar", block_size=8 * 5000)
 
-    roundtrip = dolomite_matrix.load_hdf5_dense_array(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
@@ -171,7 +171,7 @@ def test_stage_DelayedArray_sparse():
     write_metadata(meta, dir=dir)
     assert meta["array"]["type"] == "number"
 
-    roundtrip = dolomite_matrix.load_hdf5_sparse_matrix(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5CompressedSparseMatrix)

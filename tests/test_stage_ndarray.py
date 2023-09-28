@@ -1,5 +1,5 @@
 import numpy
-from dolomite_base import stage_object, write_metadata
+from dolomite_base import stage_object, write_metadata, load_object
 import dolomite_matrix
 import os
 import h5py
@@ -23,7 +23,7 @@ def test_stage_ndarray_number():
     assert dset.shape[1] == 100
     assert dset.dtype == numpy.float64
 
-    roundtrip = dolomite_matrix.load_hdf5_dense_array(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
@@ -47,7 +47,7 @@ def test_stage_ndarray_integer():
     assert dset.shape[1] == 150
     assert dset.dtype == numpy.int32
 
-    roundtrip = dolomite_matrix.load_hdf5_dense_array(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
@@ -70,7 +70,7 @@ def test_stage_ndarray_boolean():
     assert dset.shape[1] == 99 
     assert dset.dtype == numpy.uint8
 
-    roundtrip = dolomite_matrix.load_hdf5_dense_array(meta, dir)
+    roundtrip = load_object(meta, dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
