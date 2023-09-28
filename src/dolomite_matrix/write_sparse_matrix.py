@@ -1,11 +1,22 @@
 from functools import singledispatch
 from typing import Any
 from collections import namedtuple
-from delayedarray import wrap, extract_sparse_array, DelayedArray, SparseNdarray, Combine
+from delayedarray import wrap, extract_sparse_array, DelayedArray, SparseNdarray, Combine, guess_iteration_block_size
 from h5py import File
 import numpy
 
 from ._utils import _choose_block_shape
+
+
+def _choose_smallest_uint(value):
+    if value < 2**8:
+        return numpy.uint8
+    elif value < 2**16:
+        return numpy.uint16
+    elif value < 2**32:
+        return numpy.uint32
+    else:
+        return numpy.uint64
 
 
 def write_sparse_matrix(x, path: str, name: str, chunks: int = 10000, guess_integer: bool = True, block_size: int = 1e8):
@@ -41,14 +52,7 @@ def write_sparse_matrix(x, path: str, name: str, chunks: int = 10000, guess_inte
         ghandle.create_dataset(name="shape", data=numpy.array(x.shape, dtype=numpy.uint64))
 
         # Choosing a compact type for the indices.
-        if x.shape[0] < 2**8:
-            index_dtype = numpy.uint8
-        elif x.shape[0] < 2**16:
-            index_dtype = numpy.uint16
-        elif x.shape[0] < 2**32:
-            index_dtype = numpy.uint32
-        else:
-            index_dtype = numpy.uint64
+        index_dtype = _choose_smallest_uint(x.shape[0])
 
         deets = _extract_details(x, block_size=block_size)
 
@@ -58,29 +62,20 @@ def write_sparse_matrix(x, path: str, name: str, chunks: int = 10000, guess_inte
         else:
             if deets.non_integer:
                 if x.dtype == numpy.float32:
-                    dtype = x.dtype
+                    dtype = numpy.float32
                 else:
                     dtype = numpy.float64
-
             elif deets.minimum < 0:
-                if deets.minimum >= 2**-7 and deets.maximum < 2**7:
+                if deets.minimum >= -2**7 and deets.maximum < 2**7:
                     dtype = numpy.int8
-                elif deets.minimum >= 2**-15 and deets.maximum < 2**15:
+                elif deets.minimum >= -2**15 and deets.maximum < 2**15:
                     dtype = numpy.int16
-                elif deets.minimum >= 2**-31 and deets.maximum < 2**31:
+                elif deets.minimum >= -2**31 and deets.maximum < 2**31:
                     dtype = numpy.int32
                 else:
                     dtype = numpy.int64
-
             else:
-                if deets.maximum < 2**8:
-                    dtype = numpy.uint8
-                elif deets.maximum < 2**16:
-                    dtype = numpy.uint16
-                elif deets.maximum < 2**32:
-                    dtype = numpy.uint32
-                else:
-                    dtype = numpy.uint64
+                dtype = _choose_smallest_uint(deets.maximum)
 
         # Doing the dump.
         ihandle = ghandle.create_dataset(name="indices", shape=deets.count, dtype=index_dtype, chunks=chunks, compression="gzip")
@@ -111,11 +106,9 @@ _SparseMatrixDetails = namedtuple("_SparseMatrixDetails", [ "minimum", "maximum"
 def _extract_details_by_block(x, block_size: int) -> _SparseMatrixDetails:
     full_shape = x.shape
     block_shape = _choose_block_shape(x, block_size)
-    print(block_shape)
 
     num_row_blocks = int(numpy.ceil(full_shape[0] / block_shape[0]))
     num_col_blocks = int(numpy.ceil(full_shape[1] / block_shape[1]))
-    print(num_row_blocks, num_col_blocks)
 
     minimum = None
     maximum = None
@@ -151,7 +144,7 @@ def _extract_details_by_block(x, block_size: int) -> _SparseMatrixDetails:
 
 @singledispatch
 def _extract_details(x: Any, block_size: int, **kwargs) -> _SparseMatrixDetails:
-    raise _extract_details_by_block(x, block_size)
+    return _extract_details_by_block(x, block_size)
 
 
 def _has_non_integer(data: numpy.ndarray):
@@ -207,7 +200,7 @@ def _extract_details_Combine(x: Combine, **kwargs) -> _SparseMatrixDetails:
         deets = _extract_details(s, **kwargs)
         if minimum is None or deets.minimum < minimum:
             minimum = deets.minimum
-        if maximum is None or deets.maximum < maximum:
+        if maximum is None or deets.maximum > maximum:
             maximum = deets.maximum
         if not non_integer:
             non_integer = deets.non_integer
@@ -281,7 +274,7 @@ def _dump_sparse_matrix_by_block(x, indices_handle, data_handle, offset: int, bl
         end = min(start + block_size, x.shape[1])
         col_range = range(start, end)
         block = extract_sparse_array(x, (row_range, col_range))
-        saved = _dump_sparse_matrix_as_SparseNdarray(x, indices_handle, data_handle, offset)
+        saved = _dump_sparse_matrix_as_SparseNdarray(block, indices_handle, data_handle, offset=offset)
         offset += saved.sum()
         all_saved.append(saved)
         start = end
@@ -291,25 +284,25 @@ def _dump_sparse_matrix_by_block(x, indices_handle, data_handle, offset: int, bl
 
 @singledispatch
 def _dump_sparse_matrix(x: Any, indices_handle, data_handle, offset: int, block_size: int, **kwargs) -> numpy.ndarray:
-    raise _dump_sparse_matrix_by_block(x, indices_handle, data_handle, offset=offset, block_size=block_size)
+    return _dump_sparse_matrix_by_block(x, indices_handle, data_handle, offset=offset, block_size=block_size)
 
 
 @_dump_sparse_matrix.register
 def _dump_sparse_matrix_SparseNdarray(x: SparseNdarray, indices_handle, data_handle, offset: int, block_size: int, **kwargs):
-    raise _dump_sparse_matrix_by_block(x, indices_handle, data_handle, offset=offset, block_size=block_size)
+    return _dump_sparse_matrix_by_block(x, indices_handle, data_handle, offset=offset, block_size=block_size)
 
 
 @_dump_sparse_matrix.register
 def _dump_sparse_matrix_Combine(x: Combine, indices_handle, data_handle, offset: int, block_size: int, **kwargs):
     if x.along != 1:
-        raise _dump_sparse_matrix_by_block(x, indices_handle, data_handle, offset=offset, block_size=block_size)
+        return _dump_sparse_matrix_by_block(x, indices_handle, data_handle, offset=offset, block_size=block_size)
 
     all_saved = [numpy.zeros(0, dtype=numpy.uint64)]
     offset = 0
     for s in x.seeds:
         saved = _dump_sparse_matrix(s, indices_handle, data_handle, offset=offset, block_size=block_size, **kwargs)
         all_saved.append(saved)
-        offset += saved.sum()
+        offset += int(saved.sum())
 
     return numpy.concatenate(all_saved)
 
@@ -318,9 +311,9 @@ def _dump_sparse_matrix_Combine(x: Combine, indices_handle, data_handle, offset:
 def _dump_sparse_matrix_DelayedArray(x: DelayedArray, indices_handle, data_handle, offset: int, block_size: int, **kwargs):
     candidate = _dump_sparse_matrix.dispatch(type(x.seed))
     if _dump_sparse_matrix.dispatch(object) != candidate:
-        return candidate(x.seed, indices_ahndle, data_handle, offset=offset, block_size = block_size, **kwargs)
+        return candidate(x.seed, indices_handle, data_handle, offset=offset, block_size = block_size, **kwargs)
     else:
-        return _extract_details_by_block(x, block_size)
+        return _dump_sparse_matrix_by_block(x, indices_handle, data_handle, offset=offset, block_size=block_size)
 
 
 if has_scipy:
