@@ -19,3 +19,4 @@ finally:
 from .choose_dense_chunk_sizes import choose_dense_chunk_sizes
 from .stage_ndarray import stage_ndarray
 from .stage_DelayedArray import stage_DelayedArray
+from .load_hdf5_dense_array import load_hdf5_dense_array
