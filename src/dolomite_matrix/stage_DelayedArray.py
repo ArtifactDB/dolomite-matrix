@@ -155,7 +155,7 @@ def stage_DelayedArray(
     # Seeing if we can call specialized method for the seed in pristine objects.
     if is_pristine(x) and isinstance(x, DelayedArray):
         candidate = stage_object.dispatch(type(x.seed))
-        if stage_object.dispatch(Any) != candidate:
+        if stage_object.dispatch(object) != candidate:
             return candidate(
                 x.seed,
                 dir=dir,
