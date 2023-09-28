@@ -12,16 +12,89 @@
 
 [![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
 
-# dolomite-matrix
+# Read and save matrices in Python
 
-> Add a short description here!
+## Introduction
 
-A longer description of your project goes here...
+The **dolomite-matrix** package is the Python counterpart to the [**alabaster.matrix**](https://github.com/ArtifactDB/alabaster.matrix) R package,
+providing methods for saving/reading arrays and matrices within the [**dolomite** framework](https://github.com/ArtifactDB/dolomite-base).
+Dense arrays are stored in the usual HDF5 dataset, while sparse matrices are saved inside a HDF5 file in compressed sparse format.
 
+## Quick start
 
-<!-- pyscaffold-notes -->
+Let's save a dense matrix to a HDF5 file with some accompanying metadata:
 
-## Note
+```python
+import numpy
+x = numpy.random.rand(1000, 200) 
 
-This project has been set up using PyScaffold 4.5. For details and usage
-information on PyScaffold see https://pyscaffold.org/.
+import tempfile
+dir = tempfile.mkdtemp()
+
+import dolomite_base
+import dolomite_matrix
+meta = dolomite_base.stage_object(x, dir, "whee")
+dolomite_base.write_metadata(meta, dir)
+print(meta["path"])
+## whee/array.h5
+```
+
+Now we can transfer the directory and reload the matrix in a new session.
+This produces a `Hdf5DenseArray` from the [**filebackedarray**](https://github.com/BiocPy/filebackedarray) package.
+
+```python
+import dolomite_base
+info = dolomite_base.acquire_metadata(dir, "whee/array.h5")
+obj = dolomite_base.load_object(info, dir)
+## <1000 x 200> Hdf5DenseArray object of type 'float64'
+## [[0.58444226, 0.82595149, 0.7214525 , ..., 0.32493652, 0.58206044,
+##   0.73770346],
+##  [0.96398317, 0.73200292, 0.16410134, ..., 0.31626547, 0.11499628,
+##   0.19768697],
+##  [0.82350911, 0.48012452, 0.65221052, ..., 0.94989611, 0.15422992,
+##   0.77173718],
+##  ...,
+##  [0.71715436, 0.19266116, 0.52316388, ..., 0.23104537, 0.935654  ,
+##   0.51663007],
+##  [0.38585049, 0.26709808, 0.70358993, ..., 0.91822795, 0.66144925,
+##   0.42465112],
+##  [0.08535589, 0.00144712, 0.51411921, ..., 0.84546122, 0.35001404,
+##   0.53644868]]
+```
+
+## Sparse matrices
+
+We can also save and load a sparse matrix from a HDF5 file:
+
+```python
+import scipy 
+import numpy
+x = scipy.sparse.random(1000, 200, 0.2, dtype=numpy.int16, format="csc")
+
+import tempfile
+dir = tempfile.mkdtemp()
+
+import dolomite_base
+import dolomite_matrix
+meta = dolomite_base.stage_object(x, dir, "whee")
+dolomite_base.write_metadata(meta, dir)
+print(meta["path"])
+## whee/matrix.h5
+```
+
+And again, loading it back in a new session.
+This produces a `Hdf5CompressedSparseMatrix` from the [**filebackedarray**](https://github.com/BiocPy/filebackedarray) package.
+
+```python
+import dolomite_base
+info = dolomite_base.acquire_metadata(dir, "whee/matrix.h5")
+obj = dolomite_base.load_object(info, dir)
+## <1000 x 200> sparse Hdf5CompressedSparseMatrix object of type 'int16'
+## [[     0,      0, -28638, ...,      0,      0,  26194],
+##  [     0,      0,      0, ...,      0, -30829,      0],
+##  [     0,      0,      0, ...,      0,      0,      0],
+##  ...,
+##  [ 10895,      0,      0, ...,      0,      0,      0],
+##  [     0,  32539,      0, ...,      0,   2780, -12106],
+##  [     0,      0,      0, ...,   1452,      0, -26314]]
+```

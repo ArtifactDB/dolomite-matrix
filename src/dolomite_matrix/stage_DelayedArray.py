@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Any
+from typing import Tuple, Optional, Any, Union
 from delayedarray import DelayedArray, chunk_shape, is_sparse, extract_dense_array, extract_sparse_array, is_pristine
 from numpy import ceil, prod
 from dolomite_base import stage_object
@@ -97,7 +97,7 @@ def stage_DelayedArray(
     dir: str,
     path: str,
     is_child: bool = False,
-    chunks: Optional[Tuple[int, ...]] = None,
+    chunks: Optional[Union[Tuple[int, ...], int]] = None,
     cache_size: int = 1e8,
     block_size: int = 1e8,
     **kwargs
@@ -118,7 +118,7 @@ def stage_DelayedArray(
         chunks:
             For dense ``x``, a tuple of chunk dimensions. If None, we
             automatically choose some chunk sizes with
-            `:py:meth:`~dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes`.
+            :py:meth:`~dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes`.
 
             For sparse ``x``, an integer specifying the chunk dimension in
             :py:meth:`~dolomite_matrix.write_sparse_matrix.write_sparse_matrix`.

@@ -1,8 +1,8 @@
 from typing import Tuple
 
 
-def choose_dense_chunk_sizes(shape: Tuple[int], size: int, min_extent: int = 100, memory: int = 1e7) -> Tuple[int]:
-    """Chosen some chunk sizes to use for a dense HDF5 dataset. For each
+def choose_dense_chunk_sizes(shape: Tuple[int, ...], size: int, min_extent: int = 100, memory: int = 1e7) -> Tuple[int, ...]:
+    """Choose some chunk sizes to use for a dense HDF5 dataset. For each
     dimension, we consider a slice of the array that consists of the full
     extent of all other dimensions. We want this slice to occupy less than
     ``memory`` in memory, and we resize the slice along the current dimension

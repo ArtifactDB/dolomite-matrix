@@ -31,7 +31,7 @@ def stage_ndarray(
 
         chunks: 
             Chunk dimensions. If not provided, we choose some chunk sizes with 
-            `:py:meth:`~dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes`.
+            :py:meth:`~dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes`.
 
         cache_size:
             Size of the HDF5 cache size, in bytes. Larger values improve speed

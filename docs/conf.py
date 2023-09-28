@@ -72,6 +72,7 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -171,7 +172,7 @@ todo_emit_warnings = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "alabaster"
+html_theme = "furo"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -299,6 +300,8 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "setuptools": ("https://setuptools.pypa.io/en/stable/", None),
     "pyscaffold": ("https://pyscaffold.org/en/stable", None),
+    "delayedarray": ("https://biocpy.github.io/DelayedArray", None),
+    "dolomite_base": ("https://artifactdb.github.io/dolomite-base", None),
 }
 
 print(f"loading configurations for {project} {version} ...", file=sys.stderr)
