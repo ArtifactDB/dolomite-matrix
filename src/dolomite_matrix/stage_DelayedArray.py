@@ -5,27 +5,7 @@ from dolomite_base import stage_object
 import os
 
 from .choose_dense_chunk_sizes import choose_dense_chunk_sizes
-from ._utils import _choose_file_dtype, _translate_array_type, _open_writeable_hdf5_handle
-
-
-def _choose_block_shape(x: DelayedArray, block_size: int) -> Tuple[int, ...]:
-    # Block shapes are calculated by scaling up the chunks (from last to first,
-    # i.e., the fastest changing to the slowest) until the block size is exceeded.
-    full_shape = x.shape
-    ndim = len(full_shape)
-    block_shape = list(chunk_shape(x))
-    block_elements = int(block_size / x.dtype.itemsize)
-
-    for i in range(ndim - 1, -1, -1):
-        current_elements = prod(block_shape) # just recompute it, avoid potential overflow issues.
-        if current_elements >= block_elements:
-            break
-        scaling = int(block_elements / current_elements)
-        if scaling == 1:
-            break
-        block_shape[i] = min(full_shape[i], scaling * block_shape[i])
-
-    return (*block_shape,)
+from ._utils import _choose_file_dtype, _translate_array_type, _open_writeable_hdf5_handle, _choose_block_shape
 
 
 def _stage_DelayedArray_dense(
@@ -54,9 +34,9 @@ def _stage_DelayedArray_dense(
     t = x.T
     chunks = (*list(reversed(chunks)),)
 
-    # Saving the matrix in a blockwise fashion. We progress along the fastest
-    # changing dimension (i.e., the last one), and we shift along the other
-    # dimensions once we need to wrap around.
+    # Saving the matrix in a blockwise fashion. We progress along HDF5's
+    # fastest changing dimension (i.e., the last one), and we shift along the
+    # other dimensions once we need to wrap around.
     full_shape = t.shape
     ndim = len(full_shape)
     block_shape = _choose_block_shape(t, block_size)

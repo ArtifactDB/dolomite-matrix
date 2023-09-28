@@ -3,7 +3,7 @@ from dolomite_base import stage_object, write_metadata
 from delayedarray import wrap
 import delayedarray as da
 import dolomite_matrix
-from dolomite_matrix.stage_DelayedArray import _choose_block_shape
+from dolomite_matrix._utils import _choose_block_shape
 import os
 import h5py
 import filebackedarray
