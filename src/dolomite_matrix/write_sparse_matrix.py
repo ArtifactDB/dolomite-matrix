@@ -1,5 +1,5 @@
 from functools import singledispatch
-from typing import Any
+from typing import Any, Optional
 from collections import namedtuple
 from delayedarray import wrap, extract_sparse_array, DelayedArray, SparseNdarray, Combine, guess_iteration_block_size
 from h5py import File
@@ -19,7 +19,7 @@ def _choose_smallest_uint(value):
         return numpy.uint64
 
 
-def write_sparse_matrix(x, path: str, name: str, chunks: int = 10000, guess_integer: bool = True, block_size: int = 1e8):
+def write_sparse_matrix(x, path: str, name: str, chunks: Optional[int] = None, guess_integer: bool = True, block_size: int = 1e8):
     """Write a sparse matrix into a HDF5 file in a compressed-sparse column
     format. This creates a HDF5 group containing the ``data``, ``indices`` and
     ``indptr`` datasets, containing the corresponding components of the usual
@@ -33,7 +33,9 @@ def write_sparse_matrix(x, path: str, name: str, chunks: int = 10000, guess_inte
 
         name: Name of the group in the file.
 
-        chunks: Size of the chunks for the data and index datasets.
+        chunks: 
+            Size of the 1-dimensional chunks for the data and index datasets.
+            If None, defaults to 10000.
 
         guess_integer: 
             Whether to guess a compact integer type for the data. This can reduce
@@ -78,6 +80,8 @@ def write_sparse_matrix(x, path: str, name: str, chunks: int = 10000, guess_inte
                 dtype = _choose_smallest_uint(deets.maximum)
 
         # Doing the dump.
+        if chunks is None:
+            chunks = 10000
         ihandle = ghandle.create_dataset(name="indices", shape=deets.count, dtype=index_dtype, chunks=chunks, compression="gzip")
         dhandle = ghandle.create_dataset(name="data", shape=deets.count, dtype=dtype, chunks=chunks, compression="gzip")
         saved = _dump_sparse_matrix(x, ihandle, dhandle, block_size=block_size, offset=0)

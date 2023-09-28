@@ -6,6 +6,7 @@ import os
 
 from .choose_dense_chunk_sizes import choose_dense_chunk_sizes
 from ._utils import _choose_file_dtype, _translate_array_type, _open_writeable_hdf5_handle, _choose_block_shape
+from .stage_sparse import _stage_sparse_matrix
 
 
 def _stage_DelayedArray_dense(
@@ -101,8 +102,9 @@ def stage_DelayedArray(
     block_size: int = 1e8,
     **kwargs
 ) -> dict[str, Any]:
-    """Method for saving :py:class:`~numpy.ndarray` objects to file, see
-    :py:meth:`~dolomite_base.stage_object.stage_object` for details.
+    """Method for saving :py:class:`~delaydearray.DelayedArray.DelayedArray`
+    objects to file, see :py:meth:`~dolomite_base.stage_object.stage_object`
+    for details.
 
     Args:
         x: Array to be saved.
@@ -114,19 +116,27 @@ def stage_DelayedArray(
         is_child: Is ``x`` a child of another object?
 
         chunks:
-            Chunk dimensions. If not provided, we choose some chunk sizes with
+            For dense ``x``, a tuple of chunk dimensions. If None, we
+            automatically choose some chunk sizes with
             `:py:meth:`~dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes`.
+
+            For sparse ``x``, an integer specifying the chunk dimension in
+            :py:meth:`~dolomite_matrix.write_sparse_matrix.write_sparse_matrix`.
+            If None, a suitable chunk size is chosen.
 
         cache_size:
             Size of the HDF5 cache size, in bytes. Larger values improve speed
             at the cost of memory.
 
         block_size:
-            Size of each block in bytes. Saving is performed by iterating over
+            Size of each block in bytes. Staging is performed by iterating over
             ``x``, extracting one block at a time, and saving it to the HDF5
             file. Larger values improve speed at the cost of memory.
 
-        kwargs: Further arguments, ignored.
+        kwargs: 
+            Further arguments, ignored for dense ``x``. For sparse ``x``, these
+            are passed to
+            :py:meth:`~dolomite_matrix.write_sparse_matrix.write_sparse_matrix`.
 
     Returns:
         Metadata that can be edited by calling methods and then saved with
@@ -148,7 +158,15 @@ def stage_DelayedArray(
             )
 
     if is_sparse(x):
-        pass
+        return _stage_sparse_matrix(
+            x,
+            dir=dir,
+            path=path,
+            is_child=is_child,
+            chunks=chunks,
+            block_size=block_size,
+            **kwargs,
+        )
     else:
         return _stage_DelayedArray_dense(
             x,
