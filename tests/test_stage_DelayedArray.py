@@ -3,11 +3,12 @@ from dolomite_base import stage_object, write_metadata
 from delayedarray import wrap
 import delayedarray as da
 import dolomite_matrix
-from dolomite_matrix.stage_DelayedArray import _choose_block_shape
+from dolomite_matrix._utils import _choose_block_shape
 import os
 import h5py
 import filebackedarray
 from tempfile import mkdtemp
+import scipy.sparse
 
 
 def test_stage_DelayedArray_simple():
@@ -155,3 +156,23 @@ def test_stage_DelayedArray_custom_chunks():
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == x).all()
+
+
+########################################################
+########################################################
+
+
+def test_stage_DelayedArray_sparse():
+    x = scipy.sparse.random(1000, 200, 0.1).tocsc()
+    y = wrap(x) * 10
+
+    dir = mkdtemp()
+    meta = stage_object(y, dir=dir, path="foobar")
+    write_metadata(meta, dir=dir)
+    assert meta["array"]["type"] == "number"
+
+    roundtrip = dolomite_matrix.load_hdf5_sparse_matrix(meta, dir)
+    assert roundtrip.shape == y.shape
+    assert roundtrip.dtype == y.dtype
+    assert isinstance(roundtrip, filebackedarray.Hdf5CompressedSparseMatrix)
+    assert (numpy.array(roundtrip) == x.toarray() * 10).all()
