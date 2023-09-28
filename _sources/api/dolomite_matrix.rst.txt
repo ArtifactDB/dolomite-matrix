@@ -20,6 +20,14 @@ dolomite\_matrix.load\_hdf5\_dense\_array module
    :undoc-members:
    :show-inheritance:
 
+dolomite\_matrix.load\_hdf5\_sparse\_matrix module
+--------------------------------------------------
+
+.. automodule:: dolomite_matrix.load_hdf5_sparse_matrix
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dolomite\_matrix.stage\_DelayedArray module
 -------------------------------------------
 
@@ -32,6 +40,22 @@ dolomite\_matrix.stage\_ndarray module
 --------------------------------------
 
 .. automodule:: dolomite_matrix.stage_ndarray
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dolomite\_matrix.stage\_sparse module
+-------------------------------------
+
+.. automodule:: dolomite_matrix.stage_sparse
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dolomite\_matrix.write\_sparse\_matrix module
+---------------------------------------------
+
+.. automodule:: dolomite_matrix.write_sparse_matrix
    :members:
    :undoc-members:
    :show-inheritance:
