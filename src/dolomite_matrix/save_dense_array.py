@@ -1,15 +1,17 @@
 from typing import Tuple, Optional, Any
-from numpy import ndarray, bool_, uint8
+import numpy
 from dolomite_base import save_object, validate_saves
 import os
 
 from .choose_dense_chunk_sizes import choose_dense_chunk_sizes
-from ._utils import _translate_array_type, _open_writeable_hdf5_handle, _choose_file_dtype
+from ._utils import _open_writeable_hdf5_handle
+from . import _optimize_storage as optim
 
 
 @save_object.register
+@validate_saves
 def save_dense_array_from_ndarray(
-    x: ndarray, 
+    x: numpy.ndarray, 
     path: str, 
     dense_array_chunk_dimensions: Optional[Tuple[int, ...]] = None, 
     dense_array_cache_size: int = 1e8, 
@@ -39,23 +41,44 @@ def save_dense_array_from_ndarray(
         :py:meth:`~dolomite_base.write_metadata.write_metadata`.
     """
     os.mkdir(path)
-    newpath = path + "/array.h5"
 
     # Coming up with a decent chunk size.
-    if chunks is None:
-        chunks = choose_dense_chunk_sizes(x.shape, x.dtype.itemsize)
+    if dense_array_chunk_dimensions is None:
+        dense_array_chunk_dimensions = choose_dense_chunk_sizes(x.shape, x.dtype.itemsize)
     else:
         capped = []
         for i, d in enumerate(x.shape):
-            capped.append(min(d, chunks[i]))
-        chunks = (*capped,)
+            capped.append(min(d, dense_array_chunk_dimensions[i]))
+        dense_array_chunk_dimensions = (*capped,)
 
-    # Choosing the smallest data type that we can use        
+    # Choosing the smallest data type that we can use.
+    tt = None
+    if numpy.issubdtype(x.dtype, numpy.integer):
+        tt = "integer"
+        opts = optim.optimize_integer_storage(x)
+    elif numpy.issubdtype(x.dtype, numpy.floating):
+        tt = "number"
+        opts = optim.optimize_float_storage(x)
+    elif x.dtype == numpy.bool_:
+        tt = "boolean"
+        opts = optim.optimize_boolean_storage(x)
+    elif numpy.issubdtype(x.dtype, numpy.str_):
+        tt = "string"
+        opts = optim.optimize_string_storage(x)
+        x = x.astype(numpy.dtype(opts.type)) # avoid all-at-once coercion by performing some block processing.
+    else:
+        raise NotImplementedError("cannot save dense array of type '" + x.dtype.name + "'")
+    
+    fpath = os.path.join(path, "array.h5")
+    with _open_writeable_hdf5_handle(fpath, dense_array_cache_size) as handle:
+        ghandle = handle.create_group("dense_array")
+        ghandle.attrs["type"] = tt
+        dhandle = ghandle.create_dataset("data", data=x, chunks=dense_array_chunk_dimensions, dtype=opts.type, compression="gzip")
 
-    # Transposing it so that we save it in the right order.
-    t = x.T
-    chunks = (*list(reversed(chunks)),)
+        ghandle.create_dataset("transposed", data=0, dtype="i1")
+        if opts.placeholder is not None:
+            dhandle.attrs.create("missing-value-placeholder", data=opts.placeholder, dtype=opts.type)
 
-    fpath = os.path.join(dir, newpath)
-    with _open_writeable_hdf5_handle(fpath, cache_size) as fhandle:
-        fhandle.create_dataset("data", data=t, chunks=chunks, dtype=_choose_file_dtype(t.dtype), compression="gzip")
+    with open(os.path.join(path, "OBJECT"), "w") as handle:
+        handle.write('{ "type": "dense_array", "dense_array": { "version": "1.0" } }')
+
