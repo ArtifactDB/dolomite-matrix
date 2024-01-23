@@ -233,134 +233,123 @@ def optimize_integer_storage(x) -> _OptimizedStorageParameters:
 
 @dataclass
 class _FloatAttributes:
-    minimum: Optional[int] = None
-    maximum: Optional[int] = None
-    missing: bool = False
-    non_integer: bool = False 
-    non_zero: int = 0
-
-
-@dataclass
-class _FloatPlaceholderAttributes:
+    minimum: Optional[int]
+    maximum: Optional[int]
+    missing: bool
+    non_integer: bool
     has_nan: bool
     has_positive_inf: bool
     has_negative_inf: bool
-    has_zero: bool
-    has_lowest: bool
-    has_highest: bool
+    has_zero: Optional[bool]
+    has_lowest: Optional[bool]
+    has_highest: Optional[bool]
+    non_zero: int = 0
 
 
 @singledispatch
-def collect_float_attributes(x: Any, find_placeholders: bool) -> _FloatAttributes:
+def collect_float_attributes(x: Any, no_missing: bool) -> _FloatAttributes:
     if is_sparse(x):
-        collated = apply_over_blocks(x, lambda pos, block : _collect_float_attributes_from_Sparse2darray(block, find_placeholders), allow_sparse=True)
+        collated = apply_over_blocks(x, lambda pos, block : _collect_float_attributes_from_Sparse2darray(block, no_missing), allow_sparse=True)
     else:
-        collated = apply_over_blocks(x, lambda pos, block : _collect_float_attributes_from_ndarray(block, find_placeholders))
-    return _combine_float_attributes(collated, find_placeholders)
+        collated = apply_over_blocks(x, lambda pos, block : _collect_float_attributes_from_ndarray(block, no_missing))
+    return _combine_float_attributes(collated)
 
 
-def _simple_float_collector(x: numpy.ndarray, find_placeholders: bool) -> Union[_FloatAttributes, _FloatPlaceholderAttributes]:
-    if find_placeholders:
-        if not x.size:
-            return _FloatPlaceholderAttributes(
-                has_nan = False,
-                has_positive_inf = False,
-                has_negative_inf = False,
-                has_zero = False,
-                has_lowest = False,
-                has_highest = False
-            )
+def _simple_float_collector(x: numpy.ndarray, no_missing: bool) -> _FloatAttributes:
+    output = _FloatAttributes(
+        minimum = None,
+        maximum = None,
+        missing = False,
+        non_integer = False,
+        has_nan = False,
+        has_positive_inf = False,
+        has_negative_inf = False,
+        has_zero = None,
+        has_lowest = None,
+        has_highest = None 
+    )
 
-        has_nan = numpy.isnan(x).any()
-        has_positive_inf = numpy.inf in x
-        has_negative_inf = -numpy.inf in x
-        has_zero = 0 in x
+    if x.size == 0:
+        return output
 
-        fstats = numpy.finfo(x.dtype)
-        has_lowest = fstats.min in x
-        has_highest = fstats.max in x
-
-        return _FloatPlaceholderAttributes(
-            has_nan = has_nan,
-            has_positive_inf = has_positive_inf,
-            has_negative_inf = has_negative_inf,
-            has_zero = has_zero,
-            has_lowest = has_lowest,
-            has_highest = has_highest
-        )
-
-    else:
-        if not x.size:
-            return _FloatAttributes(minimum = None, maximum = None, non_integer = False, missing = False)
-
-        missing = False
+    if not no_missing:
         if numpy.ma.is_masked(x):
             if x.mask.all():
-                return _FloatAttributes(minimum = None, maximum = None, non_integer = False, missing = True)
+                output.missing = True
+                return output
             if x.mask.any():
-                missing = True
+                output.missing = True
 
-        # This evaluates to False for any of the non-finite values.
-        non_integer = (x % 1 != 0).any()
+    # While these are technically only used if there are missing values, we
+    # still need them to obtain 'non_integer', so we just compute them.
+    output.has_nan = numpy.isnan(x).any()
+    output.has_positive_inf = numpy.inf in x
+    output.has_negative_inf = -numpy.inf in x
 
-        # Minimum and maximum are only used if all floats contain integers.
-        minimum = None
-        maximum = None
-        if not non_integer:
-            minimum = x.min() 
-            maximum = x.max()
+    if output.has_nan or output.has_positive_inf or output.has_negative_inf:
+        output.non_integer = True
+    else:
+        output.non_integer = (x % 1 != 0).any()
 
-        return _FloatAttributes(minimum = minimum, maximum = maximum, non_integer = non_integer, missing = missing)
+    # Minimum and maximum are only used if all floats contain integers.
+    if not output.non_integer:
+        output.minimum = x.min() 
+        output.maximum = x.max()
+
+    # Highest/lowest are only used when there might be missing values.
+    if not no_missing:
+        fstats = numpy.finfo(x.dtype)
+        output.has_lowest = fstats.min in x
+        output.has_highest = fstats.max in x
+        output.has_zero = 0 in x
+
+    return output
 
 
 @collect_float_attributes.register
-def _collect_float_attributes_from_ndarray(x: numpy.ndarray, find_placeholders: bool) -> _FloatAttributes:
-    return _simple_float_collector(x, find_placeholders)
+def _collect_float_attributes_from_ndarray(x: numpy.ndarray, no_missing: bool) -> _FloatAttributes:
+    return _simple_float_collector(x, no_missing)
 
 
 @collect_float_attributes.register
-def _collect_float_attributes_from_Sparse2darray(x: SparseNdarray, find_placeholders: bool) -> _FloatAttributes:
-    collected = _collect_from_Sparse2darray(x.contents, lambda block : _simple_float_collector(block, find_placeholders), x.dtype)
-    return _combine_float_attributes(collected, find_placeholders)
+def _collect_float_attributes_from_Sparse2darray(x: SparseNdarray, no_missing: bool) -> _FloatAttributes:
+    collected = _collect_from_Sparse2darray(x.contents, lambda block : _simple_float_collector(block, no_missing), x.dtype)
+    return _combine_float_attributes(collected)
 
 
 if has_scipy:
     @collect_float_attributes.register
-    def _collect_float_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix, find_placeholders: bool):
-        return _simple_float_collector(x.data, find_placeholders)
+    def _collect_float_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix, no_missing: bool):
+        return _simple_float_collector(x.data, no_missing)
 
 
     @collect_float_attributes.register
-    def _collect_float_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix, find_placeholders: bool):
-        return _simple_float_collector(x.data, find_placeholders)
+    def _collect_float_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix, no_missing: bool):
+        return _simple_float_collector(x.data, no_missing)
 
 
     @collect_float_attributes.register
-    def _collect_float_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix, find_placeholders: bool):
-        return _simple_float_collector(x.data, find_placeholders)
+    def _collect_float_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix, no_missing: bool):
+        return _simple_float_collector(x.data, no_missing)
 
 
-def _combine_float_attributes(x: list[_FloatAttributes], find_placeholders: bool) -> _FloatAttributes:
-    if not find_placeholders:
-        return _FloatAttributes(
-            minimum=_aggregate_min(x, "minimum"),
-            maximum=_aggregate_max(x, "maximum"),
-            non_integer=_aggregate_any(x, "non_integer"),
-            missing=_aggregate_any(x, "missing")
-        )
-    else:
-        return _FloatPlaceholderAttributes(
-            has_nan=_aggregate_any(x, "has_nan"),
-            has_positive_inf=_aggregate_any(x, "has_positive_inf"),
-            has_negative_inf=_aggregate_any(x, "has_negative_inf"),
-            has_lowest=_aggregate_any(x, "has_lowest"),
-            has_highest=_aggregate_any(x, "has_highest"),
-            has_zero=_aggregate_any(x, "has_zero"),
-        )
+def _combine_float_attributes(x: list[_FloatAttributes]) -> _FloatAttributes:
+    return _FloatAttributes(
+        minimum=_aggregate_min(x, "minimum"),
+        maximum=_aggregate_max(x, "maximum"),
+        non_integer=_aggregate_any(x, "non_integer"),
+        missing=_aggregate_any(x, "missing"),
+        has_nan=_aggregate_any(x, "has_nan"),
+        has_positive_inf=_aggregate_any(x, "has_positive_inf"),
+        has_negative_inf=_aggregate_any(x, "has_negative_inf"),
+        has_lowest=_aggregate_any(x, "has_lowest"),
+        has_highest=_aggregate_any(x, "has_highest"),
+        has_zero=_aggregate_any(x, "has_zero"),
+    )
 
 
 def optimize_float_storage(x) -> _OptimizedStorageParameters:
-    attr = collect_float_attributes(x, find_placeholders=False)
+    attr = collect_float_attributes(x, isinstance(x, numpy.ndarray) and not numpy.ma.is_masked(x))
 
     if attr.missing:
         if not attr.non_integer:
@@ -386,18 +375,19 @@ def optimize_float_storage(x) -> _OptimizedStorageParameters:
                 elif upper < 2**32 - 1: 
                     return _OptimizedStorageParameters(type="u4", placeholder=2**32-1, non_zero=attr.non_zero)
 
-        attr2 = collect_float_attributes(x, find_placeholders=True)
         placeholder = None
-        if not attr2.has_nan:
+        if not attr.has_nan:
             placeholder = numpy.NaN
-        elif not attr2.has_positive_inf:
+        elif not attr.has_positive_inf:
             placeholder = numpy.inf
-        elif not attr2.has_negative_inf:
+        elif not attr.has_negative_inf:
             placeholder = -numpy.inf
-        elif not attr2.has_lowest:
+        elif not attr.has_lowest:
             placeholder = numpy.finfo(x.dtype).min
-        elif not attr2.has_highest:
+        elif not attr.has_highest:
             placeholder = numpy.finfo(x.dtype).max
+        elif not attr.has_zero:
+            placeholder = 0
 
         # Fallback that just goes through and pulls out all unique values.
         # This does involve a coercion to 64-bit floats, though; that's 
