@@ -1,6 +1,6 @@
 from delayedarray import SparseNdarray, is_sparse, apply_over_blocks
-from typing import Callable, Any, Optional, Union
-from functools import singledispatch
+from typing import Callable, Any, Optional, Union, Tuple
+from functools import singledispatch, reduce
 from collections import namedtuple
 from dataclasses import dataclass
 import numpy
@@ -74,17 +74,17 @@ def _collect_from_Sparse2darray(contents, fun: Callable, dtype: Callable):
 _OptimizedStorageParameters = namedtuple("_OptimizedStorageParameters", ["type", "placeholder", "non_zero"])
 
 
-def _unique_values_from_ndarray(contents: numpy.ndarray) -> set:
-    if not numpy.ma.masked(contents):
+def _unique_values_from_ndarray(position: Tuple, contents: numpy.ndarray) -> set:
+    if not numpy.ma.is_masked(contents):
         return set(contents)
     output = set()
     for y in contents:
-        if not numpy.ma.masked(y):
+        if not numpy.ma.is_masked(y):
             output.add(y)
     return output
 
 
-def _unique_values_from_Sparse2darray(contents: SparseNdarray) ->set:
+def _unique_values_from_Sparse2darray(position: Tuple, contents: SparseNdarray) ->set:
     output = set()
     if contents is not None:
         for i, node in enumerate(contents):
@@ -116,20 +116,20 @@ def collect_integer_attributes(x: Any):
 
 @dataclass
 class _IntegerAttributes:
-    minimum: Optional[int] = None
-    maximum: Optional[int] = None
-    missing: bool = False
+    minimum: Optional[int]
+    maximum: Optional[int]
+    missing: bool
     non_zero: int = 0
 
 
 def _simple_integer_collector(x: numpy.ndarray) -> _IntegerAttributes:
     if x.size == 0:
-        return _IntegerAttributes()
+        return _IntegerAttributes(minimum = None, maximum = None, missing = False)
 
     missing = False
     if numpy.ma.is_masked(x):
         if x.mask.all():
-            return _IntegerAttributes(missing=True)
+            return _IntegerAttributes(minimum = None, maximum = None, missing = True)
         if x.mask.any():
             missing = True
 
@@ -242,11 +242,12 @@ class _FloatAttributes:
 
 @dataclass
 class _FloatPlaceholderAttributes:
-    has_nan: bool = False
-    has_positive_inf: bool = False
-    has_negative_inf: bool = False
-    has_lowest: bool = False
-    has_highest: bool = False
+    has_nan: bool
+    has_positive_inf: bool
+    has_negative_inf: bool
+    has_zero: bool
+    has_lowest: bool
+    has_highest: bool
 
 
 @singledispatch
@@ -260,41 +261,56 @@ def collect_float_attributes(x: Any, find_placeholders: bool) -> _FloatAttribute
 
 def _simple_float_collector(x: numpy.ndarray, find_placeholders: bool) -> Union[_FloatAttributes, _FloatPlaceholderAttributes]:
     if find_placeholders:
-        output = _FloatPlaceholderAttributes()
         if not x.size:
-            return output
+            return _FloatPlaceholderAttributes(
+                has_nan = False,
+                has_positive_inf = False,
+                has_negative_inf = False,
+                has_zero = False,
+                has_lowest = False,
+                has_highest = False
+            )
 
-        output.has_nan = numpy.isnan(x).any()
-        output.has_positive_inf = numpy.inf in x
-        output.has_negative_inf = -numpy.inf in x
+        has_nan = numpy.isnan(x).any()
+        has_positive_inf = numpy.inf in x
+        has_negative_inf = -numpy.inf in x
+        has_zero = 0 in x
 
         fstats = numpy.finfo(x.dtype)
-        output.has_lowest = fstats.min in x
-        output.has_highest = fstats.max in x
-        return output
+        has_lowest = fstats.min in x
+        has_highest = fstats.max in x
+
+        return _FloatPlaceholderAttributes(
+            has_nan = has_nan,
+            has_positive_inf = has_positive_inf,
+            has_negative_inf = has_negative_inf,
+            has_zero = has_zero,
+            has_lowest = has_lowest,
+            has_highest = has_highest
+        )
 
     else:
-        output = _FloatAttributes()
         if not x.size:
-            return output
+            return _FloatAttributes(minimum = None, maximum = None, non_integer = False, missing = False)
 
         missing = False
         if numpy.ma.is_masked(x):
             if x.mask.all():
-                output.missing = True
-                return output
+                return _FloatAttributes(minimum = None, maximum = None, non_integer = False, missing = True)
             if x.mask.any():
-                output.missing = True
+                missing = True
 
         # This evaluates to False for any of the non-finite values.
-        output.non_integer = (x % 1 != 0).any()
+        non_integer = (x % 1 != 0).any()
 
         # Minimum and maximum are only used if all floats contain integers.
-        if not output.non_integer:
-            output.minimum = x.min() 
-            output.maximum = x.max()
+        minimum = None
+        maximum = None
+        if not non_integer:
+            minimum = x.min() 
+            maximum = x.max()
 
-        return output
+        return _FloatAttributes(minimum = minimum, maximum = maximum, non_integer = non_integer, missing = missing)
 
 
 @collect_float_attributes.register
@@ -308,21 +324,38 @@ def _collect_float_attributes_from_Sparse2darray(x: SparseNdarray, find_placehol
     return _combine_float_attributes(collected, find_placeholders)
 
 
-def _combine_float_attributes(x: list[_FloatAttributes]) -> _FloatAttributes:
-    if find_placeholders:
+if has_scipy:
+    @collect_float_attributes.register
+    def _collect_float_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix, find_placeholders: bool):
+        return _simple_float_collector(x.data, find_placeholders)
+
+
+    @collect_float_attributes.register
+    def _collect_float_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix, find_placeholders: bool):
+        return _simple_float_collector(x.data, find_placeholders)
+
+
+    @collect_float_attributes.register
+    def _collect_float_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix, find_placeholders: bool):
+        return _simple_float_collector(x.data, find_placeholders)
+
+
+def _combine_float_attributes(x: list[_FloatAttributes], find_placeholders: bool) -> _FloatAttributes:
+    if not find_placeholders:
         return _FloatAttributes(
-            minimum=aggregate_min(x, "minimum"),
-            maximum=aggregate_max(x, "maximum"),
-            non_integer=aggregate_any(x, "non_integer"),
-            missing=aggregate_any(x, "missing")
+            minimum=_aggregate_min(x, "minimum"),
+            maximum=_aggregate_max(x, "maximum"),
+            non_integer=_aggregate_any(x, "non_integer"),
+            missing=_aggregate_any(x, "missing")
         )
     else:
-        return _FloatAttributes(
-            has_nan=aggregate_any(x, "has_nan"),
-            has_positive_inf=aggregate_any(x, "has_positive_inf"),
-            has_negative_inf=aggregate_any(x, "has_negative_inf"),
-            has_lowest=aggregate_any(x, "has_lowest"),
-            has_highest=aggregate_any(x, "has_highest"),
+        return _FloatPlaceholderAttributes(
+            has_nan=_aggregate_any(x, "has_nan"),
+            has_positive_inf=_aggregate_any(x, "has_positive_inf"),
+            has_negative_inf=_aggregate_any(x, "has_negative_inf"),
+            has_lowest=_aggregate_any(x, "has_lowest"),
+            has_highest=_aggregate_any(x, "has_highest"),
+            has_zero=_aggregate_any(x, "has_zero"),
         )
 
 
@@ -475,40 +508,67 @@ def optimize_string_storage(x, missing: bool):
 ###################################################
 
 
-_BooleanAttributes = namedtuple("_BooleanAttributes", [ "non_zero" ])
+@dataclass
+class _BooleanAttributes:
+    missing: bool
+    non_zero: int = 0
 
 
 @singledispatch
 def collect_boolean_attributes(x: Any) -> _BooleanAttributes:
     if is_sparse(x):
-        collated = apply_over_blocks(x, _collect_boolean_attributes_from_Sparse2darray, allow_sparse=True)
+        collated = apply_over_blocks(x, lambda pos, block : _collect_boolean_attributes_from_Sparse2darray(block), allow_sparse=True)
     else:
-        collated = apply_over_blocks(x, _collect_boolean_attributes_from_ndarray)
+        collated = apply_over_blocks(x, lambda pos, block : _collect_boolean_attributes_from_ndarray(block))
     return _combine_boolean_attributes(collated)
 
 
 @collect_boolean_attributes.register
-def collect_boolean_attributes_from_ndarray(x: numpy.ndarray) -> _BooleanAttributes:
+def _collect_boolean_attributes_from_ndarray(x: numpy.ndarray) -> _BooleanAttributes:
     return _simple_boolean_collector(x)
 
 
 @collect_boolean_attributes.register
-def collect_boolean_attributes_from_Sparse2darray(x: SparseNdarray) -> _BooleanAttributes:
+def _collect_boolean_attributes_from_Sparse2darray(x: SparseNdarray) -> _BooleanAttributes:
     collected = _collect_from_Sparse2darray(x.contents, _simple_boolean_collector, x.dtype)
     return _combine_boolean_attributes(collected)
 
 
 def _simple_boolean_collector(x: numpy.ndarray) -> _BooleanAttributes:
-    return _BooleanAttributes(non_zero = 0)
+    missing = False
+    if x.size:
+        if numpy.ma.is_masked(x):
+            if x.mask.any():
+                missing = True
+    return _BooleanAttributes(non_zero = 0, missing = missing)
 
 
 def _combine_boolean_attributes(x: list[_BooleanAttributes]) -> _BooleanAttributes:
-    return _BooleanAttributes(non_zero = _aggregate_sum(x, "non_zero"))
+    return _BooleanAttributes(
+        missing = _aggregate_any(x, "missing"),
+        non_zero = _aggregate_sum(x, "non_zero")
+    )
 
 
-def optimize_boolean_storage(x, missing: bool) -> _OptimizedStorageParameters:
+if has_scipy:
+    @collect_boolean_attributes.register
+    def _collect_boolean_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix):
+        return _simple_boolean_collector(x.data)
+
+
+    @collect_boolean_attributes.register
+    def _collect_boolean_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix):
+        return _simple_boolean_collector(x.data)
+
+
+    @collect_boolean_attributes.register
+    def _collect_boolean_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix):
+        return _simple_boolean_collector(x.data)
+
+
+def optimize_boolean_storage(x) -> _OptimizedStorageParameters:
     attr = collect_boolean_attributes(x)
-    if missing:
-        return _OptimizedStorageParameters(type="i8", placeholder=-1, non_zero=attr.non_zero)
+    if attr.missing:
+        return _OptimizedStorageParameters(type="i1", placeholder=-1, non_zero=attr.non_zero)
     else:
-        return _OptimizedStorageParameters(type="i8", placeholder=None, non_zero=attr.non_zero)
+        return _OptimizedStorageParameters(type="i1", placeholder=None, non_zero=attr.non_zero)
