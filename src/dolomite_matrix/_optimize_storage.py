@@ -465,7 +465,7 @@ def _simple_string_collector(x: numpy.ndarray) -> _FloatAttributes:
             is_unicode = False
         )
 
-    missing = True
+    missing = False
     if numpy.ma.is_masked(x):
         if x.mask.all():
             return _StringAttributes(
@@ -478,7 +478,16 @@ def _simple_string_collector(x: numpy.ndarray) -> _FloatAttributes:
         if x.mask.any():
             missing = True
 
-    max_len = max(y.encode("UTF8") for y in x)
+    max_len = 0
+    if missing:
+        for y in x.flatten():
+            if not numpy.ma.is_masked(y):
+                candidate = len(y.encode("UTF8"))
+                if max_len < candidate:
+                    max_len = candidate
+    else:
+        max_len = max(len(y.encode("UTF8")) for y in x.flatten())
+
     return _StringAttributes(
         has_na1="NA" in x,
         has_na2="NA_" in x,
@@ -511,9 +520,10 @@ def _collect_string_attributes_from_ndarray(x: numpy.ndarray) -> _StringAttribut
 
 def optimize_string_storage(x) -> _OptimizedStorageParameters:
     attr = collect_string_attributes(x)
+    attr.max_len = max(1, attr.max_len)
 
     placeholder = None
-    if missing:
+    if attr.missing:
         if not attr.has_na1:
             placeholder = "NA"
         elif not attr.has_na2:
@@ -524,7 +534,7 @@ def optimize_string_storage(x) -> _OptimizedStorageParameters:
             new_len = max(len(placeholder.encode("UTF8")), attr.max_len)
             return _OptimizedStorageParameters(type="S" + str(new_len), placeholder=placeholder, non_zero=0)
 
-    return _OptimizedStorageParameters(type="S" + str(attr.max_len), placeholder=None, non_zero=0)
+    return _OptimizedStorageParameters(type="S" + str(attr.max_len), placeholder=placeholder, non_zero=0)
 
 
 ###################################################
