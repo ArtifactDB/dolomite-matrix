@@ -51,9 +51,9 @@ def test_optimize_integer_storage_dense():
     assert opt.placeholder is None
 
     # Empty
-    y = numpy.array([0])
+    y = numpy.array([], dtype=numpy.int32)
     opt = optim.optimize_integer_storage(y)
-    assert opt.type == "u1"
+    assert opt.type == "i1"
     assert opt.placeholder is None
 
 
@@ -252,9 +252,9 @@ def test_optimize_float_storage_dense():
     assert opt.placeholder is None
 
     # Empty
-    y = numpy.array([0])
+    y = numpy.array([], dtype=numpy.float64)
     opt = optim.optimize_float_storage(y)
-    assert opt.type == "u1"
+    assert opt.type == "i1"
     assert opt.placeholder is None
 
     # Actual floating point values.
@@ -478,6 +478,23 @@ def test_optimize_float_storage_Any():
 ###################################################
 
 
+def test_optimize_string_storage_dense():
+    y = numpy.array(["A","BB","CCC"])
+    opt = optim.optimize_string_storage(y)
+    assert opt.type == "S3"
+    assert opt.placeholder is None
+
+    # Empty
+    y = numpy.array([], dtype=numpy.str_)
+    opt = optim.optimize_string_storage(y)
+    assert opt.type == "S0"
+    assert opt.placeholder is None
+
+
+###################################################
+###################################################
+
+
 def test_optimize_boolean_storage_dense():
     y = numpy.array([True,False,True])
     opt = optim.optimize_boolean_storage(y)
@@ -485,7 +502,7 @@ def test_optimize_boolean_storage_dense():
     assert opt.placeholder is None
 
     # Empty
-    y = numpy.array([0])
+    y = numpy.array([], dtype=numpy.bool_)
     opt = optim.optimize_boolean_storage(y)
     assert opt.type == "i1"
     assert opt.placeholder is None

@@ -419,7 +419,7 @@ def optimize_float_storage(x) -> _OptimizedStorageParameters:
 
             # See logic in optimize_integer_storage().
             if lower is None:
-                return _OptimizedStorageParameters(type="i1", placeholder=-2**7, non_zero=attr.non_zero)
+                return _OptimizedStorageParameters(type="i1", placeholder=None, non_zero=attr.non_zero)
 
             if lower < 0:
                 if lower >= -2**7 and upper < 2**7:
@@ -446,38 +446,61 @@ def optimize_float_storage(x) -> _OptimizedStorageParameters:
 ###################################################
 
 
-_StringAttributes = namedtuple("_StringAttributes", [ "has_na1", "has_na2", "max_len", "is_unicode" ])
+@dataclass
+class _StringAttributes:
+    has_na1: bool
+    has_na2: bool
+    missing: bool
+    max_len: int
+    is_unicode: bool
 
 
 def _simple_string_collector(x: numpy.ndarray) -> _FloatAttributes:
-    if x.size:
+    if x.size == 0:
         return _StringAttributes(
-            has_na1="NA" in x,
-            has_na2="_NA" in x,
-            max_len=x.dtype.itemsize,
-            is_unicode=x.dtype.kind == "U"
+            has_na1 = False,
+            has_na2 = False,
+            missing = False,
+            max_len = 0,
+            is_unicode = False
         )
-    else:
-        return _FloatAttributes(
-            has_na1=False,
-            has_na2=False,
-            max_len=0,
-            is_unicode=False
-        )
+
+    missing = True
+    if numpy.ma.is_masked(x):
+        if x.mask.all():
+            return _StringAttributes(
+                has_na1=False,
+                has_na2=False,
+                missing=True,
+                max_len=0,
+                is_unicode=False
+            )
+        if x.mask.any():
+            missing = True
+
+    max_len = max(y.encode("UTF8") for y in x)
+    return _StringAttributes(
+        has_na1="NA" in x,
+        has_na2="NA_" in x,
+        missing=missing,
+        max_len=max_len,
+        is_unicode=x.dtype.kind == "U"
+    )
 
 
 @singledispatch
 def collect_string_attributes(x: Any) -> _StringAttributes:
-    collected = apply_over_blocks(x, _collect_string_attributes_from_ndarray)
+    collected = apply_over_blocks(x, lambda pos, block : _collect_string_attributes_from_ndarray(block))
     return _combine_string_attributes(collected)
 
 
 def _combine_string_attributes(x: list[_StringAttributes]) -> _StringAttributes:
     return _StringAttributes(
-        has_na1=aggregate_any(x, "has_na1"),
-        has_na2=aggregate_any(x, "has_na2"),
-        max_len=aggregate_max(x, "max_len"),
-        is_unicode=aggregate_any(x, "is_unicode")
+        has_na1 = _aggregate_any(x, "has_na1"),
+        has_na2 = _aggregate_any(x, "has_na2"),
+        missing = _aggregate_any(x, "missing"),
+        max_len = _aggregate_max(x, "max_len"),
+        is_unicode = _aggregate_any(x, "is_unicode")
     )
 
 
@@ -486,7 +509,7 @@ def _collect_string_attributes_from_ndarray(x: numpy.ndarray) -> _StringAttribut
     return _simple_string_collector(x)
 
 
-def optimize_string_storage(x, missing: bool):
+def optimize_string_storage(x) -> _OptimizedStorageParameters:
     attr = collect_string_attributes(x)
 
     placeholder = None
@@ -494,7 +517,7 @@ def optimize_string_storage(x, missing: bool):
         if not attr.has_na1:
             placeholder = "NA"
         elif not attr.has_na2:
-            placeholder = "_NA"
+            placeholder = "NA_"
         else:
             uniq = _unique_values(x)
             placeholder = dl.choose_missing_string_placeholder(uniq)
