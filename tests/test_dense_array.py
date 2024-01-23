@@ -41,13 +41,13 @@ def test_dense_array_boolean():
     assert (numpy.array(roundtrip) == y).all()
 
 
-def test_dense_array_boolean():
+def test_dense_array_string():
     y = numpy.array(["Sumire", "Kanon", "Chisato", "Ren", "Keke"])
     dir = os.path.join(mkdtemp(), "foobar")
     save_object(y, dir)
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == y.shape
-    assert roundtrip.dtype == numpy.str_
+    assert numpy.issubdtype(roundtrip.dtype, numpy.str_)
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == y).all()
 

@@ -28,12 +28,13 @@ def read_dense_array(path: str, **kwargs) -> Hdf5DenseArray:
         tt = ghandle.attrs["type"]
         dtype = None
         if tt == "boolean":
-            dtype = numpy.bool_
+            dtype = numpy.dtype("bool")
         elif tt == "string":
-            dtype = numpy.str_
+            dtype_name = "U" + str(dhandle.dtype.itemsize)
+            dtype = numpy.dtype(dtype_name)
         elif tt == "float":
             if not numpy.issubdtype(dhandle.dtype, numpy.floating):
-                dtype = numpy.float64
+                dtype = numpy.dtype("float64")
 
         transposed = False
         if "transposed" in ghandle:
