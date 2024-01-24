@@ -119,10 +119,10 @@ def test_optimize_integer_storage_dense_MaskedArray():
     assert opt.placeholder == -128
 
 
-def test_optimize_integer_storage_Sparse2dArray():
+def test_optimize_integer_storage_Sparse2darray():
     y = delayedarray.SparseNdarray([10, 5], None, dtype=numpy.int32, index_dtype=numpy.int8)
     opt = optim.optimize_integer_storage(y)
-    assert opt.type == "u1"
+    assert opt.type == "i1"
     assert opt.placeholder is None
 
     y = delayedarray.SparseNdarray(
@@ -139,6 +139,7 @@ def test_optimize_integer_storage_Sparse2dArray():
     opt = optim.optimize_integer_storage(y)
     assert opt.type == "u2"
     assert opt.placeholder is None
+    assert opt.non_zero == 4
 
     y = delayedarray.SparseNdarray(
         [10, 5],
@@ -154,6 +155,7 @@ def test_optimize_integer_storage_Sparse2dArray():
     opt = optim.optimize_integer_storage(y)
     assert opt.type == "i4"
     assert opt.placeholder == -2**31
+    assert opt.non_zero == 5
 
 
 def test_optimize_integer_storage_scipy():
@@ -388,10 +390,10 @@ def test_optimize_float_storage_dense_MaskedArray():
     assert numpy.isnan(opt.placeholder)
 
 
-def test_optimize_float_storage_Sparse2dArray():
+def test_optimize_float_storage_Sparse2darray():
     y = delayedarray.SparseNdarray([10, 5], None, dtype=numpy.float32, index_dtype=numpy.int8)
     opt = optim.optimize_float_storage(y)
-    assert opt.type == "u1"
+    assert opt.type == "i1"
     assert opt.placeholder is None
 
     y = delayedarray.SparseNdarray(
@@ -408,6 +410,7 @@ def test_optimize_float_storage_Sparse2dArray():
     opt = optim.optimize_float_storage(y)
     assert opt.type == "f8"
     assert opt.placeholder is None
+    assert opt.non_zero == 4
 
     y = delayedarray.SparseNdarray(
         [10, 5],
@@ -423,6 +426,7 @@ def test_optimize_float_storage_Sparse2dArray():
     opt = optim.optimize_float_storage(y)
     assert opt.type == "i4"
     assert opt.placeholder == -2**31
+    assert opt.non_zero == 5
 
 
 def test_optimize_float_storage_scipy():
@@ -564,7 +568,7 @@ def test_optimize_boolean_storage_dense_MaskedArray():
     assert opt.placeholder == -1
 
 
-def test_optimize_boolean_storage_Sparse2dArray():
+def test_optimize_boolean_storage_Sparse2darray():
     y = delayedarray.SparseNdarray([10, 5], None, dtype=numpy.bool_, index_dtype=numpy.int8)
     opt = optim.optimize_boolean_storage(y)
     assert opt.type == "i1"
@@ -584,6 +588,7 @@ def test_optimize_boolean_storage_Sparse2dArray():
     opt = optim.optimize_boolean_storage(y)
     assert opt.type == "i1"
     assert opt.placeholder is None
+    assert opt.non_zero == 4
 
     y = delayedarray.SparseNdarray(
         [10, 5],
@@ -599,6 +604,7 @@ def test_optimize_boolean_storage_Sparse2dArray():
     opt = optim.optimize_boolean_storage(y)
     assert opt.type == "i1"
     assert opt.placeholder == -1
+    assert opt.non_zero == 5
 
 
 def test_optimize_boolean_storage_scipy():

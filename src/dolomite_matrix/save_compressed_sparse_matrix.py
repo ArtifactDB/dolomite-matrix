@@ -63,11 +63,13 @@ def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_bu
 
     block_size = delayedarray.choose_block_size_for_1d_iteration(x, dimension=primary, memory=compressed_sparse_matrix_buffer_size)
     limit = x.shape[primary]
-    full_other = range(x.shape[secondary])
+    subset = [None] * 2
+    subset[secondary] = range(x.shape[secondary])
 
     for start in range(0, limit, block_size):
         end = min(limit, start + block_size)
-        block = delayedarray.extract_sparse_array(x, (full_other, range(start, end)))
+        subset[primary] = range(start, end)
+        block = delayedarray.extract_sparse_array(x, (*subset,))
 
         if block.contents is not None:
             # Sparse2darrays are always CSC, so if we need to save it as CSR,
@@ -82,9 +84,9 @@ def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_bu
             for i, b in enumerate(block.contents):
                 if b is not None:
                     counter += len(b[0])
-                    indptrs[start + i + 1] = counter
                     icollected.append(b[0])
                     dcollected.append(ut.sanitize_for_writing(b[1], details.placeholder))
+                indptrs[start + i + 1] = counter
 
             # Collecting everything in memory for a single write operation, avoid
             # potential issues with writing/reloading partial chunks. 

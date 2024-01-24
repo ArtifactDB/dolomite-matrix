@@ -66,14 +66,14 @@ def _blockwise_any(x: numpy.ndarray, condition: Callable):
 
 def _collect_from_Sparse2darray(contents, fun: Callable, dtype: Callable):
     if contents is None:
-        attrs = fun(numpy.array([0], dtype=dtype))
+        attrs = fun(numpy.array([], dtype=dtype))
         attrs.non_zero = 0
         return [attrs]
 
     output = []
     for i, node in enumerate(contents):
         if node is None:
-            val = numpy.array([0], dtype=dtype)
+            val = numpy.array([], dtype=dtype)
         else:
             val = node[1]
         attrs = fun(val)
@@ -152,7 +152,8 @@ def _combine_integer_attributes(x: list[_IntegerAttributes]):
     return _IntegerAttributes(
         minimum=_aggregate_min(x, "minimum"),
         maximum=_aggregate_max(x, "maximum"),
-        missing=_aggregate_any(x, "missing")
+        missing=_aggregate_any(x, "missing"),
+        non_zero=_aggregate_sum(x, "non_zero"),
     )
 
 
@@ -369,6 +370,7 @@ def _combine_float_attributes(x: list[_FloatAttributes]) -> _FloatAttributes:
         has_lowest=_aggregate_any(x, "has_lowest"),
         has_highest=_aggregate_any(x, "has_highest"),
         has_zero=_aggregate_any(x, "has_zero"),
+        non_zero=_aggregate_sum(x, "non_zero"),
     )
 
 

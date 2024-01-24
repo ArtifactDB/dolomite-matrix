@@ -3,6 +3,7 @@ import dolomite_base as dl
 import dolomite_matrix as dm
 from tempfile import mkdtemp
 import numpy
+import delayedarray
 import filebackedarray
 import os
 
@@ -43,6 +44,27 @@ def test_compressed_sparse_matrix_coo():
     assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
     assert isinstance(roundtrip, filebackedarray.Hdf5CompressedSparseMatrix)
     assert (numpy.array(roundtrip) == y.toarray()).all()
+
+
+def test_compressed_sparse_matrix_SparseNdarray():
+    y = delayedarray.SparseNdarray(
+        (10, 5),
+        [
+            None, 
+            (numpy.array([0, 8]), numpy.array([1, 20])), 
+            None, 
+            (numpy.array([2, 9]), numpy.array([0, 5000])), 
+            None
+        ]
+    )
+    dir = os.path.join(mkdtemp(),"foobar")
+    dl.save_object(y, dir)
+
+    roundtrip = dm.read_compressed_sparse_matrix(dir)
+    assert roundtrip.shape == y.shape
+    assert numpy.issubdtype(roundtrip.dtype, numpy.integer)
+    assert isinstance(roundtrip, filebackedarray.Hdf5CompressedSparseMatrix)
+    assert (numpy.array(roundtrip) == numpy.array(y)).all()
 
 
 def test_compressed_sparse_matrix_integer():
