@@ -172,14 +172,17 @@ def test_optimize_integer_storage_scipy():
     opt = optim.optimize_integer_storage(y)
     assert opt.type == "i2"
     assert opt.placeholder is None
+    assert opt.non_zero == 5
 
     opt = optim.optimize_integer_storage(y.tocsc())
     assert opt.type == "i2"
     assert opt.placeholder is None
+    assert opt.non_zero == 5
 
     opt = optim.optimize_integer_storage(y.tocsr())
     assert opt.type == "i2"
     assert opt.placeholder is None
+    assert opt.non_zero == 5
 
 
 def test_optimize_integer_storage_Any():
@@ -439,14 +442,17 @@ def test_optimize_float_storage_scipy():
     opt = optim.optimize_float_storage(y)
     assert opt.type == "i2"
     assert opt.placeholder is None
+    assert opt.non_zero == 5
 
     opt = optim.optimize_float_storage(y.tocsc())
     assert opt.type == "i2"
     assert opt.placeholder is None
+    assert opt.non_zero == 5
 
     opt = optim.optimize_float_storage(y.tocsr())
     assert opt.type == "i2"
     assert opt.placeholder is None
+    assert opt.non_zero == 5
 
 
 def test_optimize_float_storage_Any():
@@ -611,14 +617,17 @@ def test_optimize_boolean_storage_scipy():
     opt = optim.optimize_boolean_storage(y)
     assert opt.type == "i1"
     assert opt.placeholder is None
+    assert opt.non_zero == 5
 
     opt = optim.optimize_boolean_storage(y.tocsc())
     assert opt.type == "i1"
     assert opt.placeholder is None
+    assert opt.non_zero == 5
 
     opt = optim.optimize_boolean_storage(y.tocsr())
     assert opt.type == "i1"
     assert opt.placeholder is None
+    assert opt.non_zero == 5
 
 
 def test_optimize_boolean_storage_Any():

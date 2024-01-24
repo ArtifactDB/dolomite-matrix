@@ -170,17 +170,23 @@ def _collect_integer_attributes_from_Sparse2darray(x: SparseNdarray) -> _Integer
 if has_scipy:
     @collect_integer_attributes.register
     def _collect_integer_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix):
-        return _simple_integer_collector(x.data)
+        output = _simple_integer_collector(x.data)
+        output.non_zero = int(x.data.shape[0])
+        return output
 
 
     @collect_integer_attributes.register
     def _collect_integer_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix):
-        return _simple_integer_collector(x.data)
+        output = _simple_integer_collector(x.data)
+        output.non_zero = int(x.data.shape[0])
+        return output
 
 
     @collect_integer_attributes.register
     def _collect_integer_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix):
-        return _simple_integer_collector(x.data)
+        output = _simple_integer_collector(x.data)
+        output.non_zero = int(x.data.shape[0])
+        return output
 
 
 def optimize_integer_storage(x) -> _OptimizedStorageParameters:
@@ -332,17 +338,23 @@ def _collect_float_attributes_from_Sparse2darray(x: SparseNdarray, no_missing: b
 if has_scipy:
     @collect_float_attributes.register
     def _collect_float_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix, no_missing: bool):
-        return _simple_float_collector(x.data, no_missing)
+        output = _simple_float_collector(x.data, no_missing)
+        output.non_zero = int(x.data.shape[0])
+        return output
 
 
     @collect_float_attributes.register
     def _collect_float_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix, no_missing: bool):
-        return _simple_float_collector(x.data, no_missing)
+        output = _simple_float_collector(x.data, no_missing)
+        output.non_zero = int(x.data.shape[0])
+        return output
 
 
     @collect_float_attributes.register
     def _collect_float_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix, no_missing: bool):
-        return _simple_float_collector(x.data, no_missing)
+        output = _simple_float_collector(x.data, no_missing)
+        output.non_zero = int(x.data.shape[0])
+        return output
 
 
 def _combine_float_attributes(x: list[_FloatAttributes]) -> _FloatAttributes:
@@ -583,17 +595,23 @@ def _combine_boolean_attributes(x: list[_BooleanAttributes]) -> _BooleanAttribut
 if has_scipy:
     @collect_boolean_attributes.register
     def _collect_boolean_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix):
-        return _simple_boolean_collector(x.data)
+        output = _simple_boolean_collector(x.data)
+        output.non_zero = int(x.data.shape[0])
+        return output
 
 
     @collect_boolean_attributes.register
     def _collect_boolean_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix):
-        return _simple_boolean_collector(x.data)
+        output = _simple_boolean_collector(x.data)
+        output.non_zero = int(x.data.shape[0])
+        return output
 
 
     @collect_boolean_attributes.register
     def _collect_boolean_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix):
-        return _simple_boolean_collector(x.data)
+        output = _simple_boolean_collector(x.data)
+        output.non_zero = int(x.data.shape[0])
+        return output
 
 
 def optimize_boolean_storage(x) -> _OptimizedStorageParameters:

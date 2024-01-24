@@ -1,11 +1,14 @@
 from typing import Any
 from functools import singledispatch
 from dolomite_base import save_object, validate_saves
-from delayedarray import SparseNdarray
+from delayedarray import SparseNdarray, chunk_shape
 import os
 import h5py
+import numpy
+import delayedarray
 
 from . import _utils as ut
+from . import _optimize_storage as optim
 
 
 has_scipy = False
@@ -32,7 +35,7 @@ def _choose_index_type(n: int) -> str:
 
 
 @singledispatch
-def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_cache_size, compressed_sparse_matrix_chunk_size):
+def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_buffer_size, compressed_sparse_matrix_chunk_size):
     chunks = chunk_shape(x)
     chunks_per_col = x.shape[0] / chunks[0]
     chunks_per_row = x.shape[1] / chunks[1]
@@ -48,44 +51,47 @@ def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_ca
         secondary = 1
         handle.attrs["layout"] = "CSR"
 
-    dhandle = handle.create_dataset("data", shape=details.size, dtype=details.type, compression="gzip", chunks=compressed_sparse_matrix_chunk_size)
+    compressed_sparse_matrix_chunk_size = min(compressed_sparse_matrix_chunk_size, details.non_zero)
+    dhandle = handle.create_dataset("data", shape = details.non_zero, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
     if details.placeholder is not None:
-        dhandle.create("missing-value-placeholder", data=details.placeholder, dtype=details.dtype)
+        dhandle.create("missing-value-placeholder", data = details.placeholder, dtype = details.dtype)
 
     itype = _choose_index_type(x.shape[secondary])
-    ihandle = handle.create_dataset("indices", shape=details.size, dtype=itype, compression="gzip", chunks=compressed_sparse_matrix_chunk_size)
-    indptrs = numpy.zeros(x.shape[primary] + 1, dtype=numpy.uint64)
+    ihandle = handle.create_dataset("indices", shape = details.non_zero, dtype = itype, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
+    indptrs = numpy.zeros(x.shape[primary] + 1, dtype = numpy.uint64)
     counter = 0
 
-    def _save_sparse_block(pos, block):
-        if block.contents is None:
-            return
+    block_size = delayedarray.choose_block_size_for_1d_iteration(x, dimension=primary, memory=compressed_sparse_matrix_buffer_size)
+    limit = x.shape[primary]
+    full_other = range(x.shape[secondary])
 
-        # Sparse2darrays are always CSC, so if we need to save it as CSR,
-        # we transpose it before we extract the contents.
-        if primary == 0:
-            block = block.T
+    for start in range(0, limit, block_size):
+        end = min(limit, start + block_size)
+        block = delayedarray.extract_sparse_array(x, (full_other, range(start, end)))
 
-        start = pos[0]
-        original = counter
-        icollected = []
-        dcollected = []
+        if block.contents is not None:
+            # Sparse2darrays are always CSC, so if we need to save it as CSR,
+            # we transpose it before we extract the contents.
+            if primary == 0:
+                block = block.T
 
-        for i, b in enumerate(block.contents):
-            if b is not None:
-                counter += len(b[0])
-                indptrs[start + i + 1] = counter
-                icollected.append(b[0])
-                dcollected.append(ut.sanitize_for_writing(b[1], details.placeholder))
+            original = counter
+            icollected = []
+            dcollected = []
 
-        # Collecting everything in memory for a single write operation, avoid
-        # potential issues with writing/reloading partial chunks. 
-        ihandle[original : counter] = numpy.concatenate(icollected)
-        dhandle[original : counter] = numpy.concatenate(dcollected)
+            for i, b in enumerate(block.contents):
+                if b is not None:
+                    counter += len(b[0])
+                    indptrs[start + i + 1] = counter
+                    icollected.append(b[0])
+                    dcollected.append(ut.sanitize_for_writing(b[1], details.placeholder))
 
-    block_size = choose_block_size_for_1d_iteration(x, dimension=primary, memory=compressed_sparse_matrix_cache_size)
-    delayedarray.apply_over_dimension(x, dimension=primary, fun=_save_sparse_block, block_size=block_size, allow_sparse=True)
-    ghandle.create_dataset("indptr", data=indptrs, dtype="u8", compression="gzip", chunks=True)
+            # Collecting everything in memory for a single write operation, avoid
+            # potential issues with writing/reloading partial chunks. 
+            ihandle[original : counter] = numpy.concatenate(icollected)
+            dhandle[original : counter] = numpy.concatenate(dcollected)
+
+    handle.create_dataset("indptr", data=indptrs, dtype="u8", compression="gzip", chunks=True)
 
 
 if has_scipy:
@@ -100,27 +106,27 @@ if has_scipy:
             handle.attrs["layout"] = "CSR"
 
         itype = _choose_index_type(x.shape[secondary])
-        handle.create_dataset("indices", x=x.indices, dtype=itype, compression="gzip", chunks=compressed_sparse_matrix_chunk_size)
-        handle.create_dataset("indptr", x=x.indptr, dtype="u8", compression="gzip", chunks=True)
+        handle.create_dataset("indices", data = x.indices, dtype = itype, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
+        handle.create_dataset("indptr", data = x.indptr, dtype = "u8", compression = "gzip", chunks = True)
 
         if not numpy.ma.is_masked(x.data):
-            handle.create_dataset("data", x=x.data, dtype=details.type, compression="gzip", chunks=compressed_sparse_matrix_chunk_size)
+            handle.create_dataset("data", data = x.data, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
         elif not x.mask.any():
-            handle.create_dataset("data", x=x.data.data, dtype=details.type, compression="gzip", chunks=compressed_sparse_matrix_chunk_size)
+            handle.create_dataset("data", data = x.data.data, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
         else:
-            dhandle = handle.create_dataset("data", shape=details.size, dtype=details.type, compression="gzip", chunks=compressed_sparse_matrix_chunk_size)
+            dhandle = handle.create_dataset("data", shape = details.non_zero, dtype = details.type, compression="gzip", chunks = compressed_sparse_matrix_chunk_size)
             if details.placeholder is not None:
-                dhandle.create("missing-value-placeholder", data=details.placeholder, dtype=details.dtype)
+                dhandle.create("missing-value-placeholder", data = details.placeholder, dtype = details.dtype)
 
             step = max(1, int(compressed_sparse_matrix_buffer_size / compressed_sparse_matrix_chunk_size)) * compressed_sparse_matrix_chunk_size
-            for i in range(0, details.size, step): 
-                end = min(details.size, i + step)
+            for i in range(0, details.non_zero, step): 
+                end = min(details.non_zero, i + step)
                 block = x.data[i : end] # might be a view, so sanitization (and possible copying) is necessary.
                 dhandle[i : end] = ut.sanitize_for_writing(block, details.placeholder)
 
 
     @_h5_write_sparse_matrix.register
-    def _h5_write_sparse_matrix_from_csc_matrix(x: scipy.sparse.csc_matrix, handle, details, compressed_sparse_matrix_cache_size):
+    def _h5_write_sparse_matrix_from_csc_matrix(x: scipy.sparse.csc_matrix, handle, details, compressed_sparse_matrix_buffer_size,  compressed_sparse_matrix_chunk_size):
         _write_compressed_sparse_matrix(
             x,
             handle, 
@@ -132,7 +138,7 @@ if has_scipy:
 
 
     @_h5_write_sparse_matrix.register
-    def _h5_write_sparse_matrix_from_csr_matrix(x: scipy.sparse.csr_matrix, handle, details, compressed_sparse_matrix_cache_size):
+    def _h5_write_sparse_matrix_from_csr_matrix(x: scipy.sparse.csr_matrix, handle, details, compressed_sparse_matrix_buffer_size, compressed_sparse_matrix_chunk_size):
         _write_compressed_sparse_matrix(
             x,
             handle, 
@@ -147,7 +153,7 @@ if has_scipy:
 ###############################################
 
 
-def _save_compresssed_sparse_matrix(x: Any, path: str, compressed_sparse_matrix_buffer_size: int, **kwargs):
+def _save_compressed_sparse_matrix(x: Any, path: str, compressed_sparse_matrix_buffer_size: int, compressed_sparse_matrix_chunk_size: int, **kwargs):
     os.mkdir(path)
     if len(x.shape) != 2:
         raise ValueError("only 2-dimensional sparse arrays are currently supported")
@@ -168,8 +174,14 @@ def _save_compresssed_sparse_matrix(x: Any, path: str, compressed_sparse_matrix_
             raise NotImplementedError("cannot save sparse matrix of type '" + x.dtype.name + "'")
 
         ghandle.attrs["type"] = tt
-        ghandle.create_dataset("shape", data=x.shape, dtype="u8")
-        _h5_write_sparse_matrix(x, handle=ghandle, details=opts, compressed_sparse_matrix_buffer_size=compressed_sparse_matrix_buffer_size)
+        ghandle.create_dataset("shape", data = x.shape, dtype = "u8")
+        _h5_write_sparse_matrix(
+            x, 
+            handle = ghandle, 
+            details = opts, 
+            compressed_sparse_matrix_buffer_size = compressed_sparse_matrix_buffer_size,
+            compressed_sparse_matrix_chunk_size = compressed_sparse_matrix_chunk_size
+        )
 
     with open(os.path.join(path, "OBJECT"), "w") as handle:
         handle.write('{ "type": "compressed_sparse_matrix", "compressed_sparse_matrix": { "version": "1.0" } }')

@@ -21,7 +21,7 @@ def read_compressed_sparse_matrix(path: str, **kwargs) -> DelayedArray:
     Returns:
         A HDF5-backed compressed sparse matrix.
     """
-    fpath = os.path.join(path, "array.h5")
+    fpath = os.path.join(path, "matrix.h5")
     name = "compressed_sparse_matrix"
 
     with h5py.File(fpath, "r") as handle:
@@ -37,7 +37,7 @@ def read_compressed_sparse_matrix(path: str, **kwargs) -> DelayedArray:
                 dtype = numpy.dtype("float64")
 
         layout = ghandle.attrs["layout"]
-        shape = (*ghandle["shape"][:],)
+        shape = (*[int(y) for y in ghandle["shape"]],)
 
         placeholder = None
         if "missing-value-placeholder" in dhandle.attrs:
