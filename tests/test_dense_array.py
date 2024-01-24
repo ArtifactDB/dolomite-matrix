@@ -67,14 +67,3 @@ def test_dense_array_string():
     assert numpy.issubdtype(roundtrip.dtype, numpy.str_)
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == y).all()
-
-
-#def test_dense_array_string_bytes():
-#    y = numpy.array([b"Sumire", b"Kanon", b"Chisato", b"Ren", b"Keke"])
-#    dir = os.path.join(mkdtemp(), "foobar")
-#    save_object(y, dir)
-#    roundtrip = dm.read_dense_array(dir)
-#    assert roundtrip.shape == y.shape
-#    assert numpy.issubdtype(roundtrip.dtype, numpy.str_)
-#    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
-#    assert (numpy.array(roundtrip) == y).all()

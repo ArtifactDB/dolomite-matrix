@@ -69,9 +69,6 @@ def save_dense_array_from_ndarray(
         tt = "string"
         opts = optim.optimize_string_storage(x)
         blockwise = True
-    elif numpy.issubdtype(x.dtype, numpy.bytes_):
-        tt = "string"
-        opts = optim.optimize_string_storage(x)
     else:
         raise NotImplementedError("cannot save dense array of type '" + x.dtype.name + "'")
 
