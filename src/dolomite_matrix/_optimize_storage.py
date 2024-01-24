@@ -53,6 +53,17 @@ def _aggregate_sum(collated: list, name: str):
     return mval
 
 
+def _blockwise_any(x: numpy.ndarray, condition: Callable):
+    y = x.ravel()
+    step = 100000
+    limit = len(y)
+    for i in range(0, limit, step):
+        if condition(y[i : min(limit, i + step)]).any():
+            return True
+    return False 
+
+
+
 def _collect_from_Sparse2darray(contents, fun: Callable, dtype: Callable):
     if contents is None:
         attrs = fun(numpy.array([0], dtype=dtype))
@@ -283,14 +294,14 @@ def _simple_float_collector(x: numpy.ndarray, no_missing: bool) -> _FloatAttribu
 
     # While these are technically only used if there are missing values, we
     # still need them to obtain 'non_integer', so we just compute them.
-    output.has_nan = numpy.isnan(x).any()
+    output.has_nan = _blockwise_any(x, numpy.isnan)
     output.has_positive_inf = numpy.inf in x
     output.has_negative_inf = -numpy.inf in x
 
     if output.has_nan or output.has_positive_inf or output.has_negative_inf:
         output.non_integer = True
     else:
-        output.non_integer = (x % 1 != 0).any()
+        output.non_integer = _blockwise_any(x, lambda b : (b % 1 != 0))
 
     # Minimum and maximum are only used if all floats contain integers.
     if not output.non_integer:
@@ -468,13 +479,13 @@ def _simple_string_collector(x: numpy.ndarray) -> _FloatAttributes:
 
     max_len = 0
     if missing:
-        for y in x.flatten():
+        for y in x.ravel():
             if not numpy.ma.is_masked(y):
                 candidate = len(y.encode("UTF8"))
                 if max_len < candidate:
                     max_len = candidate
     else:
-        max_len = max(len(y.encode("UTF8")) for y in x.flatten())
+        max_len = max(len(y.encode("UTF8")) for y in x.ravel())
 
     return _StringAttributes(
         has_na1=x.dtype.type("NA") in x,
