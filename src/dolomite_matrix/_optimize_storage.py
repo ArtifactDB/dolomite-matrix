@@ -507,9 +507,6 @@ def _collect_string_attributes_from_ndarray(x: numpy.ndarray) -> _StringAttribut
 def optimize_string_storage(x) -> _OptimizedStorageParameters:
     attr = collect_string_attributes(x)
     attr.max_len = max(1, attr.max_len)
-    enc = "utf-8"
-    if x.dtype.kind == "S":
-        enc = "ascii"
 
     placeholder = None
     if attr.missing:
@@ -522,7 +519,7 @@ def optimize_string_storage(x) -> _OptimizedStorageParameters:
             placeholder = dl.choose_missing_string_placeholder(uniq)
         attr.max_len = max(len(placeholder.encode("UTF8")), attr.max_len)
 
-    strtype = h5py.string_dtype(encoding = enc, length = attr.max_len)
+    strtype = h5py.string_dtype(encoding = "utf8", length = attr.max_len)
     return _OptimizedStorageParameters(type = strtype, placeholder = placeholder, non_zero = 0)
 
 
