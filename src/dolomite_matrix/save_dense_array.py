@@ -6,7 +6,6 @@ import os
 import h5py
 
 from .choose_dense_chunk_sizes import choose_dense_chunk_sizes, _blockwise_write_to_hdf5
-from ._utils import _open_writeable_hdf5_handle
 from . import _optimize_storage as optim
 
 
@@ -16,11 +15,11 @@ def save_dense_array_from_ndarray(
     x: numpy.ndarray, 
     path: str, 
     dense_array_chunk_dimensions: Optional[Tuple[int, ...]] = None, 
-    dense_array_cache_size: int = 1e8, 
+    dense_array_buffer_size: int = 1e8, 
     **kwargs
 ):
-    """Method for saving :py:class:`~numpy.ndarray` objects to their
-    corresponding file representations, see
+    """
+    Method for saving :py:class:`~numpy.ndarray` objects to disk, see
     :py:meth:`~dolomite_base.save_object.save_object` for details.
 
     Args:
@@ -29,18 +28,19 @@ def save_dense_array_from_ndarray(
         path: Path to a directory to save ``x``.
 
         dense_array_chunk_dimensions: 
-            Chunk dimensions. If not provided, we choose some chunk sizes with
+            Chunk dimensions for the HDF5 dataset. Larger values improve
+            compression at the potential cost of reducing random access
+            efficiency. If not provided, we choose some chunk sizes with
             :py:meth:`~dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes`.
 
-        dense_array_cache_size:
-            Size of the HDF5 cache size, in bytes. Larger values improve speed
-            at the cost of memory.
+        dense_array_buffer_size:
+            Size of the buffer in bytes, for blockwise processing and writing
+            to file. Larger values improve speed at the cost of memory.
 
         kwargs: Further arguments, ignored.
 
     Returns:
-        Metadata that can be edited by calling methods and then saved with 
-        :py:meth:`~dolomite_base.write_metadata.write_metadata`.
+        ``x`` is saved to ``path``.
     """
     os.mkdir(path)
 
@@ -84,7 +84,7 @@ def save_dense_array_from_ndarray(
             dhandle = ghandle.create_dataset("data", data=x, chunks=dense_array_chunk_dimensions, dtype=opts.type, compression="gzip")
         else:
             dhandle = ghandle.create_dataset("data", shape=x.shape, chunks=dense_array_chunk_dimensions, dtype=opts.type, compression="gzip")
-            _blockwise_write_to_hdf5(dhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, is_string=(tt == "string"), memory=dense_array_cache_size)
+            _blockwise_write_to_hdf5(dhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, is_string=(tt == "string"), memory=dense_array_buffer_size)
 
         ghandle.create_dataset("transposed", data=0, dtype="i1")
         if opts.placeholder is not None:

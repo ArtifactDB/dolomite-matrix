@@ -2,16 +2,16 @@ import numpy
 import os
 import h5py
 from delayedarray import DelayedArray
-from filebackedarray import Hdf5DenseArray, Hdf5DenseArraySeed
+from filebackedarray import Hdf5CompressedSparseMatrix, Hdf5CompressedSparseMatrixSeed
 
 from .DelayedMask import DelayedMask
 
 
-def read_dense_array(path: str, **kwargs) -> DelayedArray:
+def read_compressed_sparse_matrix(path: str, **kwargs) -> DelayedArray:
     """
-    Read a dense array from its on-disk representation. In general, this
-    function should not be called directly but instead be dispatched via
-    :py:meth:`~dolomite_base.read_object.read_object`.
+    Read a compressed sparse matrix from its on-disk representation. In
+    general, this function should not be called directly but instead be
+    dispatched via :py:meth:`~dolomite_base.read_object.read_object`.
 
     Args:
         path: Path to the directory containing the object.
@@ -19,10 +19,10 @@ def read_dense_array(path: str, **kwargs) -> DelayedArray:
         kwargs: Further arguments, ignored.
 
     Returns:
-        A HDF5-backed dense array.
+        A HDF5-backed compressed sparse matrix.
     """
     fpath = os.path.join(path, "array.h5")
-    name = "dense_array"
+    name = "compressed_sparse_matrix"
 
     with h5py.File(fpath, "r") as handle:
         ghandle = handle[name]
@@ -32,26 +32,21 @@ def read_dense_array(path: str, **kwargs) -> DelayedArray:
         dtype = None
         if tt == "boolean":
             dtype = numpy.dtype("bool")
-        elif tt == "string":
-            dtype_name = "U" + str(dhandle.dtype.itemsize)
-            dtype = numpy.dtype(dtype_name)
         elif tt == "float":
             if not numpy.issubdtype(dhandle.dtype, numpy.floating):
                 dtype = numpy.dtype("float64")
 
-        transposed = False
-        if "transposed" in ghandle:
-            transposed = (ghandle["transposed"][()] != 0)
+        layout = ghandle.attrs["layout"]
+        shape = (*ghandle["shape"][:],)
 
         placeholder = None
         if "missing-value-placeholder" in dhandle.attrs:
             placeholder = dhandle.attrs["missing-value-placeholder"]
 
-    dname = name + "/data"
-    is_native = not transposed
+    bycol = (layout == "CSC")
     if placeholder is None:
-        return Hdf5DenseArray(fpath, dname, dtype=dtype, native_order=is_native)
+        return Hdf5CompressedSparseMatrix(fpath, name, shape=shape, by_column = bycol, dtype = dtype)
 
-    core = Hdf5DenseArraySeed(fpath, dname, native_order=is_native)
+    core = Hdf5CompressedSparseMatrixSeed(fpath, name, shape=shape, by_column = bycol)
     output = DelayedMask(core, placeholder=placeholder, dtype=dtype)
     return DelayedArray(output)

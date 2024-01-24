@@ -19,8 +19,7 @@ finally:
 from .choose_dense_chunk_sizes import choose_dense_chunk_sizes
 from .save_dense_array import save_dense_array_from_ndarray 
 from .read_dense_array import read_dense_array
+from .save_compressed_sparse_matrix import *
+from .read_compressed_sparse_matrix import read_compressed_sparse_matrix
 from .DelayedMask import DelayedMask
 #from .stage_DelayedArray import stage_DelayedArray
-#from .write_sparse_matrix import write_sparse_matrix
-#from .stage_sparse import *
-#from .load_hdf5_sparse_matrix import load_hdf5_sparse_matrix
