@@ -4,6 +4,7 @@ import dolomite_matrix as dm
 import os
 import h5py
 import filebackedarray
+import delayedarray
 from tempfile import mkdtemp
 
 
@@ -16,6 +17,22 @@ def test_dense_array_number():
     assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == y).all()
+
+
+#def test_dense_array_number_mask():
+#    y0 = numpy.random.rand(100, 200)
+#    mask = y0 > 0.9
+#    y = numpy.ma.MaskedArray(y0, mask=mask)
+#
+#    dir = os.path.join(mkdtemp(), "foobar")
+#    save_object(y, dir)
+#    roundtrip = dm.read_dense_array(dir)
+#    assert roundtrip.shape == y.shape
+#    assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
+#
+#    dump = delayedarray.extract_dense_array(roundtrip)
+#    assert (dump.mask == mask).all()
+#    assert (dump == y).all()
 
 
 def test_dense_array_integer():
@@ -51,3 +68,13 @@ def test_dense_array_string():
     assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == y).all()
 
+
+#def test_dense_array_string_bytes():
+#    y = numpy.array([b"Sumire", b"Kanon", b"Chisato", b"Ren", b"Keke"])
+#    dir = os.path.join(mkdtemp(), "foobar")
+#    save_object(y, dir)
+#    roundtrip = dm.read_dense_array(dir)
+#    assert roundtrip.shape == y.shape
+#    assert numpy.issubdtype(roundtrip.dtype, numpy.str_)
+#    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
+#    assert (numpy.array(roundtrip) == y).all()

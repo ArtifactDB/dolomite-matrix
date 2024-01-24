@@ -2,8 +2,10 @@ from typing import Any
 import numpy
 import os
 import h5py
+from delayedarray import DelayedArray
+from filebackedarray import Hdf5DenseArray, Hdf5DenseArraySeed
 
-from filebackedarray import Hdf5DenseArray
+from .DelayedMask import DelayedMask
 
 
 def read_dense_array(path: str, **kwargs) -> Hdf5DenseArray:
@@ -42,6 +44,11 @@ def read_dense_array(path: str, **kwargs) -> Hdf5DenseArray:
 
         placeholder = None
         if "missing-value-placeholder" in dhandle.attrs:
-            raise NotImplementedError("oops, no support for arrays with missing values at the moment")
+            placeholder = dhandle.attrs["missing-value-placeholder"]
 
-    return Hdf5DenseArray(fpath, "dense_array/data", dtype=dtype, native_order=not transposed)
+    if placeholder is None:
+        return Hdf5DenseArray(fpath, "dense_array/data", dtype=dtype, native_order=not transposed)
+
+    core = Hdf5DenseArraySeed(fpath, "dense_array/data", native_order=not transposed)
+    output = DelayedMask(core, placeholder=placeholder, dtype=dtype)
+    return DelayedArray(output)

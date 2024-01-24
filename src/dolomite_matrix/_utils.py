@@ -44,5 +44,3 @@ def _choose_block_shape(x: DelayedArray, block_size: int) -> Tuple[int, ...]:
         block_shape[i] = min(full_shape[i], scaling * block_shape[i])
 
     return (*block_shape,)
-
-

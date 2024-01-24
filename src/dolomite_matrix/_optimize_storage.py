@@ -5,6 +5,7 @@ from collections import namedtuple
 from dataclasses import dataclass
 import numpy
 import dolomite_base as dl
+import h5py
 
 
 has_scipy = False
@@ -442,7 +443,6 @@ class _StringAttributes:
     has_na2: bool
     missing: bool
     max_len: int
-    is_unicode: bool
 
 
 def _simple_string_collector(x: numpy.ndarray) -> _FloatAttributes:
@@ -452,7 +452,6 @@ def _simple_string_collector(x: numpy.ndarray) -> _FloatAttributes:
             has_na2 = False,
             missing = False,
             max_len = 0,
-            is_unicode = False
         )
 
     missing = False
@@ -463,7 +462,6 @@ def _simple_string_collector(x: numpy.ndarray) -> _FloatAttributes:
                 has_na2=False,
                 missing=True,
                 max_len=0,
-                is_unicode=False
             )
         if x.mask.any():
             missing = True
@@ -479,11 +477,10 @@ def _simple_string_collector(x: numpy.ndarray) -> _FloatAttributes:
         max_len = max(len(y.encode("UTF8")) for y in x.flatten())
 
     return _StringAttributes(
-        has_na1="NA" in x,
-        has_na2="NA_" in x,
+        has_na1=x.dtype.type("NA") in x,
+        has_na2=x.dtype.type("NA_") in x,
         missing=missing,
         max_len=max_len,
-        is_unicode=x.dtype.kind == "U"
     )
 
 
@@ -499,7 +496,6 @@ def _combine_string_attributes(x: list[_StringAttributes]) -> _StringAttributes:
         has_na2 = _aggregate_any(x, "has_na2"),
         missing = _aggregate_any(x, "missing"),
         max_len = _aggregate_max(x, "max_len"),
-        is_unicode = _aggregate_any(x, "is_unicode")
     )
 
 
@@ -511,6 +507,9 @@ def _collect_string_attributes_from_ndarray(x: numpy.ndarray) -> _StringAttribut
 def optimize_string_storage(x) -> _OptimizedStorageParameters:
     attr = collect_string_attributes(x)
     attr.max_len = max(1, attr.max_len)
+    enc = "utf-8"
+    if x.dtype.kind == "S":
+        enc = "ascii"
 
     placeholder = None
     if attr.missing:
@@ -521,10 +520,10 @@ def optimize_string_storage(x) -> _OptimizedStorageParameters:
         else:
             uniq = _unique_values(x)
             placeholder = dl.choose_missing_string_placeholder(uniq)
-            new_len = max(len(placeholder.encode("UTF8")), attr.max_len)
-            return _OptimizedStorageParameters(type="S" + str(new_len), placeholder=placeholder, non_zero=0)
+        attr.max_len = max(len(placeholder.encode("UTF8")), attr.max_len)
 
-    return _OptimizedStorageParameters(type="S" + str(attr.max_len), placeholder=placeholder, non_zero=0)
+    strtype = h5py.string_dtype(encoding = enc, length = attr.max_len)
+    return _OptimizedStorageParameters(type = strtype, placeholder = placeholder, non_zero = 0)
 
 
 ###################################################

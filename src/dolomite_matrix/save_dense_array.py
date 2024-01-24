@@ -1,9 +1,11 @@
 from typing import Tuple, Optional, Any
 import numpy
 from dolomite_base import save_object, validate_saves
+import delayedarray
 import os
+import h5py
 
-from .choose_dense_chunk_sizes import choose_dense_chunk_sizes
+from .choose_dense_chunk_sizes import choose_dense_chunk_sizes, _blockwise_write_to_hdf5
 from ._utils import _open_writeable_hdf5_handle
 from . import _optimize_storage as optim
 
@@ -53,6 +55,7 @@ def save_dense_array_from_ndarray(
 
     # Choosing the smallest data type that we can use.
     tt = None
+    blockwise = False 
     if numpy.issubdtype(x.dtype, numpy.integer):
         tt = "integer"
         opts = optim.optimize_integer_storage(x)
@@ -65,15 +68,26 @@ def save_dense_array_from_ndarray(
     elif numpy.issubdtype(x.dtype, numpy.str_):
         tt = "string"
         opts = optim.optimize_string_storage(x)
-        x = x.astype(numpy.dtype(opts.type)) # avoid all-at-once coercion by performing some block processing.
+        blockwise = True
+    elif numpy.issubdtype(x.dtype, numpy.bytes_):
+        tt = "string"
+        opts = optim.optimize_string_storage(x)
     else:
         raise NotImplementedError("cannot save dense array of type '" + x.dtype.name + "'")
+
+    if opts.placeholder is not None:
+        blockwise = True
     
     fpath = os.path.join(path, "array.h5")
-    with _open_writeable_hdf5_handle(fpath, dense_array_cache_size) as handle:
+    with h5py.File(fpath, "w") as handle:
         ghandle = handle.create_group("dense_array")
         ghandle.attrs["type"] = tt
-        dhandle = ghandle.create_dataset("data", data=x, chunks=dense_array_chunk_dimensions, dtype=opts.type, compression="gzip")
+
+        if not blockwise:
+            dhandle = ghandle.create_dataset("data", data=x, chunks=dense_array_chunk_dimensions, dtype=opts.type, compression="gzip")
+        else:
+            dhandle = ghandle.create_dataset("data", shape=x.shape, chunks=dense_array_chunk_dimensions, dtype=opts.type, compression="gzip")
+            _blockwise_write_to_hdf5(dhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, is_string=(tt == "string"), memory=dense_array_cache_size)
 
         ghandle.create_dataset("transposed", data=0, dtype="i1")
         if opts.placeholder is not None:
