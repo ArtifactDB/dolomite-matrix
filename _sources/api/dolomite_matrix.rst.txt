@@ -4,58 +4,74 @@ dolomite\_matrix package
 Submodules
 ----------
 
-dolomite\_matrix.choose\_dense\_chunk\_sizes module
----------------------------------------------------
+dolomite\_matrix.DelayedMask module
+-----------------------------------
 
-.. automodule:: dolomite_matrix.choose_dense_chunk_sizes
+.. automodule:: dolomite_matrix.DelayedMask
    :members:
    :undoc-members:
    :show-inheritance:
 
-dolomite\_matrix.load\_hdf5\_dense\_array module
-------------------------------------------------
-
-.. automodule:: dolomite_matrix.load_hdf5_dense_array
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dolomite\_matrix.load\_hdf5\_sparse\_matrix module
---------------------------------------------------
-
-.. automodule:: dolomite_matrix.load_hdf5_sparse_matrix
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dolomite\_matrix.stage\_DelayedArray module
--------------------------------------------
-
-.. automodule:: dolomite_matrix.stage_DelayedArray
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dolomite\_matrix.stage\_ndarray module
---------------------------------------
-
-.. automodule:: dolomite_matrix.stage_ndarray
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dolomite\_matrix.stage\_sparse module
+dolomite\_matrix.ReloadedArray module
 -------------------------------------
 
-.. automodule:: dolomite_matrix.stage_sparse
+.. automodule:: dolomite_matrix.ReloadedArray
    :members:
    :undoc-members:
    :show-inheritance:
 
-dolomite\_matrix.write\_sparse\_matrix module
----------------------------------------------
+dolomite\_matrix.WrapperArraySeed module
+----------------------------------------
 
-.. automodule:: dolomite_matrix.write_sparse_matrix
+.. automodule:: dolomite_matrix.WrapperArraySeed
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dolomite\_matrix.choose\_chunk\_dimensions module
+-------------------------------------------------
+
+.. automodule:: dolomite_matrix.choose_chunk_dimensions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dolomite\_matrix.read\_compressed\_sparse\_matrix module
+--------------------------------------------------------
+
+.. automodule:: dolomite_matrix.read_compressed_sparse_matrix
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dolomite\_matrix.read\_dense\_array module
+------------------------------------------
+
+.. automodule:: dolomite_matrix.read_dense_array
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dolomite\_matrix.save\_compressed\_sparse\_matrix module
+--------------------------------------------------------
+
+.. automodule:: dolomite_matrix.save_compressed_sparse_matrix
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dolomite\_matrix.save\_delayed\_array module
+--------------------------------------------
+
+.. automodule:: dolomite_matrix.save_delayed_array
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dolomite\_matrix.save\_dense\_array module
+------------------------------------------
+
+.. automodule:: dolomite_matrix.save_dense_array
    :members:
    :undoc-members:
    :show-inheritance:

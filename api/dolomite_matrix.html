@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="dolomite_matrix" href="modules.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>dolomite_matrix package - dolomite-matrix 0.0.post1.dev1+gf596d9e documentation</title>
+        <title>dolomite_matrix package - dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">dolomite-matrix 0.0.post1.dev1+gf596d9e documentation</div></a>
+      <a href="../index.html"><div class="brand">dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">dolomite-matrix 0.0.post1.dev1+gf596d9e documentation</span>
+  <span class="sidebar-brand-text">dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -203,12 +203,237 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
 </section>
-<section id="module-dolomite_matrix.choose_dense_chunk_sizes">
-<span id="dolomite-matrix-choose-dense-chunk-sizes-module"></span><h2>dolomite_matrix.choose_dense_chunk_sizes module<a class="headerlink" href="#module-dolomite_matrix.choose_dense_chunk_sizes" title="Link to this heading">#</a></h2>
+<section id="module-dolomite_matrix.DelayedMask">
+<span id="dolomite-matrix-delayedmask-module"></span><h2>dolomite_matrix.DelayedMask module<a class="headerlink" href="#module-dolomite_matrix.DelayedMask" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dolomite_matrix.DelayedMask.DelayedMask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dolomite_matrix.DelayedMask.</span></span><span class="sig-name descname"><span class="pre">DelayedMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placeholder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/DelayedMask.html#DelayedMask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.DelayedMask.DelayedMask" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.DelayedOp.DelayedOp" title="(in DelayedArray v0.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DelayedOp</span></code></a></p>
+<p>Delayed mask to replace the missing value placeholder with a NumPy masked array.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dolomite_matrix.DelayedMask.DelayedMask.dtype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><span class="pre">dtype</span></a></em><a class="headerlink" href="#dolomite_matrix.DelayedMask.DelayedMask.dtype" title="Link to this definition">#</a></dt>
+<dd><p>Returns:
+NumPy type for the contents after masking.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dolomite_matrix.DelayedMask.DelayedMask.placeholder">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">placeholder</span></span><a class="headerlink" href="#dolomite_matrix.DelayedMask.DelayedMask.placeholder" title="Link to this definition">#</a></dt>
+<dd><p>Returns:
+The placeholder value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dolomite_matrix.DelayedMask.DelayedMask.seed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">seed</span></span><a class="headerlink" href="#dolomite_matrix.DelayedMask.DelayedMask.seed" title="Link to this definition">#</a></dt>
+<dd><p>Returns:
+The seed object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dolomite_matrix.DelayedMask.DelayedMask.shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Tuple" title="(in Python v3.9)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dolomite_matrix.DelayedMask.DelayedMask.shape" title="Link to this definition">#</a></dt>
+<dd><p>Returns:
+Tuple of integers specifying the extent of each dimension of this
+object. This is the same as the <code class="docutils literal notranslate"><span class="pre">seed</span></code> object.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
-<dt class="sig sig-object py" id="dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes">
-<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.choose_dense_chunk_sizes.</span></span><span class="sig-name descname"><span class="pre">choose_dense_chunk_sizes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_extent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000000.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/choose_dense_chunk_sizes.html#choose_dense_chunk_sizes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes" title="Link to this definition">#</a></dt>
-<dd><p>Choose some chunk sizes to use for a dense HDF5 dataset. For each
+<dt class="sig sig-object py" id="dolomite_matrix.DelayedMask.chunk_shape_DelayedMask">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.DelayedMask.</span></span><span class="sig-name descname"><span class="pre">chunk_shape_DelayedMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/DelayedMask.html#chunk_shape_DelayedMask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.DelayedMask.chunk_shape_DelayedMask" title="Link to this definition">#</a></dt>
+<dd><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">chunk_shape()</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.DelayedMask.create_dask_array_DelayedMask">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.DelayedMask.</span></span><span class="sig-name descname"><span class="pre">create_dask_array_DelayedMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/DelayedMask.html#create_dask_array_DelayedMask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.DelayedMask.create_dask_array_DelayedMask" title="Link to this definition">#</a></dt>
+<dd><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dask_array()</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.DelayedMask.extract_dense_array_DelayedMask">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.DelayedMask.</span></span><span class="sig-name descname"><span class="pre">extract_dense_array_DelayedMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/DelayedMask.html#extract_dense_array_DelayedMask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.DelayedMask.extract_dense_array_DelayedMask" title="Link to this definition">#</a></dt>
+<dd><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">extract_dense_array()</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.DelayedMask.extract_sparse_array_DelayedMask">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.DelayedMask.</span></span><span class="sig-name descname"><span class="pre">extract_sparse_array_DelayedMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/DelayedMask.html#extract_sparse_array_DelayedMask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.DelayedMask.extract_sparse_array_DelayedMask" title="Link to this definition">#</a></dt>
+<dd><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">extract_sparse_array()</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.DelayedMask.is_sparse_DelayedMask">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.DelayedMask.</span></span><span class="sig-name descname"><span class="pre">is_sparse_DelayedMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/DelayedMask.html#is_sparse_DelayedMask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.DelayedMask.is_sparse_DelayedMask" title="Link to this definition">#</a></dt>
+<dd><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">is_sparse()</span></code>.</p>
+</dd></dl>
+
+</section>
+<section id="module-dolomite_matrix.ReloadedArray">
+<span id="dolomite-matrix-reloadedarray-module"></span><h2>dolomite_matrix.ReloadedArray module<a class="headerlink" href="#module-dolomite_matrix.ReloadedArray" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dolomite_matrix.ReloadedArray.ReloadedArray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dolomite_matrix.ReloadedArray.</span></span><span class="sig-name descname"><span class="pre">ReloadedArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/ReloadedArray.html#ReloadedArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.ReloadedArray.ReloadedArray" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.DelayedArray.DelayedArray" title="(in DelayedArray v0.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DelayedArray</span></code></a></p>
+<p>An array that was reloaded from disk by the
+<a class="reference external" href="https://artifactdb.github.io/dolomite-base/api/dolomite_base.html#dolomite_base.read_object.read_object" title="(in dolomite-base vunknown)"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_object()</span></code></a> function, and remembers
+the path from which it was loaded.  This class allows methods to refer to
+the existing on-disk representation by inspecting the path.  For example,
+<a class="reference external" href="https://artifactdb.github.io/dolomite-base/api/dolomite_base.html#dolomite_base.save_object.save_object" title="(in dolomite-base vunknown)"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_object()</span></code></a> can just copy/link to the
+existing files instead of repeating the saving process.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dolomite_matrix.ReloadedArray.ReloadedArray.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#dolomite_matrix.ReloadedArray.ReloadedArray.path" title="Link to this definition">#</a></dt>
+<dd><p>Returns:
+Path to the directory containing the on-disk representation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dolomite_matrix.ReloadedArray.ReloadedArraySeed">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dolomite_matrix.ReloadedArray.</span></span><span class="sig-name descname"><span class="pre">ReloadedArraySeed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/ReloadedArray.html#ReloadedArraySeed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.ReloadedArray.ReloadedArraySeed" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dolomite_matrix.WrapperArraySeed.WrapperArraySeed" title="dolomite_matrix.WrapperArraySeed.WrapperArraySeed"><code class="xref py py-class docutils literal notranslate"><span class="pre">WrapperArraySeed</span></code></a></p>
+<p>Seed for the <a class="reference internal" href="#dolomite_matrix.ReloadedArray.ReloadedArray" title="dolomite_matrix.ReloadedArray.ReloadedArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReloadedArray</span></code></a> class. This is a subclass
+of <a class="reference internal" href="#dolomite_matrix.WrapperArraySeed.WrapperArraySeed" title="dolomite_matrix.WrapperArraySeed.WrapperArraySeed"><code class="xref py py-class docutils literal notranslate"><span class="pre">WrapperArraySeed</span></code></a>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dolomite_matrix.ReloadedArray.ReloadedArraySeed.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#dolomite_matrix.ReloadedArray.ReloadedArraySeed.path" title="Link to this definition">#</a></dt>
+<dd><p>Returns:
+Path to the directory containing the on-disk representation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.ReloadedArray.save_object_ReloadedArray">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.ReloadedArray.</span></span><span class="sig-name descname"><span class="pre">save_object_ReloadedArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reloaded_array_reuse_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'link'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/ReloadedArray.html#save_object_ReloadedArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.ReloadedArray.save_object_ReloadedArray" title="Link to this definition">#</a></dt>
+<dd><p>Method for saving <code class="xref py py-class docutils literal notranslate"><span class="pre">ReloadedArray</span></code> objects to disk,
+see <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_object()</span></code> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#dolomite_matrix.ReloadedArray.ReloadedArray" title="dolomite_matrix.ReloadedArray.ReloadedArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReloadedArray</span></code></a></span>) – Object to be saved.</p></li>
+<li><p><strong>path</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Path to a directory to save <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>reloaded_array_reuse_mode</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – How the files in <code class="docutils literal notranslate"><span class="pre">x.path</span></code> should be re-used when populating
+<code class="docutils literal notranslate"><span class="pre">path</span></code>.  This can be <code class="docutils literal notranslate"><span class="pre">&quot;link&quot;</span></code>, to create a hard link to each
+file; <code class="docutils literal notranslate"><span class="pre">&quot;symlink&quot;</span></code>, to create a symbolic link to each file;
+<code class="docutils literal notranslate"><span class="pre">&quot;copy&quot;</span></code>, to create a copy of each file; or <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>, to
+perform a fresh save of <code class="docutils literal notranslate"><span class="pre">x</span></code> without relying on <code class="docutils literal notranslate"><span class="pre">x.path</span></code>.</p></li>
+<li><p><strong>kwargs</strong> – Further arguments, ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> is saved to <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.ReloadedArray.wrap_ReloadedArraySeed">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.ReloadedArray.</span></span><span class="sig-name descname"><span class="pre">wrap_ReloadedArraySeed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/ReloadedArray.html#wrap_ReloadedArraySeed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.ReloadedArray.wrap_ReloadedArraySeed" title="Link to this definition">#</a></dt>
+<dd><p>See <a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.wrap.wrap" title="(in DelayedArray v0.3.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">wrap()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#dolomite_matrix.ReloadedArray.ReloadedArray" title="dolomite_matrix.ReloadedArray.ReloadedArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReloadedArray</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dolomite_matrix.WrapperArraySeed">
+<span id="dolomite-matrix-wrapperarrayseed-module"></span><h2>dolomite_matrix.WrapperArraySeed module<a class="headerlink" href="#module-dolomite_matrix.WrapperArraySeed" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dolomite_matrix.WrapperArraySeed.WrapperArraySeed">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dolomite_matrix.WrapperArraySeed.</span></span><span class="sig-name descname"><span class="pre">WrapperArraySeed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/WrapperArraySeed.html#WrapperArraySeed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.WrapperArraySeed.WrapperArraySeed" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Wrapper for a DelayedArray seed, which forwards all of the required
+operations to the seed object. This is expected to be used as a base for
+concrete subclasses that attach more provenance-tracking information - see
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ReloadedArray</span></code> for an example.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dolomite_matrix.WrapperArraySeed.WrapperArraySeed.dtype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><span class="pre">dtype</span></a></em><a class="headerlink" href="#dolomite_matrix.WrapperArraySeed.WrapperArraySeed.dtype" title="Link to this definition">#</a></dt>
+<dd><p>Returns:
+The type of the seed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dolomite_matrix.WrapperArraySeed.WrapperArraySeed.seed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">seed</span></span><a class="headerlink" href="#dolomite_matrix.WrapperArraySeed.WrapperArraySeed.seed" title="Link to this definition">#</a></dt>
+<dd><p>Returns:
+The underlying seed instance.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dolomite_matrix.WrapperArraySeed.WrapperArraySeed.shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Tuple" title="(in Python v3.9)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dolomite_matrix.WrapperArraySeed.WrapperArraySeed.shape" title="Link to this definition">#</a></dt>
+<dd><p>Returns:
+The shape of the seed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.WrapperArraySeed.chunk_shape_WrapperArraySeed">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.WrapperArraySeed.</span></span><span class="sig-name descname"><span class="pre">chunk_shape_WrapperArraySeed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/WrapperArraySeed.html#chunk_shape_WrapperArraySeed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.WrapperArraySeed.chunk_shape_WrapperArraySeed" title="Link to this definition">#</a></dt>
+<dd><p>See <a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.chunk_shape.chunk_shape" title="(in DelayedArray v0.3.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">chunk_shape()</span></code></a> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#Ellipsis" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.WrapperArraySeed.create_dask_array_WrapperArraySeed">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.WrapperArraySeed.</span></span><span class="sig-name descname"><span class="pre">create_dask_array_WrapperArraySeed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/WrapperArraySeed.html#create_dask_array_WrapperArraySeed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.WrapperArraySeed.create_dask_array_WrapperArraySeed" title="Link to this definition">#</a></dt>
+<dd><p>See <a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.create_dask_array.create_dask_array" title="(in DelayedArray v0.3.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_dask_array()</span></code></a> for details.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.WrapperArraySeed.extract_dense_array_WrapperArraySeed">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.WrapperArraySeed.</span></span><span class="sig-name descname"><span class="pre">extract_dense_array_WrapperArraySeed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/WrapperArraySeed.html#extract_dense_array_WrapperArraySeed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.WrapperArraySeed.extract_dense_array_WrapperArraySeed" title="Link to this definition">#</a></dt>
+<dd><p>See <a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.extract_dense_array.extract_dense_array" title="(in DelayedArray v0.3.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">extract_dense_array()</span></code></a> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.WrapperArraySeed.extract_sparse_array_WrapperArraySeed">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.WrapperArraySeed.</span></span><span class="sig-name descname"><span class="pre">extract_sparse_array_WrapperArraySeed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/WrapperArraySeed.html#extract_sparse_array_WrapperArraySeed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.WrapperArraySeed.extract_sparse_array_WrapperArraySeed" title="Link to this definition">#</a></dt>
+<dd><p>See <a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.extract_sparse_array.extract_sparse_array" title="(in DelayedArray v0.3.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">extract_sparse_array()</span></code></a> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.SparseNdarray.SparseNdarray" title="(in DelayedArray v0.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SparseNdarray</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.WrapperArraySeed.is_sparse_WrapperArraySeed">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.WrapperArraySeed.</span></span><span class="sig-name descname"><span class="pre">is_sparse_WrapperArraySeed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/WrapperArraySeed.html#is_sparse_WrapperArraySeed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.WrapperArraySeed.is_sparse_WrapperArraySeed" title="Link to this definition">#</a></dt>
+<dd><p>See <a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.is_sparse.is_sparse" title="(in DelayedArray v0.3.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_sparse()</span></code></a> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dolomite_matrix.choose_chunk_dimensions">
+<span id="dolomite-matrix-choose-chunk-dimensions-module"></span><h2>dolomite_matrix.choose_chunk_dimensions module<a class="headerlink" href="#module-dolomite_matrix.choose_chunk_dimensions" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.choose_chunk_dimensions.choose_chunk_dimensions">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.choose_chunk_dimensions.</span></span><span class="sig-name descname"><span class="pre">choose_chunk_dimensions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_extent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000000.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/choose_chunk_dimensions.html#choose_chunk_dimensions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.choose_chunk_dimensions.choose_chunk_dimensions" title="Link to this definition">#</a></dt>
+<dd><p>Choose chunk dimensions to use for a dense HDF5 dataset. For each
 dimension, we consider a slice of the array that consists of the full
 extent of all other dimensions. We want this slice to occupy less than
 <code class="docutils literal notranslate"><span class="pre">memory</span></code> in memory, and we resize the slice along the current dimension
@@ -218,16 +443,16 @@ along each dimension will not use any more than <code class="docutils literal no
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#Ellipsis" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]) – Shape of the array.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Size of each array element in bytes.</p></li>
-<li><p><strong>min_extent</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Minimum extent of each chunk dimension, to avoid problems
+<li><p><strong>shape</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#Ellipsis" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</span>) – Shape of the array.</p></li>
+<li><p><strong>size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Size of each array element in bytes.</p></li>
+<li><p><strong>min_extent</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Minimum extent of each chunk dimension, to avoid problems
 with excessively small chunk sizes when the data is large.</p></li>
-<li><p><strong>memory</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Size of the (conceptual) memory buffer to use for storing blocks of
+<li><p><strong>memory</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Size of the (conceptual) memory buffer to use for storing blocks of
 data during iteration through the array, in bytes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#Ellipsis" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#Ellipsis" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple containing the chunk dimensions.</p>
@@ -236,26 +461,48 @@ data during iteration through the array, in bytes.</p></li>
 </dd></dl>
 
 </section>
-<section id="module-dolomite_matrix.load_hdf5_dense_array">
-<span id="dolomite-matrix-load-hdf5-dense-array-module"></span><h2>dolomite_matrix.load_hdf5_dense_array module<a class="headerlink" href="#module-dolomite_matrix.load_hdf5_dense_array" title="Link to this heading">#</a></h2>
+<section id="module-dolomite_matrix.read_compressed_sparse_matrix">
+<span id="dolomite-matrix-read-compressed-sparse-matrix-module"></span><h2>dolomite_matrix.read_compressed_sparse_matrix module<a class="headerlink" href="#module-dolomite_matrix.read_compressed_sparse_matrix" title="Link to this heading">#</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="dolomite_matrix.load_hdf5_dense_array.load_hdf5_dense_array">
-<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.load_hdf5_dense_array.</span></span><span class="sig-name descname"><span class="pre">load_hdf5_dense_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/load_hdf5_dense_array.html#load_hdf5_dense_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.load_hdf5_dense_array.load_hdf5_dense_array" title="Link to this definition">#</a></dt>
-<dd><p>Load a HDF5-backed dense array.  In general, this function should be
-called via <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_object()</span></code>.</p>
+<dt class="sig sig-object py" id="dolomite_matrix.read_compressed_sparse_matrix.read_compressed_sparse_matrix">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.read_compressed_sparse_matrix.</span></span><span class="sig-name descname"><span class="pre">read_compressed_sparse_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/read_compressed_sparse_matrix.html#read_compressed_sparse_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.read_compressed_sparse_matrix.read_compressed_sparse_matrix" title="Link to this definition">#</a></dt>
+<dd><p>Read a compressed sparse matrix from its on-disk representation. In
+general, this function should not be called directly but instead be
+dispatched via <code class="xref py py-meth docutils literal notranslate"><span class="pre">read_object()</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>meta</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]) – Metadata for this HDF5 array.</p></li>
-<li><p><strong>project</strong> – Value specifying the project of interest. This is most
-typically a string containing a file path to a staging directory
-but may also be an application-specific object that works with
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">acquire_file()</span></code>.</p></li>
+<li><p><strong>path</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Path to the directory containing the object.</p></li>
 <li><p><strong>kwargs</strong> – Further arguments, ignored.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Hdf5DenseArray</span></code></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.DelayedArray.DelayedArray" title="(in DelayedArray v0.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DelayedArray</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A HDF5-backed compressed sparse matrix.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dolomite_matrix.read_dense_array">
+<span id="dolomite-matrix-read-dense-array-module"></span><h2>dolomite_matrix.read_dense_array module<a class="headerlink" href="#module-dolomite_matrix.read_dense_array" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.read_dense_array.read_dense_array">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.read_dense_array.</span></span><span class="sig-name descname"><span class="pre">read_dense_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/read_dense_array.html#read_dense_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.read_dense_array.read_dense_array" title="Link to this definition">#</a></dt>
+<dd><p>Read a dense array from its on-disk representation. In general, this
+function should not be called directly but instead be dispatched via
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">read_object()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Path to the directory containing the object.</p></li>
+<li><p><strong>kwargs</strong> – Further arguments, ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.DelayedArray.DelayedArray" title="(in DelayedArray v0.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DelayedArray</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A HDF5-backed dense array.</p>
@@ -264,211 +511,154 @@ but may also be an application-specific object that works with
 </dd></dl>
 
 </section>
-<section id="module-dolomite_matrix.load_hdf5_sparse_matrix">
-<span id="dolomite-matrix-load-hdf5-sparse-matrix-module"></span><h2>dolomite_matrix.load_hdf5_sparse_matrix module<a class="headerlink" href="#module-dolomite_matrix.load_hdf5_sparse_matrix" title="Link to this heading">#</a></h2>
+<section id="module-dolomite_matrix.save_compressed_sparse_matrix">
+<span id="dolomite-matrix-save-compressed-sparse-matrix-module"></span><h2>dolomite_matrix.save_compressed_sparse_matrix module<a class="headerlink" href="#module-dolomite_matrix.save_compressed_sparse_matrix" title="Link to this heading">#</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="dolomite_matrix.load_hdf5_sparse_matrix.load_hdf5_sparse_matrix">
-<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.load_hdf5_sparse_matrix.</span></span><span class="sig-name descname"><span class="pre">load_hdf5_sparse_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/load_hdf5_sparse_matrix.html#load_hdf5_sparse_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.load_hdf5_sparse_matrix.load_hdf5_sparse_matrix" title="Link to this definition">#</a></dt>
-<dd><p>Load a HDF5-backed sparse matrix. In general, this function should be
-called via <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_object()</span></code>.</p>
+<dt class="sig sig-object py" id="dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_Sparse2darray">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.save_compressed_sparse_matrix.</span></span><span class="sig-name descname"><span class="pre">save_compresssed_sparse_matrix_from_Sparse2darray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed_sparse_matrix_chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed_sparse_matrix_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000000.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/save_compressed_sparse_matrix.html#save_compresssed_sparse_matrix_from_Sparse2darray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_Sparse2darray" title="Link to this definition">#</a></dt>
+<dd><p>Method for saving a <a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.SparseNdarray.SparseNdarray" title="(in DelayedArray v0.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SparseNdarray</span></code></a>
+to disk, see <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_object()</span></code> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>meta</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]) – Metadata for this HDF5 array.</p></li>
-<li><p><strong>project</strong> – Value specifying the project of interest. This is most
-typically a string containing a file path to a staging directory
-but may also be an application-specific object that works with
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">acquire_file()</span></code>.</p></li>
+<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.SparseNdarray.SparseNdarray" title="(in DelayedArray v0.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SparseNdarray</span></code></a></span>) – Object to be saved.</p></li>
+<li><p><strong>path</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Path to a directory to save <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>compressed_sparse_matrix_chunk_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Chunk size for the data and indices. Larger values improve compression
+at the potential cost of reducing random access efficiency.</p></li>
+<li><p><strong>compressed_sparse_matrix_buffer_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Size of the buffer in bytes, for blockwise processing and writing
+to file. Larger values improve speed at the cost of memory.</p></li>
 <li><p><strong>kwargs</strong> – Further arguments, ignored.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Hdf5CompressedSparseMatrix</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A HDF5-backed sparse matrix.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> is saved to <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
 
-</section>
-<section id="module-dolomite_matrix.stage_DelayedArray">
-<span id="dolomite-matrix-stage-delayedarray-module"></span><h2>dolomite_matrix.stage_DelayedArray module<a class="headerlink" href="#module-dolomite_matrix.stage_DelayedArray" title="Link to this heading">#</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="dolomite_matrix.stage_DelayedArray.stage_DelayedArray">
-<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.stage_DelayedArray.</span></span><span class="sig-name descname"><span class="pre">stage_DelayedArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_child</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000000.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/stage_DelayedArray.html#stage_DelayedArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.stage_DelayedArray.stage_DelayedArray" title="Link to this definition">#</a></dt>
-<dd><p>Method for saving <code class="xref py py-class docutils literal notranslate"><span class="pre">DelayedArray</span></code>
-objects to file, see <code class="xref py py-meth docutils literal notranslate"><span class="pre">stage_object()</span></code>
-for details.</p>
+<dt class="sig sig-object py" id="dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_coo_matrix">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.save_compressed_sparse_matrix.</span></span><span class="sig-name descname"><span class="pre">save_compresssed_sparse_matrix_from_scipy_coo_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed_sparse_matrix_chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed_sparse_matrix_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000000.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/save_compressed_sparse_matrix.html#save_compresssed_sparse_matrix_from_scipy_coo_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_coo_matrix" title="Link to this definition">#</a></dt>
+<dd><p>Method for saving <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_matrix.html#scipy.sparse.coo_matrix" title="(in SciPy v1.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">coo_matrix</span></code></a> objects to disk,
+see <code class="xref py py-meth docutils literal notranslate"><span class="pre">stage_object()</span></code> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.DelayedArray.DelayedArray" title="(in DelayedArray v0.3.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DelayedArray</span></code></a>) – Array to be saved.</p></li>
-<li><p><strong>dir</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Staging directory.</p></li>
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Relative path inside <code class="docutils literal notranslate"><span class="pre">dir</span></code> to save the object.</p></li>
-<li><p><strong>is_child</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Is <code class="docutils literal notranslate"><span class="pre">x</span></code> a child of another object?</p></li>
-<li><p><strong>chunks</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#Ellipsis" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>], <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]) – <p>For dense <code class="docutils literal notranslate"><span class="pre">x</span></code>, a tuple of chunk dimensions. If None, we
-automatically choose some chunk sizes with
-<a class="reference internal" href="#dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes" title="dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">choose_dense_chunk_sizes()</span></code></a>.</p>
-<p>For sparse <code class="docutils literal notranslate"><span class="pre">x</span></code>, an integer specifying the chunk dimension in
-<a class="reference internal" href="#dolomite_matrix.write_sparse_matrix.write_sparse_matrix" title="dolomite_matrix.write_sparse_matrix.write_sparse_matrix"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_sparse_matrix()</span></code></a>.
-If None, a suitable chunk size is chosen.</p>
-</p></li>
-<li><p><strong>cache_size</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Size of the HDF5 cache size, in bytes. Larger values improve speed
-at the cost of memory.</p></li>
-<li><p><strong>block_size</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Size of each block in bytes. Staging is performed by iterating over
-<code class="docutils literal notranslate"><span class="pre">x</span></code>, extracting one block at a time, and saving it to the HDF5
-file. Larger values improve speed at the cost of memory.</p></li>
-<li><p><strong>kwargs</strong> – Further arguments, ignored for dense <code class="docutils literal notranslate"><span class="pre">x</span></code>. For sparse <code class="docutils literal notranslate"><span class="pre">x</span></code>, these
-are passed to
-<a class="reference internal" href="#dolomite_matrix.write_sparse_matrix.write_sparse_matrix" title="dolomite_matrix.write_sparse_matrix.write_sparse_matrix"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_sparse_matrix()</span></code></a>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Metadata that can be edited by calling methods and then saved with
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">write_metadata()</span></code>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="module-dolomite_matrix.stage_ndarray">
-<span id="dolomite-matrix-stage-ndarray-module"></span><h2>dolomite_matrix.stage_ndarray module<a class="headerlink" href="#module-dolomite_matrix.stage_ndarray" title="Link to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="dolomite_matrix.stage_ndarray.stage_ndarray">
-<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.stage_ndarray.</span></span><span class="sig-name descname"><span class="pre">stage_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_child</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000000.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/stage_ndarray.html#stage_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.stage_ndarray.stage_ndarray" title="Link to this definition">#</a></dt>
-<dd><p>Method for saving <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> objects to file, see
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">stage_object()</span></code> for details.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Array to be saved.</p></li>
-<li><p><strong>dir</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Staging directory.</p></li>
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Relative path inside <code class="docutils literal notranslate"><span class="pre">dir</span></code> to save the object.</p></li>
-<li><p><strong>is_child</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Is <code class="docutils literal notranslate"><span class="pre">x</span></code> a child of another object?</p></li>
-<li><p><strong>chunks</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#Ellipsis" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]]) – Chunk dimensions. If not provided, we choose some chunk sizes with
-<a class="reference internal" href="#dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes" title="dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">choose_dense_chunk_sizes()</span></code></a>.</p></li>
-<li><p><strong>cache_size</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Size of the HDF5 cache size, in bytes. Larger values improve speed
-at the cost of memory.</p></li>
+<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_matrix.html#scipy.sparse.coo_matrix" title="(in SciPy v1.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">coo_matrix</span></code></a></span>) – Matrix to be saved.</p></li>
+<li><p><strong>path</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Path to a directory to save <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>compressed_sparse_matrix_chunk_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Chunk size for the data and indices. Larger values improve compression
+at the potential cost of reducing random access efficiency.</p></li>
+<li><p><strong>compressed_sparse_matrix_cache_size</strong> – Size of the buffer in bytes, for blockwise processing and writing
+to file. Larger values improve speed at the cost of memory.</p></li>
 <li><p><strong>kwargs</strong> – Further arguments, ignored.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> is saved to <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Metadata that can be edited by calling methods and then saved with
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">write_metadata()</span></code>.</p>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_csc_matrix">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.save_compressed_sparse_matrix.</span></span><span class="sig-name descname"><span class="pre">save_compresssed_sparse_matrix_from_scipy_csc_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed_sparse_matrix_chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed_sparse_matrix_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000000.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/save_compressed_sparse_matrix.html#save_compresssed_sparse_matrix_from_scipy_csc_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_csc_matrix" title="Link to this definition">#</a></dt>
+<dd><p>Method for saving <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_matrix.html#scipy.sparse.csc_matrix" title="(in SciPy v1.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">csc_matrix</span></code></a> objects to disk,
+see <code class="xref py py-meth docutils literal notranslate"><span class="pre">stage_object()</span></code> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_matrix.html#scipy.sparse.csc_matrix" title="(in SciPy v1.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">csc_matrix</span></code></a></span>) – Matrix to be saved.</p></li>
+<li><p><strong>path</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Path to a directory to save <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>compressed_sparse_matrix_chunk_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Chunk size for the data and indices. Larger values improve compression
+at the potential cost of reducing random access efficiency.</p></li>
+<li><p><strong>compressed_sparse_matrix_cache_size</strong> – Size of the buffer in bytes, for blockwise processing and writing
+to file. Larger values improve speed at the cost of memory.</p></li>
+<li><p><strong>kwargs</strong> – Further arguments, ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> is saved to <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_csr_matrix">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.save_compressed_sparse_matrix.</span></span><span class="sig-name descname"><span class="pre">save_compresssed_sparse_matrix_from_scipy_csr_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed_sparse_matrix_chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed_sparse_matrix_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000000.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/save_compressed_sparse_matrix.html#save_compresssed_sparse_matrix_from_scipy_csr_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_csr_matrix" title="Link to this definition">#</a></dt>
+<dd><p>Method for saving <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">csr_matrix</span></code></a> objects to disk,
+see <code class="xref py py-meth docutils literal notranslate"><span class="pre">stage_object()</span></code> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">csr_matrix</span></code></a></span>) – Matrix to be saved.</p></li>
+<li><p><strong>path</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Path to a directory to save <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>compressed_sparse_matrix_chunk_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Chunk size for the data and indices. Larger values improve compression
+at the potential cost of reducing random access efficiency.</p></li>
+<li><p><strong>compressed_sparse_matrix_cache_size</strong> – Size of the buffer in bytes, for blockwise processing and writing
+to file. Larger values improve speed at the cost of memory.</p></li>
+<li><p><strong>kwargs</strong> – Further arguments, ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> is saved to <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
 
 </section>
-<section id="module-dolomite_matrix.stage_sparse">
-<span id="dolomite-matrix-stage-sparse-module"></span><h2>dolomite_matrix.stage_sparse module<a class="headerlink" href="#module-dolomite_matrix.stage_sparse" title="Link to this heading">#</a></h2>
+<section id="module-dolomite_matrix.save_delayed_array">
+<span id="dolomite-matrix-save-delayed-array-module"></span><h2>dolomite_matrix.save_delayed_array module<a class="headerlink" href="#module-dolomite_matrix.save_delayed_array" title="Link to this heading">#</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="dolomite_matrix.stage_sparse.stage_scipy_coo_matrix">
-<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.stage_sparse.</span></span><span class="sig-name descname"><span class="pre">stage_scipy_coo_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_child</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/stage_sparse.html#stage_scipy_coo_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.stage_sparse.stage_scipy_coo_matrix" title="Link to this definition">#</a></dt>
-<dd><p>Method for saving <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_matrix.html#scipy.sparse.coo_matrix" title="(in SciPy v1.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">coo_matrix</span></code></a> objects to
-file, see <code class="xref py py-meth docutils literal notranslate"><span class="pre">stage_object()</span></code> for
-details.</p>
+<dt class="sig sig-object py" id="dolomite_matrix.save_delayed_array.save_delayed_array">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.save_delayed_array.</span></span><span class="sig-name descname"><span class="pre">save_delayed_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delayed_array_preserve_operations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/save_delayed_array.html#save_delayed_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.save_delayed_array.save_delayed_array" title="Link to this definition">#</a></dt>
+<dd><p>Method to save <a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.DelayedArray.DelayedArray" title="(in DelayedArray v0.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DelayedArray</span></code></a> objects
+to disk, see <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_object()</span></code> for details.</p>
+<p>If the array is pristine, we attempt to use the <code class="docutils literal notranslate"><span class="pre">save_object</span></code> method of
+the seed. If <code class="docutils literal notranslate"><span class="pre">delayed_array_preserve_operations</span> <span class="pre">=</span> <span class="pre">False</span></code>, we save the
+<code class="docutils literal notranslate"><span class="pre">DelayedArray</span></code> as a dense array or a compressed sparse matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_matrix.html#scipy.sparse.coo_matrix" title="(in SciPy v1.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">coo_matrix</span></code></a>) – Matrix to be saved.</p></li>
-<li><p><strong>dir</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Staging directory.</p></li>
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Relative path inside <code class="docutils literal notranslate"><span class="pre">dir</span></code> to save the object.</p></li>
-<li><p><strong>is_child</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Is <code class="docutils literal notranslate"><span class="pre">x</span></code> a child of another object?</p></li>
-<li><p><strong>kwargs</strong> – Further arguments to pass to
-<a class="reference internal" href="#dolomite_matrix.write_sparse_matrix.write_sparse_matrix" title="dolomite_matrix.write_sparse_matrix.write_sparse_matrix"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_sparse_matrix()</span></code></a>.</p></li>
+<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://biocpy.github.io/DelayedArray/api/delayedarray.html#delayedarray.DelayedArray.DelayedArray" title="(in DelayedArray v0.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DelayedArray</span></code></a></span>) – Object to be saved.</p></li>
+<li><p><strong>path</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Path to a directory to save <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>delayed_array_preserve_operations</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to preserve delayed operations via the <strong>chihaya</strong> specification.
+Currently not supported.</p></li>
+<li><p><strong>kwargs</strong> – Further arguments, passed to the <code class="docutils literal notranslate"><span class="pre">save_object</span></code> methods for dense
+arrays and compressed sparse matrices.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Metadata that can be edited by calling methods and then saved with
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">write_metadata()</span></code>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dolomite_matrix.stage_sparse.stage_scipy_csc_matrix">
-<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.stage_sparse.</span></span><span class="sig-name descname"><span class="pre">stage_scipy_csc_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_child</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/stage_sparse.html#stage_scipy_csc_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.stage_sparse.stage_scipy_csc_matrix" title="Link to this definition">#</a></dt>
-<dd><p>Method for saving <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_matrix.html#scipy.sparse.csc_matrix" title="(in SciPy v1.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">csc_matrix</span></code></a> objects to
-file, see <code class="xref py py-meth docutils literal notranslate"><span class="pre">stage_object()</span></code> for
-details.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_matrix.html#scipy.sparse.csc_matrix" title="(in SciPy v1.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">csc_matrix</span></code></a>) – Matrix to be saved.</p></li>
-<li><p><strong>dir</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Staging directory.</p></li>
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Relative path inside <code class="docutils literal notranslate"><span class="pre">dir</span></code> to save the object.</p></li>
-<li><p><strong>is_child</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Is <code class="docutils literal notranslate"><span class="pre">x</span></code> a child of another object?</p></li>
-<li><p><strong>kwargs</strong> – Further arguments to pass to
-<a class="reference internal" href="#dolomite_matrix.write_sparse_matrix.write_sparse_matrix" title="dolomite_matrix.write_sparse_matrix.write_sparse_matrix"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_sparse_matrix()</span></code></a>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Metadata that can be edited by calling methods and then saved with
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">write_metadata()</span></code>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dolomite_matrix.stage_sparse.stage_scipy_csr_matrix">
-<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.stage_sparse.</span></span><span class="sig-name descname"><span class="pre">stage_scipy_csr_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_child</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/stage_sparse.html#stage_scipy_csr_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.stage_sparse.stage_scipy_csr_matrix" title="Link to this definition">#</a></dt>
-<dd><p>Method for saving <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">csr_matrix</span></code></a> objects to
-file, see <code class="xref py py-meth docutils literal notranslate"><span class="pre">stage_object()</span></code> for
-details.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">csr_matrix</span></code></a>) – Matrix to be saved.</p></li>
-<li><p><strong>dir</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Staging directory.</p></li>
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Relative path inside <code class="docutils literal notranslate"><span class="pre">dir</span></code> to save the object.</p></li>
-<li><p><strong>is_child</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Is <code class="docutils literal notranslate"><span class="pre">x</span></code> a child of another object?</p></li>
-<li><p><strong>kwargs</strong> – Further arguments to pass to
-<a class="reference internal" href="#dolomite_matrix.write_sparse_matrix.write_sparse_matrix" title="dolomite_matrix.write_sparse_matrix.write_sparse_matrix"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_sparse_matrix()</span></code></a>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Metadata that can be edited by calling methods and then saved with
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">write_metadata()</span></code>.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> is saved to <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
 
 </section>
-<section id="module-dolomite_matrix.write_sparse_matrix">
-<span id="dolomite-matrix-write-sparse-matrix-module"></span><h2>dolomite_matrix.write_sparse_matrix module<a class="headerlink" href="#module-dolomite_matrix.write_sparse_matrix" title="Link to this heading">#</a></h2>
+<section id="module-dolomite_matrix.save_dense_array">
+<span id="dolomite-matrix-save-dense-array-module"></span><h2>dolomite_matrix.save_dense_array module<a class="headerlink" href="#module-dolomite_matrix.save_dense_array" title="Link to this heading">#</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="dolomite_matrix.write_sparse_matrix.write_sparse_matrix">
-<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.write_sparse_matrix.</span></span><span class="sig-name descname"><span class="pre">write_sparse_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guess_integer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000000.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/write_sparse_matrix.html#write_sparse_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.write_sparse_matrix.write_sparse_matrix" title="Link to this definition">#</a></dt>
-<dd><p>Write a sparse matrix into a HDF5 file in a compressed-sparse column
-format. This creates a HDF5 group containing the <code class="docutils literal notranslate"><span class="pre">data</span></code>, <code class="docutils literal notranslate"><span class="pre">indices</span></code> and
-<code class="docutils literal notranslate"><span class="pre">indptr</span></code> datasets, containing the corresponding components of the usual
-compressed sparse representation. The shape of the matrix is stored in the
-<code class="docutils literal notranslate"><span class="pre">shape</span></code> dataset inside the same group.</p>
+<dt class="sig sig-object py" id="dolomite_matrix.save_dense_array.save_dense_array_from_ndarray">
+<span class="sig-prename descclassname"><span class="pre">dolomite_matrix.save_dense_array.</span></span><span class="sig-name descname"><span class="pre">save_dense_array_from_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense_array_chunk_dimensions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense_array_chunk_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense_array_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000000.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dolomite_matrix/save_dense_array.html#save_dense_array_from_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dolomite_matrix.save_dense_array.save_dense_array_from_ndarray" title="Link to this definition">#</a></dt>
+<dd><p>Method for saving <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> objects to disk, see
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">save_object()</span></code> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – Any sparse matrix.</p></li>
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to the file in which to save <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Name of the group in the file.</p></li>
-<li><p><strong>chunks</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]) – Size of the 1-dimensional chunks for the data and index datasets.
-If None, defaults to 10000.</p></li>
-<li><p><strong>guess_integer</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Whether to guess a compact integer type for the data. This can reduce
-disk usage at the cost of a second pass through the data.</p></li>
-<li><p><strong>block_size</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Size of the blocks to use for processing <code class="docutils literal notranslate"><span class="pre">x</span></code>. Larger values
-increase speed at the cost of memory efficiency.</p></li>
+<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a></span>) – Object to be saved.</p></li>
+<li><p><strong>path</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Path to a directory to save <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>dense_array_chunk_dimensions</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#Ellipsis" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]]</span>) – Chunk dimensions for the HDF5 dataset. Larger values improve
+compression at the potential cost of reducing random access
+efficiency. If not provided, we choose some chunk sizes with
+<a class="reference internal" href="#dolomite_matrix.choose_chunk_dimensions.choose_chunk_dimensions" title="dolomite_matrix.choose_chunk_dimensions.choose_chunk_dimensions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">choose_chunk_dimensions()</span></code></a>.</p></li>
+<li><p><strong>dense_array_chunk_args</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a></span>) – Arguments to pass to <code class="docutils literal notranslate"><span class="pre">choose_chunk_dimensions</span></code> if
+<code class="docutils literal notranslate"><span class="pre">dense_array_chunk_dimensions</span></code> is not provided.</p></li>
+<li><p><strong>dense_array_buffer_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Size of the buffer in bytes, for blockwise processing and writing
+to file. Larger values improve speed at the cost of memory.</p></li>
+<li><p><strong>kwargs</strong> – Further arguments, ignored.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A HDF5 file is created at <code class="docutils literal notranslate"><span class="pre">path</span></code> with the sparse data stored in the
-<code class="docutils literal notranslate"><span class="pre">name</span></code> group.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> is saved to <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -528,34 +718,73 @@ increase speed at the cost of memory efficiency.</p></li>
             <ul>
 <li><a class="reference internal" href="#">dolomite_matrix package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-dolomite_matrix.choose_dense_chunk_sizes">dolomite_matrix.choose_dense_chunk_sizes module</a><ul>
-<li><a class="reference internal" href="#dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes"><code class="docutils literal notranslate"><span class="pre">choose_dense_chunk_sizes()</span></code></a></li>
+<li><a class="reference internal" href="#module-dolomite_matrix.DelayedMask">dolomite_matrix.DelayedMask module</a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.DelayedMask.DelayedMask"><code class="docutils literal notranslate"><span class="pre">DelayedMask</span></code></a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.DelayedMask.DelayedMask.dtype"><code class="docutils literal notranslate"><span class="pre">DelayedMask.dtype</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.DelayedMask.DelayedMask.placeholder"><code class="docutils literal notranslate"><span class="pre">DelayedMask.placeholder</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.DelayedMask.DelayedMask.seed"><code class="docutils literal notranslate"><span class="pre">DelayedMask.seed</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.DelayedMask.DelayedMask.shape"><code class="docutils literal notranslate"><span class="pre">DelayedMask.shape</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-dolomite_matrix.load_hdf5_dense_array">dolomite_matrix.load_hdf5_dense_array module</a><ul>
-<li><a class="reference internal" href="#dolomite_matrix.load_hdf5_dense_array.load_hdf5_dense_array"><code class="docutils literal notranslate"><span class="pre">load_hdf5_dense_array()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.DelayedMask.chunk_shape_DelayedMask"><code class="docutils literal notranslate"><span class="pre">chunk_shape_DelayedMask()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.DelayedMask.create_dask_array_DelayedMask"><code class="docutils literal notranslate"><span class="pre">create_dask_array_DelayedMask()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.DelayedMask.extract_dense_array_DelayedMask"><code class="docutils literal notranslate"><span class="pre">extract_dense_array_DelayedMask()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.DelayedMask.extract_sparse_array_DelayedMask"><code class="docutils literal notranslate"><span class="pre">extract_sparse_array_DelayedMask()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.DelayedMask.is_sparse_DelayedMask"><code class="docutils literal notranslate"><span class="pre">is_sparse_DelayedMask()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-dolomite_matrix.load_hdf5_sparse_matrix">dolomite_matrix.load_hdf5_sparse_matrix module</a><ul>
-<li><a class="reference internal" href="#dolomite_matrix.load_hdf5_sparse_matrix.load_hdf5_sparse_matrix"><code class="docutils literal notranslate"><span class="pre">load_hdf5_sparse_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#module-dolomite_matrix.ReloadedArray">dolomite_matrix.ReloadedArray module</a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.ReloadedArray.ReloadedArray"><code class="docutils literal notranslate"><span class="pre">ReloadedArray</span></code></a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.ReloadedArray.ReloadedArray.path"><code class="docutils literal notranslate"><span class="pre">ReloadedArray.path</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-dolomite_matrix.stage_DelayedArray">dolomite_matrix.stage_DelayedArray module</a><ul>
-<li><a class="reference internal" href="#dolomite_matrix.stage_DelayedArray.stage_DelayedArray"><code class="docutils literal notranslate"><span class="pre">stage_DelayedArray()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.ReloadedArray.ReloadedArraySeed"><code class="docutils literal notranslate"><span class="pre">ReloadedArraySeed</span></code></a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.ReloadedArray.ReloadedArraySeed.path"><code class="docutils literal notranslate"><span class="pre">ReloadedArraySeed.path</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-dolomite_matrix.stage_ndarray">dolomite_matrix.stage_ndarray module</a><ul>
-<li><a class="reference internal" href="#dolomite_matrix.stage_ndarray.stage_ndarray"><code class="docutils literal notranslate"><span class="pre">stage_ndarray()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.ReloadedArray.save_object_ReloadedArray"><code class="docutils literal notranslate"><span class="pre">save_object_ReloadedArray()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.ReloadedArray.wrap_ReloadedArraySeed"><code class="docutils literal notranslate"><span class="pre">wrap_ReloadedArraySeed()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-dolomite_matrix.stage_sparse">dolomite_matrix.stage_sparse module</a><ul>
-<li><a class="reference internal" href="#dolomite_matrix.stage_sparse.stage_scipy_coo_matrix"><code class="docutils literal notranslate"><span class="pre">stage_scipy_coo_matrix()</span></code></a></li>
-<li><a class="reference internal" href="#dolomite_matrix.stage_sparse.stage_scipy_csc_matrix"><code class="docutils literal notranslate"><span class="pre">stage_scipy_csc_matrix()</span></code></a></li>
-<li><a class="reference internal" href="#dolomite_matrix.stage_sparse.stage_scipy_csr_matrix"><code class="docutils literal notranslate"><span class="pre">stage_scipy_csr_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#module-dolomite_matrix.WrapperArraySeed">dolomite_matrix.WrapperArraySeed module</a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.WrapperArraySeed.WrapperArraySeed"><code class="docutils literal notranslate"><span class="pre">WrapperArraySeed</span></code></a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.WrapperArraySeed.WrapperArraySeed.dtype"><code class="docutils literal notranslate"><span class="pre">WrapperArraySeed.dtype</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.WrapperArraySeed.WrapperArraySeed.seed"><code class="docutils literal notranslate"><span class="pre">WrapperArraySeed.seed</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.WrapperArraySeed.WrapperArraySeed.shape"><code class="docutils literal notranslate"><span class="pre">WrapperArraySeed.shape</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-dolomite_matrix.write_sparse_matrix">dolomite_matrix.write_sparse_matrix module</a><ul>
-<li><a class="reference internal" href="#dolomite_matrix.write_sparse_matrix.write_sparse_matrix"><code class="docutils literal notranslate"><span class="pre">write_sparse_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.WrapperArraySeed.chunk_shape_WrapperArraySeed"><code class="docutils literal notranslate"><span class="pre">chunk_shape_WrapperArraySeed()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.WrapperArraySeed.create_dask_array_WrapperArraySeed"><code class="docutils literal notranslate"><span class="pre">create_dask_array_WrapperArraySeed()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.WrapperArraySeed.extract_dense_array_WrapperArraySeed"><code class="docutils literal notranslate"><span class="pre">extract_dense_array_WrapperArraySeed()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.WrapperArraySeed.extract_sparse_array_WrapperArraySeed"><code class="docutils literal notranslate"><span class="pre">extract_sparse_array_WrapperArraySeed()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.WrapperArraySeed.is_sparse_WrapperArraySeed"><code class="docutils literal notranslate"><span class="pre">is_sparse_WrapperArraySeed()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dolomite_matrix.choose_chunk_dimensions">dolomite_matrix.choose_chunk_dimensions module</a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.choose_chunk_dimensions.choose_chunk_dimensions"><code class="docutils literal notranslate"><span class="pre">choose_chunk_dimensions()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dolomite_matrix.read_compressed_sparse_matrix">dolomite_matrix.read_compressed_sparse_matrix module</a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.read_compressed_sparse_matrix.read_compressed_sparse_matrix"><code class="docutils literal notranslate"><span class="pre">read_compressed_sparse_matrix()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dolomite_matrix.read_dense_array">dolomite_matrix.read_dense_array module</a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.read_dense_array.read_dense_array"><code class="docutils literal notranslate"><span class="pre">read_dense_array()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dolomite_matrix.save_compressed_sparse_matrix">dolomite_matrix.save_compressed_sparse_matrix module</a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_Sparse2darray"><code class="docutils literal notranslate"><span class="pre">save_compresssed_sparse_matrix_from_Sparse2darray()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_coo_matrix"><code class="docutils literal notranslate"><span class="pre">save_compresssed_sparse_matrix_from_scipy_coo_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_csc_matrix"><code class="docutils literal notranslate"><span class="pre">save_compresssed_sparse_matrix_from_scipy_csc_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_csr_matrix"><code class="docutils literal notranslate"><span class="pre">save_compresssed_sparse_matrix_from_scipy_csr_matrix()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dolomite_matrix.save_delayed_array">dolomite_matrix.save_delayed_array module</a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.save_delayed_array.save_delayed_array"><code class="docutils literal notranslate"><span class="pre">save_delayed_array()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dolomite_matrix.save_dense_array">dolomite_matrix.save_dense_array module</a><ul>
+<li><a class="reference internal" href="#dolomite_matrix.save_dense_array.save_dense_array_from_ndarray"><code class="docutils literal notranslate"><span class="pre">save_dense_array_from_ndarray()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-dolomite_matrix">Module contents</a></li>
@@ -570,7 +799,7 @@ increase speed at the cost of memory efficiency.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=856aaa68"></script>
+</div><script src="../_static/documentation_options.js?v=5c94d0f6"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

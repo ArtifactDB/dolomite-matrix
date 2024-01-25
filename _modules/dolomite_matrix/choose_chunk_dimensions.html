@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>dolomite_matrix.load_hdf5_sparse_matrix - dolomite-matrix 0.0.post1.dev1+gf596d9e documentation</title>
+        <title>dolomite_matrix.choose_chunk_dimensions - dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -122,7 +122,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">dolomite-matrix 0.0.post1.dev1+gf596d9e documentation</div></a>
+      <a href="../../index.html"><div class="brand">dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,7 +145,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">dolomite-matrix 0.0.post1.dev1+gf596d9e documentation</span>
+  <span class="sidebar-brand-text">dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -196,41 +196,57 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for dolomite_matrix.load_hdf5_sparse_matrix</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">bool_</span>
-<span class="kn">from</span> <span class="nn">filebackedarray</span> <span class="kn">import</span> <span class="n">Hdf5CompressedSparseMatrix</span>
-<span class="kn">from</span> <span class="nn">dolomite_base</span> <span class="kn">import</span> <span class="n">acquire_file</span>
+          <h1>Source code for dolomite_matrix.choose_chunk_dimensions</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Any</span>
 
 
-<div class="viewcode-block" id="load_hdf5_sparse_matrix">
-<a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.load_hdf5_sparse_matrix.load_hdf5_sparse_matrix">[docs]</a>
-<span class="k">def</span> <span class="nf">load_hdf5_sparse_matrix</span><span class="p">(</span><span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">project</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Hdf5CompressedSparseMatrix</span><span class="p">:</span>
+<div class="viewcode-block" id="choose_chunk_dimensions">
+<a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.choose_chunk_dimensions.choose_chunk_dimensions">[docs]</a>
+<span class="k">def</span> <span class="nf">choose_chunk_dimensions</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">min_extent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">memory</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e7</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load a HDF5-backed sparse matrix. In general, this function should be</span>
-<span class="sd">    called via :py:meth:`~dolomite_base.load_object.load_object`.</span>
+<span class="sd">    Choose chunk dimensions to use for a dense HDF5 dataset. For each</span>
+<span class="sd">    dimension, we consider a slice of the array that consists of the full</span>
+<span class="sd">    extent of all other dimensions. We want this slice to occupy less than</span>
+<span class="sd">    ``memory`` in memory, and we resize the slice along the current dimension</span>
+<span class="sd">    to achieve this. The chosen chunk size is then defined as the size of the</span>
+<span class="sd">    slice along the current dimension. This ensures that efficient iteration</span>
+<span class="sd">    along each dimension will not use any more than ``memory`` bytes.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        meta: Metadata for this HDF5 array.</span>
+<span class="sd">        shape: Shape of the array.</span>
 
-<span class="sd">        project: Value specifying the project of interest. This is most</span>
-<span class="sd">            typically a string containing a file path to a staging directory</span>
-<span class="sd">            but may also be an application-specific object that works with</span>
-<span class="sd">            :py:meth:`~dolomite_base.acquire_file.acquire_file`.</span>
+<span class="sd">        size: Size of each array element in bytes.</span>
 
-<span class="sd">        kwargs: Further arguments, ignored.</span>
+<span class="sd">        min_extent: </span>
+<span class="sd">            Minimum extent of each chunk dimension, to avoid problems</span>
+<span class="sd">            with excessively small chunk sizes when the data is large.</span>
+
+<span class="sd">        memory:</span>
+<span class="sd">            Size of the (conceptual) memory buffer to use for storing blocks of</span>
+<span class="sd">            data during iteration through the array, in bytes.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A HDF5-backed sparse matrix.</span>
+<span class="sd">        Tuple containing the chunk dimensions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">fpath</span> <span class="o">=</span> <span class="n">acquire_file</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;hdf5_sparse_matrix&quot;</span><span class="p">][</span><span class="s2">&quot;group&quot;</span><span class="p">]</span>
 
-    <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;array&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;boolean&quot;</span><span class="p">:</span>
-        <span class="n">dtype</span> <span class="o">=</span> <span class="n">bool_</span>
+    <span class="n">num_elements</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">memory</span> <span class="o">/</span> <span class="n">size</span><span class="p">)</span>
+    <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">return</span> <span class="n">Hdf5CompressedSparseMatrix</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;array&quot;</span><span class="p">][</span><span class="s2">&quot;dimensions&quot;</span><span class="p">],),</span> <span class="n">by_column</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+    <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
+        <span class="n">otherdim</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">d2</span><span class="p">,</span> <span class="n">s2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span> <span class="c1"># just calculating it again to avoid overflow issues.</span>
+            <span class="k">if</span> <span class="n">d2</span> <span class="o">!=</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">otherdim</span> <span class="o">*=</span> <span class="n">s2</span>
+
+        <span class="n">proposed</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_elements</span> <span class="o">/</span> <span class="n">otherdim</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">proposed</span> <span class="o">&gt;</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">proposed</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="k">elif</span> <span class="n">proposed</span> <span class="o">&lt;</span> <span class="n">min_extent</span><span class="p">:</span>
+            <span class="n">proposed</span> <span class="o">=</span> <span class="n">min_extent</span>
+
+        <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proposed</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="n">chunks</span><span class="p">,)</span></div>
 
 </pre></div>
         </article>
@@ -264,7 +280,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=856aaa68"></script>
+</div><script src="../../_static/documentation_options.js?v=5c94d0f6"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
