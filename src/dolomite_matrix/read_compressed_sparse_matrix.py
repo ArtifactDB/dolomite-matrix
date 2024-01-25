@@ -8,7 +8,9 @@ from .DelayedMask import DelayedMask
 from .ReloadedArray import ReloadedArray
 
 
-def read_compressed_sparse_matrix(path: str, metadata: dict, **kwargs) -> DelayedArray:
+def read_compressed_sparse_matrix(
+    path: str, metadata: dict = None, **kwargs
+) -> DelayedArray:
     """
     Read a compressed sparse matrix from its on-disk representation. In
     general, this function should not be called directly but instead be
@@ -44,11 +46,13 @@ def read_compressed_sparse_matrix(path: str, metadata: dict, **kwargs) -> Delaye
         if "missing-value-placeholder" in dhandle.attrs:
             placeholder = dhandle.attrs["missing-value-placeholder"]
 
-    bycol = (layout == "CSC")
+    bycol = layout == "CSC"
     if placeholder is None:
-        seed = Hdf5CompressedSparseMatrixSeed(fpath, name, shape=shape, by_column = bycol, dtype = dtype)
+        seed = Hdf5CompressedSparseMatrixSeed(
+            fpath, name, shape=shape, by_column=bycol, dtype=dtype
+        )
     else:
-        core = Hdf5CompressedSparseMatrixSeed(fpath, name, shape=shape, by_column = bycol)
+        core = Hdf5CompressedSparseMatrixSeed(fpath, name, shape=shape, by_column=bycol)
         seed = DelayedMask(core, placeholder=placeholder, dtype=dtype)
 
     return ReloadedArray(seed, path)
