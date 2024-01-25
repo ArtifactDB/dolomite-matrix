@@ -13,7 +13,7 @@ def test_compressed_sparse_matrix_csc():
     dir = os.path.join(mkdtemp(),"foobar")
     dl.save_object(y, dir)
 
-    roundtrip = dm.read_compressed_sparse_matrix(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, dm.ReloadedArray)
@@ -27,7 +27,7 @@ def test_compressed_sparse_matrix_csr():
     dir = os.path.join(mkdtemp(),"foobar")
     dl.save_object(y, dir)
 
-    roundtrip = dm.read_compressed_sparse_matrix(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
     assert (numpy.array(roundtrip) == y.toarray()).all()
@@ -39,7 +39,7 @@ def test_compressed_sparse_matrix_coo():
     dir = os.path.join(mkdtemp(),"foobar")
     dl.save_object(y, dir)
 
-    roundtrip = dm.read_compressed_sparse_matrix(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
     assert (numpy.array(roundtrip) == y.toarray()).all()
@@ -59,7 +59,7 @@ def test_compressed_sparse_matrix_SparseNdarray():
     dir = os.path.join(mkdtemp(),"foobar")
     dl.save_object(y, dir)
 
-    roundtrip = dm.read_compressed_sparse_matrix(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.integer)
     assert (numpy.array(roundtrip) == numpy.array(y)).all()
@@ -71,7 +71,7 @@ def test_compressed_sparse_matrix_integer():
     dir = os.path.join(mkdtemp(),"foobar")
     dl.save_object(y, dir)
 
-    roundtrip = dm.read_compressed_sparse_matrix(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.integer)
     assert (numpy.array(roundtrip) == y.toarray()).all()
@@ -82,7 +82,7 @@ def test_compressed_sparse_matrix_boolean():
     dir = os.path.join(mkdtemp(),"foobar")
     dl.save_object(y, dir)
 
-    roundtrip = dm.read_compressed_sparse_matrix(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert (numpy.array(roundtrip) == y.toarray()).all()

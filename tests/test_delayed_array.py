@@ -17,7 +17,7 @@ def test_save_delayed_array_simple():
     dir = os.path.join(mkdtemp(), "foobar")
     dl.save_object(y, dir)
 
-    roundtrip = dm.read_dense_array(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, dm.ReloadedArray) 
@@ -34,7 +34,7 @@ def test_save_delayed_array_booleans():
     dir = os.path.join(mkdtemp(), "foobar")
     dl.save_object(y, dir)
 
-    roundtrip = dm.read_dense_array(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == numpy.bool_
     assert (numpy.array(roundtrip) == numpy.logical_and(x1, x2)).all()
@@ -73,7 +73,7 @@ def test_delayed_array_custom_chunks():
     dir = os.path.join(mkdtemp(), "foobar")
     dl.save_object(y, dir, dense_array_buffer_size=20 * 5000, dense_array_chunk_dimensions=(5, 20, 5))
 
-    roundtrip = dm.read_dense_array(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert (numpy.array(roundtrip) == x).all()
@@ -83,7 +83,7 @@ def test_delayed_array_custom_chunks():
     dir = os.path.join(mkdtemp(), "foobar2")
     dl.save_object(y, dir, dense_array_buffer_size=20 * 5000, dense_array_chunk_dimensions=(5, 1, 10))
 
-    roundtrip = dm.read_dense_array(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert (numpy.array(roundtrip) == x).all()
@@ -94,7 +94,7 @@ def test_delayed_array_low_block_size_C_contiguous():
     y = da.wrap(x) + 1
     dir = os.path.join(mkdtemp(), "foobar")
     dl.save_object(y, dir, dense_array_buffer_size=8 * 1000)
-    roundtrip = dm.read_dense_array(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert (numpy.array(roundtrip) == x + 1).all()
@@ -105,7 +105,7 @@ def test_delayed_array_low_block_size_F_contiguous():
     y = da.wrap(x) + 1
     dir = os.path.join(mkdtemp(), "foobar")
     dl.save_object(y, dir, dense_array_buffer_size=8 * 1000)
-    roundtrip = dm.read_dense_array(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert (numpy.array(roundtrip) == x + 1).all()
@@ -121,7 +121,7 @@ def test_delayed_array_sparse():
 
     dir = os.path.join(mkdtemp(), "foobar")
     dl.save_object(y, dir)
-    roundtrip = dm.read_compressed_sparse_matrix(dir)
+    roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, dm.ReloadedArray)
