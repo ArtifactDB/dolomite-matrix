@@ -1,14 +1,14 @@
+from typing import Dict, Any
 import numpy
 import os
 import h5py
-from delayedarray import DelayedArray
 from filebackedarray import Hdf5DenseArraySeed
 
 from .DelayedMask import DelayedMask
 from .ReloadedArray import ReloadedArray
 
 
-def read_dense_array(path: str, **kwargs) -> DelayedArray:
+def read_dense_array(path: str, metadata: Dict[str, Any], **kwargs) -> ReloadedArray:
     """
     Read a dense array from its on-disk representation. In general, this
     function should not be called directly but instead be dispatched via
@@ -17,10 +17,13 @@ def read_dense_array(path: str, **kwargs) -> DelayedArray:
     Args:
         path: Path to the directory containing the object.
 
+        metadata: Metadata for this object.
+
         kwargs: Further arguments, ignored.
 
     Returns:
-        A HDF5-backed dense array.
+        A :py:class:`~dolomite_matrix.ReloadedArray.ReloadedArray` containing a
+        HDF5-backed dense array as a seed.
     """
     fpath = os.path.join(path, "array.h5")
     name = "dense_array"
