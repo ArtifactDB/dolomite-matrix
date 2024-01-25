@@ -1,12 +1,12 @@
-from delayedarray import SparseNdarray, is_sparse, apply_over_blocks
-from typing import Callable, Any, Optional, Union, Tuple
-from functools import singledispatch, reduce
 from collections import namedtuple
 from dataclasses import dataclass
-import numpy
+from functools import reduce, singledispatch
+from typing import Any, Callable, List, Optional, Tuple
+
 import dolomite_base as dl
 import h5py
-
+import numpy
+from delayedarray import SparseNdarray, apply_over_blocks, is_sparse
 
 has_scipy = False
 try:
@@ -148,7 +148,7 @@ def _simple_integer_collector(x: numpy.ndarray) -> _IntegerAttributes:
     return _IntegerAttributes(minimum=x.min(), maximum=x.max(), missing=missing)
 
 
-def _combine_integer_attributes(x: list[_IntegerAttributes]):
+def _combine_integer_attributes(x: List[_IntegerAttributes]):
     return _IntegerAttributes(
         minimum=_aggregate_min(x, "minimum"),
         maximum=_aggregate_max(x, "maximum"),
@@ -358,7 +358,7 @@ if has_scipy:
         return output
 
 
-def _combine_float_attributes(x: list[_FloatAttributes]) -> _FloatAttributes:
+def _combine_float_attributes(x: List[_FloatAttributes]) -> _FloatAttributes:
     return _FloatAttributes(
         minimum=_aggregate_min(x, "minimum"),
         maximum=_aggregate_max(x, "maximum"),
@@ -515,7 +515,7 @@ def collect_string_attributes(x: Any) -> _StringAttributes:
     return _combine_string_attributes(collected)
 
 
-def _combine_string_attributes(x: list[_StringAttributes]) -> _StringAttributes:
+def _combine_string_attributes(x: List[_StringAttributes]) -> _StringAttributes:
     return _StringAttributes(
         has_na1 = _aggregate_any(x, "has_na1"),
         has_na2 = _aggregate_any(x, "has_na2"),
@@ -587,7 +587,7 @@ def _simple_boolean_collector(x: numpy.ndarray) -> _BooleanAttributes:
     return _BooleanAttributes(non_zero = 0, missing = missing)
 
 
-def _combine_boolean_attributes(x: list[_BooleanAttributes]) -> _BooleanAttributes:
+def _combine_boolean_attributes(x: List[_BooleanAttributes]) -> _BooleanAttributes:
     return _BooleanAttributes(
         missing = _aggregate_any(x, "missing"),
         non_zero = _aggregate_sum(x, "non_zero")

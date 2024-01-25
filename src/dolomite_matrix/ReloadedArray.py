@@ -104,13 +104,13 @@ def save_object_ReloadedArray(x: ReloadedArray, path: str, reloaded_array_reuse_
         def FUN(src, dest):
             try:
                 os.link(src, dest)
-            except:
+            except Exception as _:
                 shutil.copyfile(src, dest)
     elif reloaded_array_reuse_mode == "symlink":
         def FUN(src, dest):
             try:
                 os.symlink(src, dest)
-            except:
+            except Exception as _:
                 shutil.copyfile(src, dest)
     elif reloaded_array_reuse_mode == "copy":
         FUN = shutil.copyfile
