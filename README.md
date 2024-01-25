@@ -4,13 +4,14 @@
 [![Built Status](https://api.cirrus-ci.com/github/<USER>/dolomite-matrix.svg?branch=main)](https://cirrus-ci.com/github/<USER>/dolomite-matrix)
 [![ReadTheDocs](https://readthedocs.org/projects/dolomite-matrix/badge/?version=latest)](https://dolomite-matrix.readthedocs.io/en/stable/)
 [![Coveralls](https://img.shields.io/coveralls/github/<USER>/dolomite-matrix/main.svg)](https://coveralls.io/r/<USER>/dolomite-matrix)
-[![PyPI-Server](https://img.shields.io/pypi/v/dolomite-matrix.svg)](https://pypi.org/project/dolomite-matrix/)
 [![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/dolomite-matrix.svg)](https://anaconda.org/conda-forge/dolomite-matrix)
-[![Monthly Downloads](https://pepy.tech/badge/dolomite-matrix/month)](https://pepy.tech/project/dolomite-matrix)
 [![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/dolomite-matrix)
 -->
 
 [![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
+[![PyPI-Server](https://img.shields.io/pypi/v/dolomite-matrix.svg)](https://pypi.org/project/dolomite-matrix/)
+[![Monthly Downloads](https://pepy.tech/badge/dolomite-matrix/month)](https://pepy.tech/project/dolomite-matrix)
+![Unit tests](https://github.com/ArtifactDB/dolomite-matrix/actions/workflows/run-tests.yml/badge.svg)
 
 # Read and save matrices in Python
 
@@ -28,25 +29,22 @@ Let's save a dense matrix to a HDF5 file with some accompanying metadata:
 import numpy
 x = numpy.random.rand(1000, 200) 
 
+import os
 import tempfile
-dir = tempfile.mkdtemp()
+dir = os.path.join(tempfile.mkdtemp(), "whee")
 
 import dolomite_base
 import dolomite_matrix
-meta = dolomite_base.stage_object(x, dir, "whee")
-dolomite_base.write_metadata(meta, dir)
-print(meta["path"])
-## whee/array.h5
+dolomite_base.save_object(x, dir)
 ```
 
 Now we can transfer the directory and reload the matrix in a new session.
-This produces a `Hdf5DenseArray` from the [**filebackedarray**](https://github.com/BiocPy/filebackedarray) package.
+This constructs a HDF5-backed dense array that can be used for block processing or realized into the usual NumPy array.
 
 ```python
 import dolomite_base
-info = dolomite_base.acquire_metadata(dir, "whee/array.h5")
-obj = dolomite_base.load_object(info, dir)
-## <1000 x 200> Hdf5DenseArray object of type 'float64'
+obj = dolomite_base.read_object(dir)
+## <1000 x 200> ReloadedArray object of type 'float64'
 ## [[0.58444226, 0.82595149, 0.7214525 , ..., 0.32493652, 0.58206044,
 ##   0.73770346],
 ##  [0.96398317, 0.73200292, 0.16410134, ..., 0.31626547, 0.11499628,
@@ -71,25 +69,22 @@ import scipy
 import numpy
 x = scipy.sparse.random(1000, 200, 0.2, dtype=numpy.int16, format="csc")
 
+import os
 import tempfile
-dir = tempfile.mkdtemp()
+dir = os.path.join(tempfile.mkdtemp(), "stuff")
 
 import dolomite_base
 import dolomite_matrix
-meta = dolomite_base.stage_object(x, dir, "whee")
-dolomite_base.write_metadata(meta, dir)
-print(meta["path"])
-## whee/matrix.h5
+dolomite_base.save_object(x, dir)
 ```
 
 And again, loading it back in a new session.
-This produces a `Hdf5CompressedSparseMatrix` from the [**filebackedarray**](https://github.com/BiocPy/filebackedarray) package.
+This constructs a HDF5-backed sparse array that can be used for block processing or realized into the usual NumPy array.
 
 ```python
 import dolomite_base
-info = dolomite_base.acquire_metadata(dir, "whee/matrix.h5")
-obj = dolomite_base.load_object(info, dir)
-## <1000 x 200> sparse Hdf5CompressedSparseMatrix object of type 'int16'
+obj = dolomite_base.read_object(dir)
+## <1000 x 200> sparse ReloadedArray object of type 'int16'
 ## [[     0,      0, -28638, ...,      0,      0,  26194],
 ##  [     0,      0,      0, ...,      0, -30829,      0],
 ##  [     0,      0,      0, ...,      0,      0,      0],
