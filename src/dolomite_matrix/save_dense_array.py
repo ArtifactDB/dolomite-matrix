@@ -5,7 +5,7 @@ import delayedarray
 import os
 import h5py
 
-from .choose_dense_chunk_sizes import choose_dense_chunk_sizes 
+from .choose_chunk_dimensions import choose_chunk_dimensions 
 from . import _optimize_storage as optim
 from . import _utils as ut
 
@@ -72,7 +72,7 @@ def _save_dense_array(
 
     # Coming up with a decent chunk size.
     if dense_array_chunk_dimensions is None:
-        dense_array_chunk_dimensions = choose_dense_chunk_sizes(x.shape, x.dtype.itemsize, **dense_array_chunk_args)
+        dense_array_chunk_dimensions = choose_chunk_dimensions(x.shape, x.dtype.itemsize, **dense_array_chunk_args)
     else:
         capped = []
         for i, d in enumerate(x.shape):
@@ -158,10 +158,10 @@ def save_dense_array_from_ndarray(
             Chunk dimensions for the HDF5 dataset. Larger values improve
             compression at the potential cost of reducing random access
             efficiency. If not provided, we choose some chunk sizes with
-            :py:meth:`~dolomite_matrix.choose_dense_chunk_sizes.choose_dense_chunk_sizes`.
+            :py:meth:`~dolomite_matrix.choose_chunk_dimensions.choose_chunk_dimensions`.
 
         dense_array_chunk_args: 
-            Arguments to pass to ``choose_dense_chunk_sizes`` if
+            Arguments to pass to ``choose_chunk_dimensions`` if
             ``dense_array_chunk_dimensions`` is not provided.
 
         dense_array_buffer_size:

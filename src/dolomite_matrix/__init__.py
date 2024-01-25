@@ -16,7 +16,7 @@ finally:
     del version, PackageNotFoundError
 
 
-from .choose_dense_chunk_sizes import choose_dense_chunk_sizes
+from .choose_chunk_dimensions import choose_chunk_dimensions
 from .save_dense_array import save_dense_array_from_ndarray 
 from .read_dense_array import read_dense_array
 from .save_compressed_sparse_matrix import *
