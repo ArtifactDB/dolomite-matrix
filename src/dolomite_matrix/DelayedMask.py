@@ -119,7 +119,7 @@ def create_dask_array_DelayedMask(x: DelayedMask):
     target = delayedarray.create_dask_array(x._seed)
     mask = (target == x._placeholder) 
     target = target.astype(x._dtype)
-    import dask.array
+    import dask
     return dask.array.ma.masked_array(target, mask=mask)
 
 

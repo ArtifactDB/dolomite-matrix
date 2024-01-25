@@ -1,4 +1,4 @@
-from typing import Tuple, Any
+from typing import Tuple
 
 
 def choose_chunk_dimensions(shape: Tuple[int, ...], size: int, min_extent: int = 100, memory: int = 1e7) -> Tuple[int, ...]:
