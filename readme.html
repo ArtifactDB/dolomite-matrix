@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Contributing" href="contributing.html" /><link rel="prev" title="Save and load matrices from disk" href="index.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>Read and save matrices in Python - dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</title>
+        <title>Read and save matrices in Python - dolomite-matrix 0.0.post1.dev1+g523b502 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</div></a>
+      <a href="index.html"><div class="brand">dolomite-matrix 0.0.post1.dev1+g523b502 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</span>
+  <span class="sidebar-brand-text">dolomite-matrix 0.0.post1.dev1+g523b502 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -204,12 +204,13 @@
 [![Built Status](https://api.cirrus-ci.com/github/<USER>/dolomite-matrix.svg?branch=main)](https://cirrus-ci.com/github/<USER>/dolomite-matrix)
 [![ReadTheDocs](https://readthedocs.org/projects/dolomite-matrix/badge/?version=latest)](https://dolomite-matrix.readthedocs.io/en/stable/)
 [![Coveralls](https://img.shields.io/coveralls/github/<USER>/dolomite-matrix/main.svg)](https://coveralls.io/r/<USER>/dolomite-matrix)
-[![PyPI-Server](https://img.shields.io/pypi/v/dolomite-matrix.svg)](https://pypi.org/project/dolomite-matrix/)
 [![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/dolomite-matrix.svg)](https://anaconda.org/conda-forge/dolomite-matrix)
-[![Monthly Downloads](https://pepy.tech/badge/dolomite-matrix/month)](https://pepy.tech/project/dolomite-matrix)
 [![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/dolomite-matrix)
 -->
-<p><a class="reference external" href="https://pyscaffold.org/"><img alt="Project generated with PyScaffold" src="https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold" /></a></p>
+<p><a class="reference external" href="https://pyscaffold.org/"><img alt="Project generated with PyScaffold" src="https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold" /></a>
+<a class="reference external" href="https://pypi.org/project/dolomite-matrix/"><img alt="PyPI-Server" src="https://img.shields.io/pypi/v/dolomite-matrix.svg" /></a>
+<a class="reference external" href="https://pepy.tech/project/dolomite-matrix"><img alt="Monthly Downloads" src="https://pepy.tech/badge/dolomite-matrix/month" /></a>
+<img alt="Unit tests" src="https://github.com/ArtifactDB/dolomite-matrix/actions/workflows/run-tests.yml/badge.svg" /></p>
 <section class="tex2jax_ignore mathjax_ignore" id="read-and-save-matrices-in-python">
 <h1>Read and save matrices in Python<a class="headerlink" href="#read-and-save-matrices-in-python" title="Link to this heading">#</a></h1>
 <section id="introduction">
@@ -224,23 +225,20 @@ Dense arrays are stored in the usual HDF5 dataset, while sparse matrices are sav
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span> 
 
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="nb">dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+<span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">&quot;whee&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">dolomite_base</span>
 <span class="kn">import</span> <span class="nn">dolomite_matrix</span>
-<span class="n">meta</span> <span class="o">=</span> <span class="n">dolomite_base</span><span class="o">.</span><span class="n">stage_object</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="s2">&quot;whee&quot;</span><span class="p">)</span>
-<span class="n">dolomite_base</span><span class="o">.</span><span class="n">write_metadata</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
-<span class="c1">## whee/array.h5</span>
+<span class="n">dolomite_base</span><span class="o">.</span><span class="n">save_object</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now we can transfer the directory and reload the matrix in a new session.
-This produces a <code class="docutils literal notranslate"><span class="pre">Hdf5DenseArray</span></code> from the <a class="reference external" href="https://github.com/BiocPy/filebackedarray"><strong>filebackedarray</strong></a> package.</p>
+This constructs a HDF5-backed dense array that can be used for block processing or realized into the usual NumPy array.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dolomite_base</span>
-<span class="n">info</span> <span class="o">=</span> <span class="n">dolomite_base</span><span class="o">.</span><span class="n">acquire_metadata</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="s2">&quot;whee/array.h5&quot;</span><span class="p">)</span>
-<span class="n">obj</span> <span class="o">=</span> <span class="n">dolomite_base</span><span class="o">.</span><span class="n">load_object</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
-<span class="c1">## &lt;1000 x 200&gt; Hdf5DenseArray object of type &#39;float64&#39;</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">dolomite_base</span><span class="o">.</span><span class="n">read_object</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+<span class="c1">## &lt;1000 x 200&gt; ReloadedArray object of type &#39;float64&#39;</span>
 <span class="c1">## [[0.58444226, 0.82595149, 0.7214525 , ..., 0.32493652, 0.58206044,</span>
 <span class="c1">##   0.73770346],</span>
 <span class="c1">##  [0.96398317, 0.73200292, 0.16410134, ..., 0.31626547, 0.11499628,</span>
@@ -264,23 +262,20 @@ This produces a <code class="docutils literal notranslate"><span class="pre">Hdf
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csc&quot;</span><span class="p">)</span>
 
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="nb">dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+<span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">&quot;stuff&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">dolomite_base</span>
 <span class="kn">import</span> <span class="nn">dolomite_matrix</span>
-<span class="n">meta</span> <span class="o">=</span> <span class="n">dolomite_base</span><span class="o">.</span><span class="n">stage_object</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="s2">&quot;whee&quot;</span><span class="p">)</span>
-<span class="n">dolomite_base</span><span class="o">.</span><span class="n">write_metadata</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
-<span class="c1">## whee/matrix.h5</span>
+<span class="n">dolomite_base</span><span class="o">.</span><span class="n">save_object</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>And again, loading it back in a new session.
-This produces a <code class="docutils literal notranslate"><span class="pre">Hdf5CompressedSparseMatrix</span></code> from the <a class="reference external" href="https://github.com/BiocPy/filebackedarray"><strong>filebackedarray</strong></a> package.</p>
+This constructs a HDF5-backed sparse array that can be used for block processing or realized into the usual NumPy array.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dolomite_base</span>
-<span class="n">info</span> <span class="o">=</span> <span class="n">dolomite_base</span><span class="o">.</span><span class="n">acquire_metadata</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="s2">&quot;whee/matrix.h5&quot;</span><span class="p">)</span>
-<span class="n">obj</span> <span class="o">=</span> <span class="n">dolomite_base</span><span class="o">.</span><span class="n">load_object</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
-<span class="c1">## &lt;1000 x 200&gt; sparse Hdf5CompressedSparseMatrix object of type &#39;int16&#39;</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">dolomite_base</span><span class="o">.</span><span class="n">read_object</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+<span class="c1">## &lt;1000 x 200&gt; sparse ReloadedArray object of type &#39;int16&#39;</span>
 <span class="c1">## [[     0,      0, -28638, ...,      0,      0,  26194],</span>
 <span class="c1">##  [     0,      0,      0, ...,      0, -30829,      0],</span>
 <span class="c1">##  [     0,      0,      0, ...,      0,      0,      0],</span>
@@ -363,7 +358,7 @@ This produces a <code class="docutils literal notranslate"><span class="pre">Hdf
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=5c94d0f6"></script>
+</div><script src="_static/documentation_options.js?v=1cd5277f"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>dolomite_matrix.read_dense_array - dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</title>
+        <title>dolomite_matrix.read_dense_array - dolomite-matrix 0.0.post1.dev1+g523b502 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -122,7 +122,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</div></a>
+      <a href="../../index.html"><div class="brand">dolomite-matrix 0.0.post1.dev1+g523b502 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,7 +145,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">dolomite-matrix 0.0.post1.dev1+gdb09526 documentation</span>
+  <span class="sidebar-brand-text">dolomite-matrix 0.0.post1.dev1+g523b502 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -197,10 +197,10 @@
         </div>
         <article role="main">
           <h1>Source code for dolomite_matrix.read_dense_array</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
-<span class="kn">from</span> <span class="nn">delayedarray</span> <span class="kn">import</span> <span class="n">DelayedArray</span>
 <span class="kn">from</span> <span class="nn">filebackedarray</span> <span class="kn">import</span> <span class="n">Hdf5DenseArraySeed</span>
 
 <span class="kn">from</span> <span class="nn">.DelayedMask</span> <span class="kn">import</span> <span class="n">DelayedMask</span>
@@ -209,7 +209,7 @@
 
 <div class="viewcode-block" id="read_dense_array">
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.read_dense_array.read_dense_array">[docs]</a>
-<span class="k">def</span> <span class="nf">read_dense_array</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DelayedArray</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">read_dense_array</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReloadedArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read a dense array from its on-disk representation. In general, this</span>
 <span class="sd">    function should not be called directly but instead be dispatched via</span>
@@ -218,10 +218,13 @@
 <span class="sd">    Args:</span>
 <span class="sd">        path: Path to the directory containing the object.</span>
 
+<span class="sd">        metadata: Metadata for this object.</span>
+
 <span class="sd">        kwargs: Further arguments, ignored.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A HDF5-backed dense array.</span>
+<span class="sd">        A :py:class:`~dolomite_matrix.ReloadedArray.ReloadedArray` containing a</span>
+<span class="sd">        HDF5-backed dense array as a seed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;array.h5&quot;</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;dense_array&quot;</span>
@@ -291,7 +294,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=5c94d0f6"></script>
+</div><script src="../../_static/documentation_options.js?v=1cd5277f"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
