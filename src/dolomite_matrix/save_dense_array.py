@@ -50,7 +50,7 @@ def _blockwise_write_to_hdf5(dhandle: h5py.Dataset, chunk_shape: Tuple, x: Any, 
         # comparison HDF5 uses C order. To avoid any rearrangement of data
         # by h5py, we save it as a transposed array for efficiency.
         coords = [slice(start, end) for start, end in reversed(pos)]
-        dhandle[*coords] = block.T
+        dhandle[(*coords,)] = block.T
 
     delayedarray.apply_over_blocks(x, _blockwise_dense_writer, block_shape = block_shape)
     return
