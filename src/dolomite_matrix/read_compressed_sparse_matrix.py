@@ -2,9 +2,10 @@ import numpy
 import os
 import h5py
 from delayedarray import DelayedArray
-from filebackedarray import Hdf5CompressedSparseMatrix, Hdf5CompressedSparseMatrixSeed
+from filebackedarray import Hdf5CompressedSparseMatrixSeed
 
 from .DelayedMask import DelayedMask
+from .ReloadedArray import ReloadedArray
 
 
 def read_compressed_sparse_matrix(path: str, **kwargs) -> DelayedArray:
@@ -45,8 +46,9 @@ def read_compressed_sparse_matrix(path: str, **kwargs) -> DelayedArray:
 
     bycol = (layout == "CSC")
     if placeholder is None:
-        return Hdf5CompressedSparseMatrix(fpath, name, shape=shape, by_column = bycol, dtype = dtype)
+        seed = Hdf5CompressedSparseMatrixSeed(fpath, name, shape=shape, by_column = bycol, dtype = dtype)
+    else:
+        core = Hdf5CompressedSparseMatrixSeed(fpath, name, shape=shape, by_column = bycol)
+        seed = DelayedMask(core, placeholder=placeholder, dtype=dtype)
 
-    core = Hdf5CompressedSparseMatrixSeed(fpath, name, shape=shape, by_column = bycol)
-    output = DelayedMask(core, placeholder=placeholder, dtype=dtype)
-    return DelayedArray(output)
+    return ReloadedArray(seed, path)

@@ -2,9 +2,10 @@ import numpy
 import os
 import h5py
 from delayedarray import DelayedArray
-from filebackedarray import Hdf5DenseArray, Hdf5DenseArraySeed
+from filebackedarray import Hdf5DenseArraySeed
 
 from .DelayedMask import DelayedMask
+from .ReloadedArray import ReloadedArray
 
 
 def read_dense_array(path: str, **kwargs) -> DelayedArray:
@@ -50,8 +51,9 @@ def read_dense_array(path: str, **kwargs) -> DelayedArray:
     dname = name + "/data"
     is_native = not transposed
     if placeholder is None:
-        return Hdf5DenseArray(fpath, dname, dtype=dtype, native_order=is_native)
+        seed = Hdf5DenseArraySeed(fpath, dname, dtype=dtype, native_order=is_native)
+    else: 
+        core = Hdf5DenseArraySeed(fpath, dname, native_order=is_native)
+        seed = DelayedMask(core, placeholder=placeholder, dtype=dtype)
 
-    core = Hdf5DenseArraySeed(fpath, dname, native_order=is_native)
-    output = DelayedMask(core, placeholder=placeholder, dtype=dtype)
-    return DelayedArray(output)
+    return ReloadedArray(seed, path)

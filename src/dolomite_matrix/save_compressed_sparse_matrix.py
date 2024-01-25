@@ -107,6 +107,7 @@ if has_scipy:
             secondary = 1
             handle.attrs["layout"] = "CSR"
 
+        compressed_sparse_matrix_chunk_size = min(compressed_sparse_matrix_chunk_size, details.non_zero)
         itype = _choose_index_type(x.shape[secondary])
         handle.create_dataset("indices", data = x.indices, dtype = itype, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
         handle.create_dataset("indptr", data = x.indptr, dtype = "u8", compression = "gzip", chunks = True)

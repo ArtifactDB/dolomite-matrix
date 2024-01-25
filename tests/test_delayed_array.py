@@ -20,7 +20,8 @@ def test_save_delayed_array_simple():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
+    assert isinstance(roundtrip, dm.ReloadedArray) 
+    assert isinstance(roundtrip.seed.seed, filebackedarray.Hdf5DenseArraySeed)
     assert (numpy.array(roundtrip) == x + 1).all()
 
 
@@ -36,7 +37,6 @@ def test_save_delayed_array_booleans():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == numpy.bool_
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == numpy.logical_and(x1, x2)).all()
 
 
@@ -76,7 +76,6 @@ def test_delayed_array_custom_chunks():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == x).all()
 
     # Chunky boi (II)
@@ -87,7 +86,6 @@ def test_delayed_array_custom_chunks():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == x).all()
 
 
@@ -99,7 +97,6 @@ def test_delayed_array_low_block_size_C_contiguous():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == x + 1).all()
 
 
@@ -111,7 +108,6 @@ def test_delayed_array_low_block_size_F_contiguous():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == x + 1).all()
 
 
@@ -128,5 +124,6 @@ def test_delayed_array_sparse():
     roundtrip = dm.read_compressed_sparse_matrix(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
-    assert isinstance(roundtrip, filebackedarray.Hdf5CompressedSparseMatrix)
+    assert isinstance(roundtrip, dm.ReloadedArray)
+    assert isinstance(roundtrip.seed.seed, filebackedarray.Hdf5CompressedSparseMatrixSeed)
     assert (numpy.array(roundtrip) == x.toarray() * 10).all()

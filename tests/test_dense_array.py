@@ -16,7 +16,8 @@ def test_dense_array_number():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
+    assert isinstance(roundtrip, dm.ReloadedArray)
+    assert isinstance(roundtrip.seed.seed, filebackedarray.Hdf5DenseArraySeed)
     assert (numpy.array(roundtrip) == y).all()
 
 
@@ -28,7 +29,6 @@ def test_dense_array_integer():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.integer)
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == y).all()
 
 
@@ -39,7 +39,6 @@ def test_dense_array_boolean():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == numpy.bool_
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == y).all()
 
 
@@ -50,7 +49,6 @@ def test_dense_array_string():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.str_)
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == y).all()
 
 
@@ -85,7 +83,6 @@ def test_dense_array_F_contiguous():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == x.shape
     assert roundtrip.dtype == x.dtype
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == x).all()
 
 
@@ -101,6 +98,4 @@ def test_dense_array_block_size():
     roundtrip = dm.read_dense_array(dir)
     assert roundtrip.shape == x.shape
     assert roundtrip.dtype == x.dtype
-    assert isinstance(roundtrip, filebackedarray.Hdf5DenseArray)
     assert (numpy.array(roundtrip) == x).all()
-
