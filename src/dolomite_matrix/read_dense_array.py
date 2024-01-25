@@ -8,7 +8,7 @@ from .DelayedMask import DelayedMask
 from .ReloadedArray import ReloadedArray
 
 
-def read_dense_array(path: str, **kwargs) -> DelayedArray:
+def read_dense_array(path: str, metadata: dict, **kwargs) -> DelayedArray:
     """
     Read a dense array from its on-disk representation. In general, this
     function should not be called directly but instead be dispatched via

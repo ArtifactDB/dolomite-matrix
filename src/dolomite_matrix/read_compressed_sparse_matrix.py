@@ -8,7 +8,7 @@ from .DelayedMask import DelayedMask
 from .ReloadedArray import ReloadedArray
 
 
-def read_compressed_sparse_matrix(path: str, **kwargs) -> DelayedArray:
+def read_compressed_sparse_matrix(path: str, metadata: dict, **kwargs) -> DelayedArray:
     """
     Read a compressed sparse matrix from its on-disk representation. In
     general, this function should not be called directly but instead be
