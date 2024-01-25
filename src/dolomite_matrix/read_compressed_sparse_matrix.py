@@ -1,14 +1,14 @@
+from typing import Dict, Any
 import numpy
 import os
 import h5py
-from delayedarray import DelayedArray
 from filebackedarray import Hdf5CompressedSparseMatrixSeed
 
 from .DelayedMask import DelayedMask
 from .ReloadedArray import ReloadedArray
 
 
-def read_compressed_sparse_matrix(path: str, **kwargs) -> DelayedArray:
+def read_compressed_sparse_matrix(path: str, metadata: Dict[str, Any], **kwargs) -> ReloadedArray:
     """
     Read a compressed sparse matrix from its on-disk representation. In
     general, this function should not be called directly but instead be
@@ -17,10 +17,13 @@ def read_compressed_sparse_matrix(path: str, **kwargs) -> DelayedArray:
     Args:
         path: Path to the directory containing the object.
 
+        metadata: Metadata for this object.
+
         kwargs: Further arguments, ignored.
 
     Returns:
-        A HDF5-backed compressed sparse matrix.
+        A :py:class:`~dolomite_matrix.ReloadedArray.ReloadedArray` containing a
+        HDF5-backed compressed sparse matrix as a seed.
     """
     fpath = os.path.join(path, "matrix.h5")
     name = "compressed_sparse_matrix"

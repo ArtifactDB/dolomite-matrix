@@ -1,5 +1,5 @@
 import numpy
-from dolomite_base import save_object
+from dolomite_base import save_object, read_object
 import dolomite_matrix as dm
 import os
 import scipy.sparse
@@ -12,7 +12,7 @@ def test_ReloadedArray_basic():
     y = numpy.random.rand(100, 200)
     dir = os.path.join(mkdtemp(), "foobar")
     save_object(y, dir)
-    roundtrip = dm.read_dense_array(dir)
+    roundtrip = read_object(dir)
 
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
@@ -54,7 +54,7 @@ def test_ReloadedArray_sparse():
     y = (scipy.sparse.random(1000, 200, 0.1) > 0.5).tocsc()
     dir = os.path.join(mkdtemp(),"foobar")
     save_object(y, dir)
-    roundtrip = dm.read_compressed_sparse_matrix(dir)
+    roundtrip = read_object(dir)
 
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == numpy.bool_
