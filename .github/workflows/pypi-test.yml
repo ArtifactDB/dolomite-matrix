@@ -1,4 +1,4 @@
-name: Test the library
+name: Unit tests 
 
 on:
   push:
