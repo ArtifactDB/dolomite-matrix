@@ -155,7 +155,7 @@ if has_scipy:
 ###############################################
 
 
-def _save_compressed_sparse_matrix(x: Any, path: str, compressed_sparse_matrix_buffer_size: int, compressed_sparse_matrix_chunk_size: int, **kwargs):
+def _save_compressed_sparse_matrix(x: Any, path: str, compressed_sparse_matrix_chunk_size: int = 10000, compressed_sparse_matrix_buffer_size: int = 1e8, **kwargs):
     os.mkdir(path)
     if len(x.shape) != 2:
         raise ValueError("only 2-dimensional sparse arrays are currently supported")

@@ -21,5 +21,5 @@ from .save_dense_array import save_dense_array_from_ndarray
 from .read_dense_array import read_dense_array
 from .save_compressed_sparse_matrix import *
 from .read_compressed_sparse_matrix import read_compressed_sparse_matrix
+from .save_delayed_array import save_delayed_array
 from .DelayedMask import DelayedMask
-#from .stage_DelayedArray import stage_DelayedArray
