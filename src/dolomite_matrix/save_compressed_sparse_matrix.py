@@ -112,20 +112,15 @@ if has_scipy:
         handle.create_dataset("indices", data = x.indices, dtype = itype, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
         handle.create_dataset("indptr", data = x.indptr, dtype = "u8", compression = "gzip", chunks = True)
 
-        if not numpy.ma.is_masked(x.data):
-            handle.create_dataset("data", data = x.data, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
-        elif not x.mask.any():
-            handle.create_dataset("data", data = x.data.data, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
-        else:
-            dhandle = handle.create_dataset("data", shape = details.non_zero, dtype = details.type, compression="gzip", chunks = compressed_sparse_matrix_chunk_size)
-            if details.placeholder is not None:
-                dhandle.create("missing-value-placeholder", data = details.placeholder, dtype = details.dtype)
-
-            step = max(1, int(compressed_sparse_matrix_buffer_size / compressed_sparse_matrix_chunk_size)) * compressed_sparse_matrix_chunk_size
-            for i in range(0, details.non_zero, step): 
-                end = min(details.non_zero, i + step)
-                block = x.data[i : end] # might be a view, so sanitization (and possible copying) is necessary.
-                dhandle[i : end] = ut.sanitize_for_writing(block, details.placeholder, output_dtype=dhandle.dtype)
+        # Currently, it seems like scipy's sparse matrices are not intended
+        # to be masked, seeing as how any subsetting discards the masks, e.g.,
+        #
+        # >>> y = (scipy.sparse.random(1000, 200, 0.1)).tocsr()
+        # >>> y.data = numpy.ma.MaskedArray(y.data, y.data > 0.5)
+        # >>> y[0:5,:].data # gives back a regulary NumPy array.
+        #
+        # So we won't bother capturing the mask state. 
+        handle.create_dataset("data", data = x.data, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
 
 
     @_h5_write_sparse_matrix.register
