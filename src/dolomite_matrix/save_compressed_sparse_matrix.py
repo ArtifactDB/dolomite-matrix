@@ -54,7 +54,7 @@ def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_bu
     compressed_sparse_matrix_chunk_size = min(compressed_sparse_matrix_chunk_size, details.non_zero)
     dhandle = handle.create_dataset("data", shape = details.non_zero, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
     if details.placeholder is not None:
-        dhandle.create("missing-value-placeholder", data = details.placeholder, dtype = details.dtype)
+        dhandle.attrs.create("missing-value-placeholder", data = details.placeholder, dtype = details.type)
 
     itype = _choose_index_type(x.shape[secondary])
     ihandle = handle.create_dataset("indices", shape = details.non_zero, dtype = itype, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
