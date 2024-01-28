@@ -85,7 +85,7 @@ def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_bu
                 if b is not None:
                     counter += len(b[0])
                     icollected.append(b[0])
-                    dcollected.append(ut.sanitize_for_writing(b[1], details.placeholder))
+                    dcollected.append(ut.sanitize_for_writing(b[1], details.placeholder, output_dtype=dhandle.dtype))
                 indptrs[start + i + 1] = counter
 
             # Collecting everything in memory for a single write operation, avoid
@@ -125,7 +125,7 @@ if has_scipy:
             for i in range(0, details.non_zero, step): 
                 end = min(details.non_zero, i + step)
                 block = x.data[i : end] # might be a view, so sanitization (and possible copying) is necessary.
-                dhandle[i : end] = ut.sanitize_for_writing(block, details.placeholder)
+                dhandle[i : end] = ut.sanitize_for_writing(block, details.placeholder, output_dtype=dhandle.dtype)
 
 
     @_h5_write_sparse_matrix.register
