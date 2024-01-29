@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Any, Dict
+from typing import Tuple, Optional, Any, Dict, Union
 import numpy
 from dolomite_base import save_object, validate_saves
 import delayedarray
@@ -30,14 +30,19 @@ def _chunk_shape_DenseArrayOutputMock(x: _DenseArrayOutputMock):
     return x.chunks
 
 
-def _blockwise_write_to_hdf5(dhandle: h5py.Dataset, chunk_shape: Tuple, x: Any, placeholder: Any, is_string: bool, memory: int):
+def _blockwise_write_to_hdf5(dhandle: h5py.Dataset, chunk_shape: Tuple, x: Any, placeholder: Any, memory: int):
     mock = _DenseArrayOutputMock(x.shape, x.dtype, chunk_shape)
     block_shape = delayedarray.choose_block_shape_for_iteration(mock, memory=memory)
+
+    is_string = numpy.issubdtype(dhandle.dtype, numpy.bytes_)
     if placeholder is not None:
-        placeholder = x.dtype.type(placeholder)
+        if is_string:
+            placeholder = placeholder.encode("UTF8")
+        else:
+            placeholder = dhandle.dtype.type(placeholder)
 
     def _blockwise_dense_writer(pos: Tuple, block):
-        block = ut.sanitize_for_writing(block, placeholder)
+        block = ut.sanitize_for_writing(block, placeholder, output_dtype=dhandle.dtype)
 
         # h5py doesn't want to convert from numpy's Unicode type to bytes
         # automatically, and fails: so fine, we'll do it ourselves.
@@ -84,16 +89,16 @@ def _save_dense_array(
     blockwise = False 
     if numpy.issubdtype(x.dtype, numpy.integer):
         tt = "integer"
-        opts = optim.optimize_integer_storage(x)
+        opts = optim.optimize_integer_storage(x, buffer_size = dense_array_buffer_size)
     elif numpy.issubdtype(x.dtype, numpy.floating):
         tt = "number"
-        opts = optim.optimize_float_storage(x)
+        opts = optim.optimize_float_storage(x, buffer_size = dense_array_buffer_size)
     elif x.dtype == numpy.bool_:
         tt = "boolean"
-        opts = optim.optimize_boolean_storage(x)
+        opts = optim.optimize_boolean_storage(x, buffer_size = dense_array_buffer_size)
     elif numpy.issubdtype(x.dtype, numpy.str_):
         tt = "string"
-        opts = optim.optimize_string_storage(x)
+        opts = optim.optimize_string_storage(x, buffer_size = dense_array_buffer_size)
         blockwise = True
     else:
         raise NotImplementedError("cannot save dense array of type '" + x.dtype.name + "'")
@@ -123,7 +128,7 @@ def _save_dense_array(
             # So, we save the blocks in transposed form for efficiency.
             ghandle.create_dataset("transposed", data=1, dtype="i1")
             dhandle = ghandle.create_dataset("data", shape=(*reversed(x.shape),), chunks=(*reversed(dense_array_chunk_dimensions),), dtype=opts.type, compression="gzip")
-            _blockwise_write_to_hdf5(dhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, is_string=(tt == "string"), memory=dense_array_buffer_size)
+            _blockwise_write_to_hdf5(dhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, memory=dense_array_buffer_size) 
             if opts.placeholder is not None:
                 dhandle.attrs.create("missing-value-placeholder", data=opts.placeholder, dtype=opts.type)
 

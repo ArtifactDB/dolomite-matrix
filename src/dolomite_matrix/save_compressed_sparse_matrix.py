@@ -54,7 +54,7 @@ def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_bu
     compressed_sparse_matrix_chunk_size = min(compressed_sparse_matrix_chunk_size, details.non_zero)
     dhandle = handle.create_dataset("data", shape = details.non_zero, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
     if details.placeholder is not None:
-        dhandle.create("missing-value-placeholder", data = details.placeholder, dtype = details.dtype)
+        dhandle.attrs.create("missing-value-placeholder", data = details.placeholder, dtype = details.type)
 
     itype = _choose_index_type(x.shape[secondary])
     ihandle = handle.create_dataset("indices", shape = details.non_zero, dtype = itype, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
@@ -85,7 +85,7 @@ def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_bu
                 if b is not None:
                     counter += len(b[0])
                     icollected.append(b[0])
-                    dcollected.append(ut.sanitize_for_writing(b[1], details.placeholder))
+                    dcollected.append(ut.sanitize_for_writing(b[1], details.placeholder, output_dtype=dhandle.dtype))
                 indptrs[start + i + 1] = counter
 
             # Collecting everything in memory for a single write operation, avoid
@@ -112,20 +112,9 @@ if has_scipy:
         handle.create_dataset("indices", data = x.indices, dtype = itype, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
         handle.create_dataset("indptr", data = x.indptr, dtype = "u8", compression = "gzip", chunks = True)
 
-        if not numpy.ma.is_masked(x.data):
-            handle.create_dataset("data", data = x.data, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
-        elif not x.mask.any():
-            handle.create_dataset("data", data = x.data.data, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
-        else:
-            dhandle = handle.create_dataset("data", shape = details.non_zero, dtype = details.type, compression="gzip", chunks = compressed_sparse_matrix_chunk_size)
-            if details.placeholder is not None:
-                dhandle.create("missing-value-placeholder", data = details.placeholder, dtype = details.dtype)
-
-            step = max(1, int(compressed_sparse_matrix_buffer_size / compressed_sparse_matrix_chunk_size)) * compressed_sparse_matrix_chunk_size
-            for i in range(0, details.non_zero, step): 
-                end = min(details.non_zero, i + step)
-                block = x.data[i : end] # might be a view, so sanitization (and possible copying) is necessary.
-                dhandle[i : end] = ut.sanitize_for_writing(block, details.placeholder)
+        # Currently, it seems like scipy's sparse matrices are not intended
+        # to be masked, so we'll just ignore it completely.
+        handle.create_dataset("data", data = x.data, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
 
 
     @_h5_write_sparse_matrix.register
@@ -166,13 +155,13 @@ def _save_compressed_sparse_matrix(x: Any, path: str, compressed_sparse_matrix_c
 
         if numpy.issubdtype(x.dtype, numpy.integer):
             tt = "integer"
-            opts = optim.optimize_integer_storage(x)
+            opts = optim.optimize_integer_storage(x, buffer_size = compressed_sparse_matrix_buffer_size)
         elif numpy.issubdtype(x.dtype, numpy.floating):
             tt = "number"
-            opts = optim.optimize_float_storage(x)
+            opts = optim.optimize_float_storage(x, buffer_size = compressed_sparse_matrix_buffer_size)
         elif x.dtype == numpy.bool_:
             tt = "boolean"
-            opts = optim.optimize_boolean_storage(x)
+            opts = optim.optimize_boolean_storage(x, buffer_size = compressed_sparse_matrix_buffer_size)
         else:
             raise NotImplementedError("cannot save sparse matrix of type '" + x.dtype.name + "'")
 
