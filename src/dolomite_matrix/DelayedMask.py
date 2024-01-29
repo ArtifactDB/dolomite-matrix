@@ -134,3 +134,8 @@ def is_sparse_DelayedMask(x: DelayedMask):
     """See :py:meth:`~delayedarray.is_sparse.is_sparse`."""
     return delayedarray.is_sparse(x._seed)
 
+
+@delayedarray.is_masked.register
+def is_masked_DelayedMask(x: DelayedMask):
+    """See :py:meth:`~delayedarray.is_masked.is_masked`."""
+    return True

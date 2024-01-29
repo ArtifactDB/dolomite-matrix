@@ -11,6 +11,7 @@ def test_DelayedMask_dense():
     assert m.shape == y.shape
     assert m.placeholder == 1
     assert not delayedarray.is_sparse(m)
+    assert delayedarray.is_masked(m)
     assert delayedarray.chunk_shape(m) == (1, 3)
 
     block = delayedarray.extract_dense_array(m)
