@@ -6,7 +6,7 @@ from typing import Any, Callable, List, Optional, Tuple
 import dolomite_base as dl
 import h5py
 import numpy
-from delayedarray import SparseNdarray, apply_over_blocks, is_sparse
+from delayedarray import SparseNdarray, apply_over_blocks, choose_block_shape_for_iteration, is_sparse, is_masked
 
 has_scipy = False
 try:
@@ -53,15 +53,14 @@ def _aggregate_sum(collated: list, name: str):
     return mval
 
 
-def _blockwise_any(x: numpy.ndarray, condition: Callable):
+def _blockwise_any(x: numpy.ndarray, condition: Callable, buffer_size: int) -> bool:
     y = x.ravel()
-    step = 100000
+    step = max(1, int(buffer_size / x.dtype.itemsize))
     limit = len(y)
     for i in range(0, limit, step):
         if condition(y[i : min(limit, i + step)]).any():
             return True
     return False 
-
 
 
 def _collect_from_Sparse2darray(contents, fun: Callable, dtype: Callable):
@@ -91,7 +90,7 @@ def _unique_values_from_ndarray(position: Tuple, contents: numpy.ndarray) -> set
         return set(contents)
     output = set()
     for y in contents:
-        if not numpy.ma.is_masked(y):
+        if not y is numpy.ma.masked:
             output.add(y)
     return output
 
@@ -117,15 +116,6 @@ def _unique_values(x) -> set:
 ###################################################
 
 
-@singledispatch
-def collect_integer_attributes(x: Any):
-    if is_sparse(x):
-        collated = apply_over_blocks(x, lambda pos, block : _collect_integer_attributes_from_Sparse2darray(block), allow_sparse=True)
-    else:
-        collated = apply_over_blocks(x, lambda pos, block : _collect_integer_attributes_from_ndarray(block))
-    return _combine_integer_attributes(collated)
-
-
 @dataclass
 class _IntegerAttributes:
     minimum: Optional[int]
@@ -134,12 +124,31 @@ class _IntegerAttributes:
     non_zero: int = 0
 
 
-def _simple_integer_collector(x: numpy.ndarray) -> _IntegerAttributes:
+@singledispatch
+def collect_integer_attributes(x: Any, buffer_size: int) -> _IntegerAttributes:
+    block_shape = choose_block_shape_for_iteration(x, memory = buffer_size)
+    if is_sparse(x):
+        collated = apply_over_blocks(
+            x, 
+            lambda pos, block : _collect_integer_attributes_from_Sparse2darray(block, buffer_size), 
+            block_shape = block_shape, 
+            allow_sparse=True
+        )
+    else:
+        collated = apply_over_blocks(
+            x, 
+            lambda pos, block : _collect_integer_attributes_from_ndarray(block, buffer_size), 
+            block_shape = block_shape
+        )
+    return _combine_integer_attributes(collated, check_missing = is_masked(x))
+
+
+def _simple_integer_collector(x: numpy.ndarray, check_missing: bool) -> _IntegerAttributes:
     if x.size == 0:
         return _IntegerAttributes(minimum = None, maximum = None, missing = False)
 
     missing = False
-    if numpy.ma.is_masked(x):
+    if check_missing:
         if x.mask.all():
             return _IntegerAttributes(minimum = None, maximum = None, missing = True)
         if x.mask.any():
@@ -148,50 +157,65 @@ def _simple_integer_collector(x: numpy.ndarray) -> _IntegerAttributes:
     return _IntegerAttributes(minimum=x.min(), maximum=x.max(), missing=missing)
 
 
-def _combine_integer_attributes(x: List[_IntegerAttributes]):
+def _combine_integer_attributes(x: List[_IntegerAttributes], check_missing: bool):
+    if check_missing:
+        missing = _aggregate_any(x, "missing")
+    else:
+        missing = False
+
     return _IntegerAttributes(
-        minimum=_aggregate_min(x, "minimum"),
-        maximum=_aggregate_max(x, "maximum"),
-        missing=_aggregate_any(x, "missing"),
-        non_zero=_aggregate_sum(x, "non_zero"),
+        minimum = _aggregate_min(x, "minimum"),
+        maximum = _aggregate_max(x, "maximum"),
+        missing = missing,
+        non_zero = _aggregate_sum(x, "non_zero"),
     )
 
 
 @collect_integer_attributes.register
-def _collect_integer_attributes_from_ndarray(x: numpy.ndarray) -> _IntegerAttributes:
-    return _simple_integer_collector(x)
+def _collect_integer_attributes_from_ndarray(x: numpy.ndarray, buffer_size: int) -> _IntegerAttributes:
+    return _simple_integer_collector(x, check_missing = numpy.ma.isMaskedArray(x))
 
 
 @collect_integer_attributes.register
-def _collect_integer_attributes_from_Sparse2darray(x: SparseNdarray) -> _IntegerAttributes:
-    collected = _collect_from_Sparse2darray(x.contents, _simple_integer_collector, x.dtype)
-    return _combine_integer_attributes(collected)
+def _collect_integer_attributes_from_Sparse2darray(x: SparseNdarray, buffer_size: int) -> _IntegerAttributes:
+    check_missing = is_masked(x)
+    collected = _collect_from_Sparse2darray(x.contents, lambda block : _simple_integer_collector(block, check_missing), x.dtype)
+    return _combine_integer_attributes(collected, check_missing)
 
 
 if has_scipy:
+    # Currently, it seems like scipy's sparse matrices are not intended
+    # to be masked, seeing as how any subsetting discards the masks, e.g.,
+    #
+    # >>> y = (scipy.sparse.random(1000, 200, 0.1)).tocsr()
+    # >>> y.data = numpy.ma.MaskedArray(y.data, y.data > 0.5)
+    # >>> y[0:5,:].data # gives back a regulary NumPy array.
+    #
+    # So we won't bother capturing the mask state. 
+
     @collect_integer_attributes.register
-    def _collect_integer_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix):
-        output = _simple_integer_collector(x.data)
+    def _collect_integer_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix, buffer_size: int):
+        output = _simple_integer_collector(x.data, check_missing = False)
         output.non_zero = int(x.data.shape[0])
         return output
 
 
     @collect_integer_attributes.register
-    def _collect_integer_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix):
-        output = _simple_integer_collector(x.data)
+    def _collect_integer_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix, buffer_size: int):
+        output = _simple_integer_collector(x.data, check_missing = False)
         output.non_zero = int(x.data.shape[0])
         return output
 
 
     @collect_integer_attributes.register
-    def _collect_integer_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix):
-        output = _simple_integer_collector(x.data)
+    def _collect_integer_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix, buffer_size: int):
+        output = _simple_integer_collector(x.data, check_missing = False)
         output.non_zero = int(x.data.shape[0])
         return output
 
 
-def optimize_integer_storage(x) -> _OptimizedStorageParameters:
-    attr = collect_integer_attributes(x)
+def optimize_integer_storage(x, buffer_size: int = 1e8) -> _OptimizedStorageParameters:
+    attr = collect_integer_attributes(x, buffer_size)
     lower = attr.minimum
     upper = attr.maximum
     has_missing = attr.missing
@@ -252,135 +276,207 @@ def optimize_integer_storage(x) -> _OptimizedStorageParameters:
 
 @dataclass
 class _FloatAttributes:
-    minimum: Optional[int]
-    maximum: Optional[int]
-    missing: bool
+    # Minimum and maximum are only set if non_integer = True.
     non_integer: bool
-    has_nan: bool
-    has_positive_inf: bool
-    has_negative_inf: bool
+    integer_minimum: Optional[int]
+    integer_maximum: Optional[int]
+
+    # These flags are only set if check_missing = True.
+    has_nan: Optional[bool]
+    has_positive_inf: Optional[bool]
+    has_negative_inf: Optional[bool]
     has_zero: Optional[bool]
     has_lowest: Optional[bool]
     has_highest: Optional[bool]
+
+    missing: bool
     non_zero: int = 0
 
 
 @singledispatch
-def collect_float_attributes(x: Any, no_missing: bool) -> _FloatAttributes:
+def collect_float_attributes(x: Any, buffer_size: int) -> _FloatAttributes:
+    block_shape = choose_block_shape_for_iteration(x, memory = buffer_size)
     if is_sparse(x):
-        collated = apply_over_blocks(x, lambda pos, block : _collect_float_attributes_from_Sparse2darray(block, no_missing), allow_sparse=True)
+        collated = apply_over_blocks(
+            x, 
+            lambda pos, block : _collect_float_attributes_from_Sparse2darray(block, buffer_size), 
+            block_shape = block_shape, 
+            allow_sparse=True
+        )
     else:
-        collated = apply_over_blocks(x, lambda pos, block : _collect_float_attributes_from_ndarray(block, no_missing))
-    return _combine_float_attributes(collated)
+        collated = apply_over_blocks(
+            x, 
+            lambda pos, block : _collect_float_attributes_from_ndarray(block, buffer_size), 
+            block_shape = block_shape
+        )
+    return _combine_float_attributes(collated, check_missing = is_masked(x))
 
 
-def _simple_float_collector(x: numpy.ndarray, no_missing: bool) -> _FloatAttributes:
-    output = _FloatAttributes(
-        minimum = None,
-        maximum = None,
-        missing = False,
-        non_integer = False,
-        has_nan = False,
-        has_positive_inf = False,
-        has_negative_inf = False,
-        has_zero = None,
-        has_lowest = None,
-        has_highest = None 
-    )
-
+def _simple_float_collector(x: numpy.ndarray, check_missing: bool, buffer_size: int) -> _FloatAttributes:
+    # Do NOT set default parameters in _FloatAttributes; it's too easy to
+    # forget to set one of these flags. Prefer to spell it all out explicitly
+    # to avoid errors, despite the verbosity.
     if x.size == 0:
-        return output
+        return _FloatAttributes(
+            non_integer = False,
+            integer_minimum = None,
+            integer_maximum = None,
+            missing = False,
+            has_nan = False,
+            has_positive_inf = False,
+            has_negative_inf = False,
+            has_zero = False,
+            has_lowest = False,
+            has_highest = False 
+        )
 
-    if not no_missing:
+    missing = False
+    if check_missing:
         if numpy.ma.is_masked(x):
             if x.mask.all():
-                output.missing = True
-                return output
+                return _FloatAttributes(
+                    non_integer = False,
+                    integer_minimum = None,
+                    integer_maximum = None,
+                    missing = True,
+                    has_nan = False,
+                    has_positive_inf = False,
+                    has_negative_inf = False,
+                    has_zero = False,
+                    has_lowest = False,
+                    has_highest = False 
+                )
             if x.mask.any():
-                output.missing = True
+                missing = True
 
-    # While these are technically only used if there are missing values, we
-    # still need them to obtain 'non_integer', so we just compute them.
-    output.has_nan = _blockwise_any(x, numpy.isnan)
-    output.has_positive_inf = numpy.inf in x
-    output.has_negative_inf = -numpy.inf in x
+        has_nan = _blockwise_any(x, numpy.isnan, buffer_size = buffer_size)
+        has_positive_inf = numpy.inf in x
+        has_negative_inf = -numpy.inf in x
+        non_finite = (has_nan or has_positive_inf or has_negative_inf)
 
-    if output.has_nan or output.has_positive_inf or output.has_negative_inf:
-        output.non_integer = True
-    else:
-        output.non_integer = _blockwise_any(x, lambda b : (b % 1 != 0))
-
-    # Minimum and maximum are only used if all floats contain integers.
-    if not output.non_integer:
-        output.minimum = x.min() 
-        output.maximum = x.max()
-
-    # Highest/lowest are only used when there might be missing values.
-    if not no_missing:
         fstats = numpy.finfo(x.dtype)
-        output.has_lowest = fstats.min in x
-        output.has_highest = fstats.max in x
-        output.has_zero = 0 in x
+        has_lowest = fstats.min in x
+        has_highest = fstats.max in x
+        has_zero = 0 in x
+    else:
+        non_finite = _blockwise_any(x, lambda b : numpy.logical_not(numpy.isfinite(b)), buffer_size = buffer_size)
+        has_nan = None
+        has_positive_inf = None
+        has_negative_inf = None
+        has_lowest = None
+        has_highest = None
+        has_zero = None
 
-    return output
+    integer_minimum = None
+    integer_maximum = None
+    if non_finite:
+        non_integer = True
+    else:
+        non_integer = _blockwise_any(x, lambda b : (b % 1 != 0), buffer_size = buffer_size)
+        if not non_integer:
+            integer_minimum = x.min() 
+            integer_maximum = x.max()
+
+    return _FloatAttributes(
+        non_integer = non_integer,
+        integer_minimum = integer_minimum,
+        integer_maximum = integer_maximum,
+        missing = missing,
+        has_nan = has_nan,
+        has_positive_inf = has_positive_inf,
+        has_negative_inf = has_negative_inf,
+        has_zero = has_zero,
+        has_lowest = has_lowest,
+        has_highest = has_highest,
+    )
 
 
 @collect_float_attributes.register
-def _collect_float_attributes_from_ndarray(x: numpy.ndarray, no_missing: bool) -> _FloatAttributes:
-    return _simple_float_collector(x, no_missing)
+def _collect_float_attributes_from_ndarray(x: numpy.ndarray, buffer_size: int) -> _FloatAttributes:
+    return _simple_float_collector(x, check_missing = numpy.ma.isMaskedArray(x), buffer_size = buffer_size)
 
 
 @collect_float_attributes.register
-def _collect_float_attributes_from_Sparse2darray(x: SparseNdarray, no_missing: bool) -> _FloatAttributes:
-    collected = _collect_from_Sparse2darray(x.contents, lambda block : _simple_float_collector(block, no_missing), x.dtype)
-    return _combine_float_attributes(collected)
+def _collect_float_attributes_from_Sparse2darray(x: SparseNdarray, buffer_size: int) -> _FloatAttributes:
+    check_missing = is_masked(x)
+    collected = _collect_from_Sparse2darray(
+        x.contents, 
+        lambda block : _simple_float_collector(block, check_missing, buffer_size), 
+        x.dtype
+    )
+    return _combine_float_attributes(collected, check_missing)
 
 
 if has_scipy:
     @collect_float_attributes.register
-    def _collect_float_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix, no_missing: bool):
-        output = _simple_float_collector(x.data, no_missing)
+    def _collect_float_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix, buffer_size: int) -> _FloatAttributes:
+        output = _simple_float_collector(x.data, check_missing = False, buffer_size = buffer_size)
         output.non_zero = int(x.data.shape[0])
         return output
 
 
     @collect_float_attributes.register
-    def _collect_float_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix, no_missing: bool):
-        output = _simple_float_collector(x.data, no_missing)
+    def _collect_float_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix, buffer_size: int) -> _FloatAttributes:
+        output = _simple_float_collector(x.data, check_missing = False, buffer_size = buffer_size)
         output.non_zero = int(x.data.shape[0])
         return output
 
 
     @collect_float_attributes.register
-    def _collect_float_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix, no_missing: bool):
-        output = _simple_float_collector(x.data, no_missing)
+    def _collect_float_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix, buffer_size: int) -> _FloatAttributes:
+        output = _simple_float_collector(x.data, check_missing = False, buffer_size = buffer_size)
         output.non_zero = int(x.data.shape[0])
         return output
 
 
-def _combine_float_attributes(x: List[_FloatAttributes]) -> _FloatAttributes:
+def _combine_float_attributes(x: List[_FloatAttributes], check_missing: bool) -> _FloatAttributes:
+    non_integer = _aggregate_any(x, "non_integer")
+    if not non_integer:
+        integer_minimum = _aggregate_min(x, "integer_minimum")
+        integer_maximum = _aggregate_max(x, "integer_maximum")
+    else:
+        integer_minimum = None
+        integer_maximum = None
+
+    if check_missing:
+        missing = _aggregate_any(x, "missing")
+        has_nan = _aggregate_any(x, "has_nan")
+        has_positive_inf = _aggregate_any(x, "has_positive_inf")
+        has_negative_inf = _aggregate_any(x, "has_negative_inf")
+        has_lowest = _aggregate_any(x, "has_lowest")
+        has_highest = _aggregate_any(x, "has_highest")
+        has_zero = _aggregate_any(x, "has_zero")
+    else:
+        missing = False
+        has_nan = None
+        has_positive_inf = None
+        has_negative_inf = None
+        has_lowest = None
+        has_highest = None
+        has_zero = None
+
     return _FloatAttributes(
-        minimum=_aggregate_min(x, "minimum"),
-        maximum=_aggregate_max(x, "maximum"),
-        non_integer=_aggregate_any(x, "non_integer"),
-        missing=_aggregate_any(x, "missing"),
-        has_nan=_aggregate_any(x, "has_nan"),
-        has_positive_inf=_aggregate_any(x, "has_positive_inf"),
-        has_negative_inf=_aggregate_any(x, "has_negative_inf"),
-        has_lowest=_aggregate_any(x, "has_lowest"),
-        has_highest=_aggregate_any(x, "has_highest"),
-        has_zero=_aggregate_any(x, "has_zero"),
-        non_zero=_aggregate_sum(x, "non_zero"),
+        non_integer = non_integer,
+        integer_minimum = integer_minimum,
+        integer_maximum = integer_maximum,
+        missing = missing,
+        has_nan = has_nan,
+        has_positive_inf = has_positive_inf,
+        has_negative_inf = has_negative_inf,
+        has_lowest = has_lowest,
+        has_highest = has_highest,
+        has_zero = has_zero,
+        non_zero = _aggregate_sum(x, "non_zero"),
     )
 
 
-def optimize_float_storage(x) -> _OptimizedStorageParameters:
-    attr = collect_float_attributes(x, isinstance(x, numpy.ndarray) and not numpy.ma.is_masked(x))
+def optimize_float_storage(x, buffer_size: int = 1e8) -> _OptimizedStorageParameters:
+    attr = collect_float_attributes(x, buffer_size = buffer_size)
 
     if attr.missing:
         if not attr.non_integer:
-            lower = attr.minimum
-            upper = attr.maximum
+            lower = attr.integer_minimum
+            upper = attr.integer_maximum
 
             # See logic in optimize_integer_storage().
             if lower is None:
@@ -430,8 +526,8 @@ def optimize_float_storage(x) -> _OptimizedStorageParameters:
 
     else:
         if not attr.non_integer:
-            lower = attr.minimum
-            upper = attr.maximum
+            lower = attr.integer_minimum
+            upper = attr.integer_maximum
 
             # See logic in optimize_integer_storage().
             if lower is None:
@@ -464,29 +560,29 @@ def optimize_float_storage(x) -> _OptimizedStorageParameters:
 
 @dataclass
 class _StringAttributes:
-    has_na1: bool
-    has_na2: bool
     missing: bool
+    has_na1: Optional[bool]
+    has_na2: Optional[bool]
     max_len: int
 
 
-def _simple_string_collector(x: numpy.ndarray) -> _FloatAttributes:
+def _simple_string_collector(x: numpy.ndarray, check_missing: None) -> _StringAttributes:
     if x.size == 0:
         return _StringAttributes(
+            missing = False,
             has_na1 = False,
             has_na2 = False,
-            missing = False,
             max_len = 0,
         )
 
     missing = False
-    if numpy.ma.is_masked(x):
+    if check_missing:
         if x.mask.all():
             return _StringAttributes(
-                has_na1=False,
-                has_na2=False,
-                missing=True,
-                max_len=0,
+                missing = True,
+                has_na1 = False,
+                has_na2 = False,
+                max_len = 0,
             )
         if x.mask.any():
             missing = True
@@ -501,36 +597,57 @@ def _simple_string_collector(x: numpy.ndarray) -> _FloatAttributes:
     else:
         max_len = max(len(y.encode("UTF8")) for y in x.ravel())
 
+    if check_missing:
+        has_na1 = x.dtype.type("NA") in x
+        has_na2 = x.dtype.type("NA_") in x
+    else:
+        has_na1 = None
+        has_na2 = None
+
     return _StringAttributes(
-        has_na1=x.dtype.type("NA") in x,
-        has_na2=x.dtype.type("NA_") in x,
-        missing=missing,
-        max_len=max_len,
+        missing = missing,
+        has_na1 = has_na1,
+        has_na2 = has_na2,
+        max_len = max_len,
     )
 
 
 @singledispatch
-def collect_string_attributes(x: Any) -> _StringAttributes:
-    collected = apply_over_blocks(x, lambda pos, block : _collect_string_attributes_from_ndarray(block))
-    return _combine_string_attributes(collected)
+def collect_string_attributes(x: Any, buffer_size: int) -> _StringAttributes:
+    block_shape = choose_block_shape_for_iteration(x, memory = buffer_size)
+    collected = apply_over_blocks(
+        x, 
+        lambda pos, block : _collect_string_attributes_from_ndarray(block, buffer_size), 
+        block_shape = block_shape
+    )
+    return _combine_string_attributes(collected, check_missing = is_masked(x))
 
 
-def _combine_string_attributes(x: List[_StringAttributes]) -> _StringAttributes:
+def _combine_string_attributes(x: List[_StringAttributes], check_missing: bool) -> _StringAttributes:
+    if check_missing:
+        missing = _aggregate_any(x, "missing")
+        has_na1 = _aggregate_any(x, "has_na1")
+        has_na2 = _aggregate_any(x, "has_na2")
+    else:
+        missing = False
+        has_na1 = None
+        has_na2 = None
+
     return _StringAttributes(
-        has_na1 = _aggregate_any(x, "has_na1"),
-        has_na2 = _aggregate_any(x, "has_na2"),
-        missing = _aggregate_any(x, "missing"),
+        missing = missing,
+        has_na1 = has_na1,
+        has_na2 = has_na2,
         max_len = _aggregate_max(x, "max_len"),
     )
 
 
 @collect_string_attributes.register
-def _collect_string_attributes_from_ndarray(x: numpy.ndarray) -> _StringAttributes:
-    return _simple_string_collector(x)
+def _collect_string_attributes_from_ndarray(x: numpy.ndarray, buffer_size: int) -> _StringAttributes:
+    return _simple_string_collector(x, check_missing = numpy.ma.isMaskedArray(x))
 
 
-def optimize_string_storage(x) -> _OptimizedStorageParameters:
-    attr = collect_string_attributes(x)
+def optimize_string_storage(x, buffer_size: int = 1e8) -> _OptimizedStorageParameters:
+    attr = collect_string_attributes(x, buffer_size = buffer_size)
     attr.max_len = max(1, attr.max_len)
 
     placeholder = None
@@ -559,65 +676,85 @@ class _BooleanAttributes:
 
 
 @singledispatch
-def collect_boolean_attributes(x: Any) -> _BooleanAttributes:
+def collect_boolean_attributes(x: Any, buffer_size: int) -> _BooleanAttributes:
+    block_shape = choose_block_shape_for_iteration(x, memory = buffer_size)
     if is_sparse(x):
-        collated = apply_over_blocks(x, lambda pos, block : _collect_boolean_attributes_from_Sparse2darray(block), allow_sparse=True)
+        collated = apply_over_blocks(
+            x, 
+            lambda pos, block : _collect_boolean_attributes_from_Sparse2darray(block, buffer_size), 
+            block_shape = block_shape, 
+            allow_sparse=True
+        )
     else:
-        collated = apply_over_blocks(x, lambda pos, block : _collect_boolean_attributes_from_ndarray(block))
-    return _combine_boolean_attributes(collated)
+        collated = apply_over_blocks(
+            x, 
+            lambda pos, block : _collect_boolean_attributes_from_ndarray(block, buffer_size), 
+            block_shape = block_shape
+        )
+    return _combine_boolean_attributes(collated, check_missing = is_masked(x))
 
 
 @collect_boolean_attributes.register
-def _collect_boolean_attributes_from_ndarray(x: numpy.ndarray) -> _BooleanAttributes:
-    return _simple_boolean_collector(x)
+def _collect_boolean_attributes_from_ndarray(x: numpy.ndarray, buffer_size: int) -> _BooleanAttributes:
+    return _simple_boolean_collector(x, check_missing = numpy.ma.isMaskedArray(x))
 
 
 @collect_boolean_attributes.register
-def _collect_boolean_attributes_from_Sparse2darray(x: SparseNdarray) -> _BooleanAttributes:
-    collected = _collect_from_Sparse2darray(x.contents, _simple_boolean_collector, x.dtype)
-    return _combine_boolean_attributes(collected)
+def _collect_boolean_attributes_from_Sparse2darray(x: SparseNdarray, buffer_size: int) -> _BooleanAttributes:
+    check_missing = is_masked(x)
+    collected = _collect_from_Sparse2darray(
+        x.contents, 
+        lambda block : _simple_boolean_collector(block, check_missing), 
+        x.dtype
+    )
+    return _combine_boolean_attributes(collected, check_missing)
 
 
-def _simple_boolean_collector(x: numpy.ndarray) -> _BooleanAttributes:
+def _simple_boolean_collector(x: numpy.ndarray, check_missing: bool) -> _BooleanAttributes:
     missing = False
     if x.size:
-        if numpy.ma.is_masked(x):
+        if check_missing:
             if x.mask.any():
                 missing = True
     return _BooleanAttributes(non_zero = 0, missing = missing)
 
 
-def _combine_boolean_attributes(x: List[_BooleanAttributes]) -> _BooleanAttributes:
+def _combine_boolean_attributes(x: List[_BooleanAttributes], check_missing: bool) -> _BooleanAttributes:
+    if check_missing:
+        missing = _aggregate_any(x, "missing")
+    else:
+        missing = False
+
     return _BooleanAttributes(
-        missing = _aggregate_any(x, "missing"),
+        missing = missing,
         non_zero = _aggregate_sum(x, "non_zero")
     )
 
 
 if has_scipy:
     @collect_boolean_attributes.register
-    def _collect_boolean_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix):
-        output = _simple_boolean_collector(x.data)
+    def _collect_boolean_attributes_from_scipy_csc(x: scipy.sparse.csc_matrix, buffer_size: int) -> _BooleanAttributes:
+        output = _simple_boolean_collector(x.data, check_missing = False)
         output.non_zero = int(x.data.shape[0])
         return output
 
 
     @collect_boolean_attributes.register
-    def _collect_boolean_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix):
-        output = _simple_boolean_collector(x.data)
+    def _collect_boolean_attributes_from_scipy_csr(x: scipy.sparse.csr_matrix, buffer_size: int) -> _BooleanAttributes:
+        output = _simple_boolean_collector(x.data, check_missing = False)
         output.non_zero = int(x.data.shape[0])
         return output
 
 
     @collect_boolean_attributes.register
-    def _collect_boolean_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix):
-        output = _simple_boolean_collector(x.data)
+    def _collect_boolean_attributes_from_scipy_coo(x: scipy.sparse.coo_matrix, buffer_size: int) -> _BooleanAttributes:
+        output = _simple_boolean_collector(x.data, check_missing = False)
         output.non_zero = int(x.data.shape[0])
         return output
 
 
-def optimize_boolean_storage(x) -> _OptimizedStorageParameters:
-    attr = collect_boolean_attributes(x)
+def optimize_boolean_storage(x, buffer_size: int = 1e8) -> _OptimizedStorageParameters:
+    attr = collect_boolean_attributes(x, buffer_size)
     if attr.missing:
         return _OptimizedStorageParameters(type="i1", placeholder=-1, non_zero=attr.non_zero)
     else:

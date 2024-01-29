@@ -1,6 +1,7 @@
 import dolomite_matrix._optimize_storage as optim
 import numpy
 import delayedarray
+import pytest
 
 
 ###################################################
@@ -187,9 +188,10 @@ def test_optimize_integer_storage_scipy():
     assert opt.non_zero == 5
 
 
-def test_optimize_integer_storage_Any():
+@pytest.mark.parametrize("buffer_size", [1, 10, 100])
+def test_optimize_integer_storage_Any(buffer_size):
     y = delayedarray.DelayedArray(numpy.array([[1,2,3],[4,5,6]]))
-    opt = optim.optimize_integer_storage(y * 200000)
+    opt = optim.optimize_integer_storage(y * 200000, buffer_size = buffer_size)
     assert opt.type == "i4"
     assert opt.placeholder is None
 
@@ -204,7 +206,7 @@ def test_optimize_integer_storage_Any():
         ]
     )
     y = delayedarray.DelayedArray(y)
-    opt = optim.optimize_integer_storage(y * 2)
+    opt = optim.optimize_integer_storage(y * 2, buffer_size = buffer_size)
     assert opt.type == "u2"
     assert opt.placeholder is None
 
@@ -459,12 +461,13 @@ def test_optimize_float_storage_scipy():
     assert opt.non_zero == 5
 
 
-def test_optimize_float_storage_Any():
+@pytest.mark.parametrize("buffer_size", [1, 10, 100])
+def test_optimize_float_storage_Any(buffer_size):
     y = delayedarray.DelayedArray(numpy.array([[1,2,3],[4,5,6]]))
     y = y * 20000.000
     assert y.dtype == numpy.float64
 
-    opt = optim.optimize_float_storage(y)
+    opt = optim.optimize_float_storage(y, buffer_size = buffer_size)
     assert opt.type == "u4"
     assert opt.placeholder is None
 
@@ -479,7 +482,7 @@ def test_optimize_float_storage_Any():
         ]
     )
     y = delayedarray.DelayedArray(y)
-    opt = optim.optimize_float_storage(y * 2)
+    opt = optim.optimize_float_storage(y * 2, buffer_size = buffer_size)
     assert opt.type == "u2"
     assert opt.placeholder is None
 
@@ -524,9 +527,10 @@ def test_optimize_string_storage_dense_MaskedArray():
     assert opt.placeholder == "NA"
 
 
-def test_optimize_string_storage_Any():
+@pytest.mark.parametrize("buffer_size", [1, 10, 100])
+def test_optimize_string_storage_Any(buffer_size):
     y = delayedarray.DelayedArray(numpy.array([["A","BB","CCC"],["DDDD","EEEEE","FFFFFF"]]))
-    opt = optim.optimize_string_storage(y)
+    opt = optim.optimize_string_storage(y, buffer_size = buffer_size)
     assert opt.type == "S6"
     assert opt.placeholder is None
 
@@ -636,9 +640,10 @@ def test_optimize_boolean_storage_scipy():
     assert opt.non_zero == 5
 
 
-def test_optimize_boolean_storage_Any():
+@pytest.mark.parametrize("buffer_size", [1, 10, 100])
+def test_optimize_boolean_storage_Any(buffer_size):
     y = delayedarray.DelayedArray(numpy.array([[True,False,True],[False,True,False]]))
-    opt = optim.optimize_boolean_storage(y)
+    opt = optim.optimize_boolean_storage(y, buffer_size)
     assert opt.type == "i1"
     assert opt.placeholder is None
 
@@ -653,8 +658,6 @@ def test_optimize_boolean_storage_Any():
         ]
     )
     y = delayedarray.DelayedArray(y)
-    opt = optim.optimize_boolean_storage(y)
+    opt = optim.optimize_boolean_storage(y, buffer_size = buffer_size)
     assert opt.type == "i1"
     assert opt.placeholder is None
-
-

@@ -113,13 +113,7 @@ if has_scipy:
         handle.create_dataset("indptr", data = x.indptr, dtype = "u8", compression = "gzip", chunks = True)
 
         # Currently, it seems like scipy's sparse matrices are not intended
-        # to be masked, seeing as how any subsetting discards the masks, e.g.,
-        #
-        # >>> y = (scipy.sparse.random(1000, 200, 0.1)).tocsr()
-        # >>> y.data = numpy.ma.MaskedArray(y.data, y.data > 0.5)
-        # >>> y[0:5,:].data # gives back a regulary NumPy array.
-        #
-        # So we won't bother capturing the mask state. 
+        # to be masked, so we'll just ignore it completely.
         handle.create_dataset("data", data = x.data, dtype = details.type, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
 
 
@@ -161,13 +155,13 @@ def _save_compressed_sparse_matrix(x: Any, path: str, compressed_sparse_matrix_c
 
         if numpy.issubdtype(x.dtype, numpy.integer):
             tt = "integer"
-            opts = optim.optimize_integer_storage(x)
+            opts = optim.optimize_integer_storage(x, buffer_size = compressed_sparse_matrix_buffer_size)
         elif numpy.issubdtype(x.dtype, numpy.floating):
             tt = "number"
-            opts = optim.optimize_float_storage(x)
+            opts = optim.optimize_float_storage(x, buffer_size = compressed_sparse_matrix_buffer_size)
         elif x.dtype == numpy.bool_:
             tt = "boolean"
-            opts = optim.optimize_boolean_storage(x)
+            opts = optim.optimize_boolean_storage(x, buffer_size = compressed_sparse_matrix_buffer_size)
         else:
             raise NotImplementedError("cannot save sparse matrix of type '" + x.dtype.name + "'")
 

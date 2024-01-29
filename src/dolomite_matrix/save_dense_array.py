@@ -89,16 +89,16 @@ def _save_dense_array(
     blockwise = False 
     if numpy.issubdtype(x.dtype, numpy.integer):
         tt = "integer"
-        opts = optim.optimize_integer_storage(x)
+        opts = optim.optimize_integer_storage(x, buffer_size = dense_array_buffer_size)
     elif numpy.issubdtype(x.dtype, numpy.floating):
         tt = "number"
-        opts = optim.optimize_float_storage(x)
+        opts = optim.optimize_float_storage(x, buffer_size = dense_array_buffer_size)
     elif x.dtype == numpy.bool_:
         tt = "boolean"
-        opts = optim.optimize_boolean_storage(x)
+        opts = optim.optimize_boolean_storage(x, buffer_size = dense_array_buffer_size)
     elif numpy.issubdtype(x.dtype, numpy.str_):
         tt = "string"
-        opts = optim.optimize_string_storage(x)
+        opts = optim.optimize_string_storage(x, buffer_size = dense_array_buffer_size)
         blockwise = True
     else:
         raise NotImplementedError("cannot save dense array of type '" + x.dtype.name + "'")
