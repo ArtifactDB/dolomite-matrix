@@ -115,12 +115,26 @@ def test_delayed_array_low_block_size_F_contiguous():
 ########################################################
 
 
-def test_delayed_array_sparse():
+def test_delayed_array_sparse_csc():
     x = scipy.sparse.random(1000, 200, 0.1).tocsc()
     y = da.wrap(x) * 10
 
     dir = os.path.join(mkdtemp(), "foobar")
     dl.save_object(y, dir)
+    roundtrip = dl.read_object(dir)
+    assert roundtrip.shape == y.shape
+    assert roundtrip.dtype == y.dtype
+    assert isinstance(roundtrip, dm.ReloadedArray)
+    assert isinstance(roundtrip.seed.seed, filebackedarray.Hdf5CompressedSparseMatrixSeed)
+    assert (numpy.array(roundtrip) == x.toarray() * 10).all()
+
+
+def test_delayed_array_sparse_csr():
+    x = scipy.sparse.random(1000, 200, 0.1).tocsr()
+    y = da.wrap(x) * 10
+
+    dir = os.path.join(mkdtemp(), "foobar")
+    dl.save_object(y, dir, compressed_sparse_matrix_buffer_size=8*10000)
     roundtrip = dl.read_object(dir)
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
