@@ -49,6 +49,12 @@ def is_sparse_WrapperArraySeed(x: WrapperArraySeed) -> bool:
     return delayedarray.is_sparse(x._seed)
 
 
+@delayedarray.is_masked.register
+def is_masked_WrapperArraySeed(x: WrapperArraySeed) -> bool:
+    """See :py:func:`~delayedarray.is_masked.is_masked` for details."""
+    return delayedarray.is_masked(x._seed)
+
+
 @delayedarray.chunk_shape.register
 def chunk_shape_WrapperArraySeed(x: WrapperArraySeed) -> Tuple[int, ...]:
     """See :py:func:`~delayedarray.chunk_shape.chunk_shape` for details."""

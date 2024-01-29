@@ -33,6 +33,7 @@ def _chunk_shape_DenseArrayOutputMock(x: _DenseArrayOutputMock):
 def _blockwise_write_to_hdf5(dhandle: h5py.Dataset, chunk_shape: Tuple, x: Any, placeholder: Any, memory: int):
     mock = _DenseArrayOutputMock(x.shape, x.dtype, chunk_shape)
     block_shape = delayedarray.choose_block_shape_for_iteration(mock, memory=memory)
+    masked = delayedarray.is_masked(x)
 
     is_string = numpy.issubdtype(dhandle.dtype, numpy.bytes_)
     if placeholder is not None:
@@ -42,7 +43,8 @@ def _blockwise_write_to_hdf5(dhandle: h5py.Dataset, chunk_shape: Tuple, x: Any, 
             placeholder = dhandle.dtype.type(placeholder)
 
     def _blockwise_dense_writer(pos: Tuple, block):
-        block = ut.sanitize_for_writing(block, placeholder, output_dtype=dhandle.dtype)
+        if masked:
+            block = ut.replace_mask_with_placeholder(block, placeholder, dhandle.dtype)
 
         # h5py doesn't want to convert from numpy's Unicode type to bytes
         # automatically, and fails: so fine, we'll do it ourselves.

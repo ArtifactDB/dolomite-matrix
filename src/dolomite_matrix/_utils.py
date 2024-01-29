@@ -1,11 +1,11 @@
+from typing import Any
 import numpy
 
 
-def sanitize_for_writing(x, placeholder, output_dtype):
-    if not numpy.ma.isMaskedArray(x):
-        return x
-    if not x.mask.any():
-        return x.data
-    copy = x.data.astype(output_dtype, copy=True)
-    copy[x.mask] = placeholder
-    return copy
+def replace_mask_with_placeholder(x: numpy.ma.core.MaskedArray, placeholder: Any, output_dtype: numpy.dtype) -> numpy.ndarray:
+    if placeholder is None or not numpy.ma.is_masked(x):
+        return x.data.astype(output_dtype, copy=False)
+    else:
+        copy = x.data.astype(output_dtype, copy=True)
+        copy[x.mask] = placeholder
+        return copy

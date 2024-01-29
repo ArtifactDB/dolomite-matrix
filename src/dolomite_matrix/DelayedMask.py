@@ -80,9 +80,7 @@ def extract_dense_array_DelayedMask(x: DelayedMask, subset: Optional[Tuple[Seque
     out = delayedarray.extract_dense_array(x._seed, subset)
     mask = _create_mask(out, x._placeholder) # do this before type coercion, as the placeholder is assumed to be of the same underlying seed type.
     out = out.astype(x._dtype, copy=False)
-    if mask.any():
-        out = numpy.ma.MaskedArray(out, mask=mask)
-    return out
+    return numpy.ma.MaskedArray(out, mask=mask)
 
 
 def _mask_SparseNdarray(contents, placeholder, dtype):
@@ -90,9 +88,7 @@ def _mask_SparseNdarray(contents, placeholder, dtype):
         indices, values = contents
         mask = _create_mask(values, placeholder) # do this before type coercion, again.
         values = values.astype(dtype, copy=False)
-        if mask.any():
-            values = numpy.ma.MaskedArray(values, mask=mask)
-        return indices, values
+        return indices, numpy.ma.MaskedArray(values, mask=mask)
     else:
         output = []
         for val in contents:

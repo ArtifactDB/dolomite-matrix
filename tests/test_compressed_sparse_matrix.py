@@ -146,7 +146,7 @@ def test_compressed_sparse_matrix_float_mask():
     y = _simulate_SparseNdarray((20, 100), dtype=numpy.dtype("float64"), mask_rate=0.3)
     y.contents[0] = ( # injecting some special values.
         numpy.array([1,2,3]),
-        numpy.array([numpy.nan, numpy.inf, -numpy.inf], dtype=numpy.dtype("float64"))
+        numpy.ma.MaskedArray(numpy.array([numpy.nan, numpy.inf, -numpy.inf], dtype=numpy.dtype("float64")), mask=False)
     )
 
     dir = os.path.join(mkdtemp(),"foobar")

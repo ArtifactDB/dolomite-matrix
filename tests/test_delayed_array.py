@@ -65,6 +65,10 @@ def extract_dense_array_ChunkyBoi(x: _ChunkyBoi, subsets):
 def chunk_shape_ChunkyBoi(x: _ChunkyBoi):
     return x._chunks
 
+@da.is_masked.register
+def is_masked_ChunkyBoi(x: _ChunkyBoi):
+    return False
+
 
 def test_delayed_array_custom_chunks():
     # Chunky boi (I)

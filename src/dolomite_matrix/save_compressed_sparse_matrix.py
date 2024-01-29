@@ -61,6 +61,7 @@ def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_bu
     indptrs = numpy.zeros(x.shape[primary] + 1, dtype = numpy.uint64)
     counter = 0
 
+    masked = delayedarray.is_masked(x)
     block_size = delayedarray.choose_block_size_for_1d_iteration(x, dimension=primary, memory=compressed_sparse_matrix_buffer_size)
     limit = x.shape[primary]
     subset = [None] * 2
@@ -85,7 +86,10 @@ def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_bu
                 if b is not None:
                     counter += len(b[0])
                     icollected.append(b[0])
-                    dcollected.append(ut.sanitize_for_writing(b[1], details.placeholder, output_dtype=dhandle.dtype))
+                    vals = b[1]
+                    if masked:
+                        vals = ut.replace_mask_with_placeholder(vals, details.placeholder, dhandle.dtype)
+                    dcollected.append(vals)
                 indptrs[start + i + 1] = counter
 
             # Collecting everything in memory for a single write operation, avoid
