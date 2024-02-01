@@ -3,7 +3,7 @@ from dolomite_base import save_object, read_object
 import dolomite_matrix as dm
 import os
 import scipy.sparse
-import filebackedarray
+import hdf5array
 import delayedarray
 from tempfile import mkdtemp
 
@@ -18,9 +18,11 @@ def test_ReloadedArray_basic():
     assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
     assert isinstance(roundtrip, dm.ReloadedArray)
     assert roundtrip.path == dir
-    assert isinstance(roundtrip.seed.seed, filebackedarray.Hdf5DenseArraySeed)
+    assert isinstance(roundtrip.seed.seed, hdf5array.Hdf5DenseArraySeed)
 
-    assert (delayedarray.extract_dense_array(roundtrip) == y).all()
+    assert (delayedarray.to_dense_array(roundtrip) == y).all()
+    block = delayedarray.extract_dense_array(roundtrip, (range(10, 50), range(100, 200, 10)))
+    assert (block == y[10:50,100:200:10]).all()
 
     # Checking re-saves.
     dir2 = os.path.join(mkdtemp(), "foobar2")
@@ -60,11 +62,13 @@ def test_ReloadedArray_sparse():
     assert roundtrip.dtype == numpy.bool_
     assert isinstance(roundtrip, dm.ReloadedArray)
     assert roundtrip.path == dir
-    assert isinstance(roundtrip.seed.seed, filebackedarray.Hdf5CompressedSparseMatrixSeed)
+    assert isinstance(roundtrip.seed.seed, hdf5array.Hdf5CompressedSparseMatrixSeed)
 
-    as_sparse = delayedarray.extract_sparse_array(roundtrip) 
+    as_sparse = delayedarray.to_sparse_array(roundtrip) 
     assert isinstance(as_sparse, delayedarray.SparseNdarray)
     assert (numpy.array(as_sparse) == y.toarray()).all()
+    block = delayedarray.extract_sparse_array(roundtrip, (range(10, 50), range(100, 200, 10)))
+    assert (delayedarray.to_dense_array(block) == y[10:50,100:200:10].toarray()).all()
 
     # Checking re-saves.
     dir2 = os.path.join(mkdtemp(), "foobar2")

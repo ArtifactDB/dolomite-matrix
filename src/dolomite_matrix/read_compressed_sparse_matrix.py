@@ -2,7 +2,7 @@ from typing import Dict, Any
 import numpy
 import os
 import h5py
-from filebackedarray import Hdf5CompressedSparseMatrixSeed
+from hdf5array import Hdf5CompressedSparseMatrixSeed
 
 from .DelayedMask import DelayedMask
 from .ReloadedArray import ReloadedArray

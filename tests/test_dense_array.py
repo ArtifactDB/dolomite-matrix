@@ -4,7 +4,7 @@ from dolomite_base import save_object, read_object
 import dolomite_matrix as dm
 import os
 import h5py
-import filebackedarray
+import hdf5array
 import delayedarray
 from tempfile import mkdtemp
 
@@ -17,7 +17,7 @@ def test_dense_array_number():
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
     assert isinstance(roundtrip, dm.ReloadedArray)
-    assert isinstance(roundtrip.seed.seed, filebackedarray.Hdf5DenseArraySeed)
+    assert isinstance(roundtrip.seed.seed, hdf5array.Hdf5DenseArraySeed)
     assert (numpy.array(roundtrip) == y).all()
 
 
@@ -67,7 +67,7 @@ def test_dense_array_number_mask():
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
 
-    dump = delayedarray.extract_dense_array(roundtrip)
+    dump = delayedarray.to_dense_array(roundtrip)
     assert (dump.mask == mask).all()
     assert numpy.logical_or(dump == y, mask).all()
 
@@ -86,7 +86,7 @@ def test_dense_array_number_mask_complex():
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
 
-    dump = delayedarray.extract_dense_array(roundtrip)
+    dump = delayedarray.to_dense_array(roundtrip)
     assert (dump.mask == mask).all()
     vals = numpy.logical_or(dump == y, numpy.isnan(dump) == numpy.isnan(y))
     assert numpy.logical_or(vals, mask).all()
@@ -106,7 +106,7 @@ def test_dense_array_number_mask_integer():
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.integer)
 
-    dump = delayedarray.extract_dense_array(roundtrip)
+    dump = delayedarray.to_dense_array(roundtrip)
     assert (dump.mask == mask).all()
     assert numpy.logical_or(dump == y, mask).all()
 
@@ -129,7 +129,7 @@ def test_dense_array_number_mask_string():
     assert roundtrip.shape == x.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.str_)
 
-    dump = delayedarray.extract_dense_array(roundtrip)
+    dump = delayedarray.to_dense_array(roundtrip)
     assert (dump.mask == mask).all()
     assert numpy.logical_or(dump == x, mask).all()
 

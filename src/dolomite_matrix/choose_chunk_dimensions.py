@@ -1,15 +1,15 @@
 from typing import Tuple
 
 
-def choose_chunk_dimensions(shape: Tuple[int, ...], size: int, min_extent: int = 100, memory: int = 1e7) -> Tuple[int, ...]:
+def choose_chunk_dimensions(shape: Tuple[int, ...], size: int, min_extent: int = 100, buffer_size: int = 1e7) -> Tuple[int, ...]:
     """
     Choose chunk dimensions to use for a dense HDF5 dataset. For each
     dimension, we consider a slice of the array that consists of the full
     extent of all other dimensions. We want this slice to occupy less than
-    ``memory`` in memory, and we resize the slice along the current dimension
-    to achieve this. The chosen chunk size is then defined as the size of the
+    ``buffer_size`` in memory, and we resize the slice along the current
+    dimension to achieve this. The chunk size is then chosen as the size of the
     slice along the current dimension. This ensures that efficient iteration
-    along each dimension will not use any more than ``memory`` bytes.
+    along each dimension will not use any more than ``buffer_size`` bytes.
 
     Args:
         shape: Shape of the array.
@@ -20,7 +20,7 @@ def choose_chunk_dimensions(shape: Tuple[int, ...], size: int, min_extent: int =
             Minimum extent of each chunk dimension, to avoid problems
             with excessively small chunk sizes when the data is large.
 
-        memory:
+        buffer_size:
             Size of the (conceptual) memory buffer to use for storing blocks of
             data during iteration through the array, in bytes.
 
@@ -28,7 +28,7 @@ def choose_chunk_dimensions(shape: Tuple[int, ...], size: int, min_extent: int =
         Tuple containing the chunk dimensions.
     """
 
-    num_elements = int(memory / size)
+    num_elements = int(buffer_size / size)
     chunks = []
 
     for d, s in enumerate(shape):

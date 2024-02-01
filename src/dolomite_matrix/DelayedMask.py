@@ -75,7 +75,7 @@ def _create_mask(x: numpy.ndarray, placeholder):
 
 
 @delayedarray.extract_dense_array.register
-def extract_dense_array_DelayedMask(x: DelayedMask, subset: Optional[Tuple[Sequence[int], ...]] = None):
+def extract_dense_array_DelayedMask(x: DelayedMask, subset: Tuple[Sequence[int], ...]):
     """See :py:meth:`~delayedarray.extract_dense_array.extract_dense_array`."""
     out = delayedarray.extract_dense_array(x._seed, subset)
     mask = _create_mask(out, x._placeholder) # do this before type coercion, as the placeholder is assumed to be of the same underlying seed type.
@@ -100,13 +100,13 @@ def _mask_SparseNdarray(contents, placeholder, dtype):
 
 
 @delayedarray.extract_sparse_array.register
-def extract_sparse_array_DelayedMask(x: DelayedMask, subset: Optional[Tuple[Sequence[int], ...]] = None):
+def extract_sparse_array_DelayedMask(x: DelayedMask, subset: Tuple[Sequence[int], ...]):
     """See :py:meth:`~delayedarray.extract_sparse_array.extract_sparse_array`."""
     out = delayedarray.extract_sparse_array(x._seed, subset)
     contents = out.contents
     if contents is not None:
         contents = _mask_SparseNdarray(contents, x._placeholder, x._dtype)
-    return delayedarray.SparseNdarray(x.shape, contents, dtype=x._dtype, index_dtype=out.index_dtype, check=False)
+    return delayedarray.SparseNdarray(out.shape, contents, dtype=x._dtype, index_dtype=out.index_dtype, is_masked=True, check=False)
 
 
 @delayedarray.create_dask_array.register
@@ -119,10 +119,10 @@ def create_dask_array_DelayedMask(x: DelayedMask):
     return dask.array.ma.masked_array(target, mask=mask)
 
 
-@delayedarray.chunk_shape.register
-def chunk_shape_DelayedMask(x: DelayedMask):
-    """See :py:meth:`~delayedarray.chunk_shape.chunk_shape`."""
-    return delayedarray.chunk_shape(x._seed)
+@delayedarray.chunk_grid.register
+def chunk_grid_DelayedMask(x: DelayedMask):
+    """See :py:meth:`~delayedarray.chunk_grid.chunk_grid`."""
+    return delayedarray.chunk_grid(x._seed)
 
 
 @delayedarray.is_sparse.register

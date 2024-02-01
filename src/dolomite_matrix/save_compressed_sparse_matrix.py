@@ -1,7 +1,7 @@
 from typing import Any
 from functools import singledispatch
 from dolomite_base import save_object, validate_saves
-from delayedarray import SparseNdarray, chunk_shape
+from delayedarray import SparseNdarray, chunk_grid 
 import os
 import h5py
 import numpy
@@ -36,9 +36,9 @@ def _choose_index_type(n: int) -> str:
 
 @singledispatch
 def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_buffer_size, compressed_sparse_matrix_chunk_size):
-    chunks = chunk_shape(x)
-    chunks_per_col = x.shape[0] / chunks[0]
-    chunks_per_row = x.shape[1] / chunks[1]
+    chunks = chunk_grid(x)
+    chunks_per_col = len(chunks.boundaries[0])
+    chunks_per_row = len(chunks.boundaries[1])
 
     # If we have to extract fewer chunks per column, we iterate by column to
     # create a CSC matrix. Otherwise we make a CSR matrix.
@@ -56,14 +56,15 @@ def _h5_write_sparse_matrix(x: Any, handle, details, compressed_sparse_matrix_bu
     if details.placeholder is not None:
         dhandle.attrs.create("missing-value-placeholder", data = details.placeholder, dtype = details.type)
 
+    masked = delayedarray.is_masked(x)
+    block_size = max(int(compressed_sparse_matrix_buffer_size) // (x.dtype.itemsize * x.shape[secondary]), 1)
+    limit = x.shape[primary]
+
     itype = _choose_index_type(x.shape[secondary])
     ihandle = handle.create_dataset("indices", shape = details.non_zero, dtype = itype, compression = "gzip", chunks = compressed_sparse_matrix_chunk_size)
     indptrs = numpy.zeros(x.shape[primary] + 1, dtype = numpy.uint64)
-    counter = 0
 
-    masked = delayedarray.is_masked(x)
-    block_size = delayedarray.choose_block_size_for_1d_iteration(x, dimension=primary, memory=compressed_sparse_matrix_buffer_size)
-    limit = x.shape[primary]
+    counter = 0
     subset = [None] * 2
     subset[secondary] = range(x.shape[secondary])
 

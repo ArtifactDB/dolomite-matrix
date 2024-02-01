@@ -5,7 +5,7 @@ import dolomite_matrix as dm
 from tempfile import mkdtemp
 import numpy
 import delayedarray
-import filebackedarray
+import hdf5array
 import os
 import random
 
@@ -19,7 +19,7 @@ def test_compressed_sparse_matrix_csc():
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, dm.ReloadedArray)
-    assert isinstance(roundtrip.seed.seed, filebackedarray.Hdf5CompressedSparseMatrixSeed)
+    assert isinstance(roundtrip.seed.seed, hdf5array.Hdf5CompressedSparseMatrixSeed)
     assert (numpy.array(roundtrip) == y.toarray()).all()
 
 
@@ -136,8 +136,8 @@ def test_compressed_sparse_matrix_integer_mask():
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.integer)
 
-    densed = delayedarray.extract_dense_array(roundtrip)
-    ref = delayedarray.extract_dense_array(y)
+    densed = delayedarray.to_dense_array(roundtrip)
+    ref = delayedarray.to_dense_array(y)
     assert (densed.mask == ref.mask).all()
     assert numpy.logical_or(densed == ref, ref.mask).all()
 
@@ -156,8 +156,8 @@ def test_compressed_sparse_matrix_float_mask():
     assert roundtrip.shape == y.shape
     assert numpy.issubdtype(roundtrip.dtype, numpy.floating)
 
-    densed = delayedarray.extract_dense_array(roundtrip)
-    ref = delayedarray.extract_dense_array(y)
+    densed = delayedarray.to_dense_array(roundtrip)
+    ref = delayedarray.to_dense_array(y)
     assert (densed.mask == ref.mask).all()
     vals = numpy.logical_or(densed == ref, numpy.isnan(densed) == numpy.isnan(ref))
     assert numpy.logical_or(vals, ref.mask).all()
@@ -172,7 +172,7 @@ def test_compressed_sparse_matrix_bool_mask():
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == numpy.bool_
 
-    densed = delayedarray.extract_dense_array(roundtrip)
-    ref = delayedarray.extract_dense_array(y)
+    densed = delayedarray.to_dense_array(roundtrip)
+    ref = delayedarray.to_dense_array(y)
     assert (densed.mask == ref.mask).all()
     assert numpy.logical_or(densed == ref, ref.mask).all()

@@ -14,27 +14,8 @@ from . import _utils as ut
 ###################################################
 
 
-# We use a mock class with the properties of the HDF5 dataset.  This allows us
-# to use choose_block_shape_for_iteration to pick dimensions that align with
-# the HDF5 chunks; these may or may not be suitable for the input array, but 
-# we'll take the chance that the input array is already in memory.
-class _DenseArrayOutputMock:
-    def __init__(self, shape: Tuple, dtype: numpy.dtype, chunks: Tuple):
-        self.shape = shape
-        self.dtype = dtype
-        self.chunks = chunks
-
-
-@delayedarray.chunk_shape.register
-def _chunk_shape_DenseArrayOutputMock(x: _DenseArrayOutputMock):
-    return x.chunks
-
-
-def _blockwise_write_to_hdf5(dhandle: h5py.Dataset, chunk_shape: Tuple, x: Any, placeholder: Any, memory: int):
-    mock = _DenseArrayOutputMock(x.shape, x.dtype, chunk_shape)
-    block_shape = delayedarray.choose_block_shape_for_iteration(mock, memory=memory)
+def _blockwise_write_to_hdf5(dhandle: h5py.Dataset, chunk_shape: Tuple, x: Any, placeholder: Any, buffer_size: int):
     masked = delayedarray.is_masked(x)
-
     is_string = numpy.issubdtype(dhandle.dtype, numpy.bytes_)
     if placeholder is not None:
         if is_string:
@@ -59,7 +40,9 @@ def _blockwise_write_to_hdf5(dhandle: h5py.Dataset, chunk_shape: Tuple, x: Any, 
         coords = [slice(start, end) for start, end in reversed(pos)]
         dhandle[(*coords,)] = block.T
 
-    delayedarray.apply_over_blocks(x, _blockwise_dense_writer, block_shape = block_shape)
+    # Cost factor doesn't really matter here as we're not choosing between grids.
+    grid = delayedarray.chunk_shape_to_grid(chunk_shape, x.shape, cost_factor=10)
+    delayedarray.apply_over_blocks(x, _blockwise_dense_writer, grid = grid, buffer_size = buffer_size)
     return
 
 
@@ -130,7 +113,7 @@ def _save_dense_array(
             # So, we save the blocks in transposed form for efficiency.
             ghandle.create_dataset("transposed", data=1, dtype="i1")
             dhandle = ghandle.create_dataset("data", shape=(*reversed(x.shape),), chunks=(*reversed(dense_array_chunk_dimensions),), dtype=opts.type, compression="gzip")
-            _blockwise_write_to_hdf5(dhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, memory=dense_array_buffer_size) 
+            _blockwise_write_to_hdf5(dhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, buffer_size=dense_array_buffer_size) 
             if opts.placeholder is not None:
                 dhandle.attrs.create("missing-value-placeholder", data=opts.placeholder, dtype=opts.type)
 

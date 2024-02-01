@@ -6,7 +6,7 @@ from typing import Any, Callable, List, Optional, Tuple
 import dolomite_base as dl
 import h5py
 import numpy
-from delayedarray import SparseNdarray, apply_over_blocks, choose_block_shape_for_iteration, is_sparse, is_masked
+from delayedarray import SparseNdarray, apply_over_blocks, is_sparse, is_masked
 
 has_scipy = False
 try:
@@ -126,19 +126,18 @@ class _IntegerAttributes:
 
 @singledispatch
 def collect_integer_attributes(x: Any, buffer_size: int) -> _IntegerAttributes:
-    block_shape = choose_block_shape_for_iteration(x, memory = buffer_size)
     if is_sparse(x):
         collated = apply_over_blocks(
             x, 
             lambda pos, block : _collect_integer_attributes_from_Sparse2darray(block, buffer_size), 
-            block_shape = block_shape, 
+            buffer_size = buffer_size,
             allow_sparse=True
         )
     else:
         collated = apply_over_blocks(
             x, 
             lambda pos, block : _collect_integer_attributes_from_ndarray(block, buffer_size), 
-            block_shape = block_shape
+            buffer_size = buffer_size,
         )
     return _combine_integer_attributes(collated, check_missing = is_masked(x))
 
@@ -295,19 +294,18 @@ class _FloatAttributes:
 
 @singledispatch
 def collect_float_attributes(x: Any, buffer_size: int) -> _FloatAttributes:
-    block_shape = choose_block_shape_for_iteration(x, memory = buffer_size)
     if is_sparse(x):
         collated = apply_over_blocks(
             x, 
             lambda pos, block : _collect_float_attributes_from_Sparse2darray(block, buffer_size), 
-            block_shape = block_shape, 
+            buffer_size = buffer_size,
             allow_sparse=True
         )
     else:
         collated = apply_over_blocks(
             x, 
             lambda pos, block : _collect_float_attributes_from_ndarray(block, buffer_size), 
-            block_shape = block_shape
+            buffer_size = buffer_size,
         )
     return _combine_float_attributes(collated, check_missing = is_masked(x))
 
@@ -614,11 +612,10 @@ def _simple_string_collector(x: numpy.ndarray, check_missing: None) -> _StringAt
 
 @singledispatch
 def collect_string_attributes(x: Any, buffer_size: int) -> _StringAttributes:
-    block_shape = choose_block_shape_for_iteration(x, memory = buffer_size)
     collected = apply_over_blocks(
         x, 
         lambda pos, block : _collect_string_attributes_from_ndarray(block, buffer_size), 
-        block_shape = block_shape
+        buffer_size = buffer_size,
     )
     return _combine_string_attributes(collected, check_missing = is_masked(x))
 
@@ -677,19 +674,18 @@ class _BooleanAttributes:
 
 @singledispatch
 def collect_boolean_attributes(x: Any, buffer_size: int) -> _BooleanAttributes:
-    block_shape = choose_block_shape_for_iteration(x, memory = buffer_size)
     if is_sparse(x):
         collated = apply_over_blocks(
             x, 
             lambda pos, block : _collect_boolean_attributes_from_Sparse2darray(block, buffer_size), 
-            block_shape = block_shape, 
+            buffer_size = buffer_size,
             allow_sparse=True
         )
     else:
         collated = apply_over_blocks(
             x, 
             lambda pos, block : _collect_boolean_attributes_from_ndarray(block, buffer_size), 
-            block_shape = block_shape
+            buffer_size = buffer_size,
         )
     return _combine_boolean_attributes(collated, check_missing = is_masked(x))
 

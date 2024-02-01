@@ -55,20 +55,20 @@ def is_masked_WrapperArraySeed(x: WrapperArraySeed) -> bool:
     return delayedarray.is_masked(x._seed)
 
 
-@delayedarray.chunk_shape.register
-def chunk_shape_WrapperArraySeed(x: WrapperArraySeed) -> Tuple[int, ...]:
-    """See :py:func:`~delayedarray.chunk_shape.chunk_shape` for details."""
-    return delayedarray.chunk_shape(x._seed)
+@delayedarray.chunk_grid.register
+def chunk_grid_WrapperArraySeed(x: WrapperArraySeed) -> Tuple[int, ...]:
+    """See :py:func:`~delayedarray.chunk_grid.chunk_grid` for details."""
+    return delayedarray.chunk_grid(x._seed)
 
 
 @delayedarray.extract_dense_array.register
-def extract_dense_array_WrapperArraySeed(x: WrapperArraySeed, subset: Optional[Tuple[Sequence[int], ...]] = None) -> numpy.ndarray:
+def extract_dense_array_WrapperArraySeed(x: WrapperArraySeed, subset: Tuple[Sequence[int], ...]) -> numpy.ndarray:
     """See :py:func:`~delayedarray.extract_dense_array.extract_dense_array` for details."""
     return delayedarray.extract_dense_array(x._seed, subset)
 
 
 @delayedarray.extract_sparse_array.register
-def extract_sparse_array_WrapperArraySeed(x: WrapperArraySeed, subset: Optional[Tuple[Sequence[int], ...]] = None) -> delayedarray.SparseNdarray:
+def extract_sparse_array_WrapperArraySeed(x: WrapperArraySeed, subset: Tuple[Sequence[int], ...]) -> delayedarray.SparseNdarray:
     """See :py:func:`~delayedarray.extract_sparse_array.extract_sparse_array` for details."""
     return delayedarray.extract_sparse_array(x._seed, subset)
 

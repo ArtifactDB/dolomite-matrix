@@ -4,7 +4,7 @@ import dolomite_matrix as dm
 import delayedarray as da
 import os
 import h5py
-import filebackedarray
+import hdf5array
 from tempfile import mkdtemp
 import scipy.sparse
 
@@ -21,7 +21,7 @@ def test_save_delayed_array_simple():
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, dm.ReloadedArray) 
-    assert isinstance(roundtrip.seed.seed, filebackedarray.Hdf5DenseArraySeed)
+    assert isinstance(roundtrip.seed.seed, hdf5array.Hdf5DenseArraySeed)
     assert (numpy.array(roundtrip) == x + 1).all()
 
 
@@ -61,9 +61,9 @@ class _ChunkyBoi:
 def extract_dense_array_ChunkyBoi(x: _ChunkyBoi, subsets):
     return da.extract_dense_array(x._core, subsets)
 
-@da.chunk_shape.register
-def chunk_shape_ChunkyBoi(x: _ChunkyBoi):
-    return x._chunks
+@da.chunk_grid.register
+def chunk_grid_ChunkyBoi(x: _ChunkyBoi):
+    return da.chunk_shape_to_grid(x._chunks, x.shape, cost_factor=1)
 
 @da.is_masked.register
 def is_masked_ChunkyBoi(x: _ChunkyBoi):
@@ -129,7 +129,7 @@ def test_delayed_array_sparse_csc():
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, dm.ReloadedArray)
-    assert isinstance(roundtrip.seed.seed, filebackedarray.Hdf5CompressedSparseMatrixSeed)
+    assert isinstance(roundtrip.seed.seed, hdf5array.Hdf5CompressedSparseMatrixSeed)
     assert (numpy.array(roundtrip) == x.toarray() * 10).all()
 
 
@@ -143,5 +143,5 @@ def test_delayed_array_sparse_csr():
     assert roundtrip.shape == y.shape
     assert roundtrip.dtype == y.dtype
     assert isinstance(roundtrip, dm.ReloadedArray)
-    assert isinstance(roundtrip.seed.seed, filebackedarray.Hdf5CompressedSparseMatrixSeed)
+    assert isinstance(roundtrip.seed.seed, hdf5array.Hdf5CompressedSparseMatrixSeed)
     assert (numpy.array(roundtrip) == x.toarray() * 10).all()
