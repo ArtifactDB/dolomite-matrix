@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>dolomite_matrix.save_compressed_sparse_matrix - dolomite-matrix 0.1.0 documentation</title>
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>dolomite_matrix.save_compressed_sparse_matrix - dolomite-matrix 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -122,7 +122,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">dolomite-matrix 0.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">dolomite-matrix 0.2.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,7 +145,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">dolomite-matrix 0.1.0 documentation</span>
+  <span class="sidebar-brand-text">dolomite-matrix 0.2.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -200,7 +200,7 @@
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">singledispatch</span>
 <span class="kn">from</span> <span class="nn">dolomite_base</span> <span class="kn">import</span> <span class="n">save_object</span><span class="p">,</span> <span class="n">validate_saves</span>
-<span class="kn">from</span> <span class="nn">delayedarray</span> <span class="kn">import</span> <span class="n">SparseNdarray</span><span class="p">,</span> <span class="n">chunk_shape</span>
+<span class="kn">from</span> <span class="nn">delayedarray</span> <span class="kn">import</span> <span class="n">SparseNdarray</span><span class="p">,</span> <span class="n">chunk_grid</span> 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
@@ -235,9 +235,9 @@
 
 <span class="nd">@singledispatch</span>
 <span class="k">def</span> <span class="nf">_h5_write_sparse_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">):</span>
-    <span class="n">chunks</span> <span class="o">=</span> <span class="n">chunk_shape</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">chunks_per_col</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">chunks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">chunks_per_row</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">chunks</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">chunks</span> <span class="o">=</span> <span class="n">chunk_grid</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">chunks_per_col</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="o">.</span><span class="n">boundaries</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">chunks_per_row</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="o">.</span><span class="n">boundaries</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="c1"># If we have to extract fewer chunks per column, we iterate by column to</span>
     <span class="c1"># create a CSC matrix. Otherwise we make a CSR matrix.</span>
@@ -253,15 +253,17 @@
     <span class="n">compressed_sparse_matrix_chunk_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">,</span> <span class="n">details</span><span class="o">.</span><span class="n">non_zero</span><span class="p">)</span>
     <span class="n">dhandle</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">non_zero</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">chunks</span> <span class="o">=</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">details</span><span class="o">.</span><span class="n">placeholder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">dhandle</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;missing-value-placeholder&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">dhandle</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;missing-value-placeholder&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+    <span class="n">masked</span> <span class="o">=</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">is_masked</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">block_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">)</span> <span class="o">//</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">secondary</span><span class="p">]),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">limit</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">primary</span><span class="p">]</span>
 
     <span class="n">itype</span> <span class="o">=</span> <span class="n">_choose_index_type</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">secondary</span><span class="p">])</span>
     <span class="n">ihandle</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;indices&quot;</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">non_zero</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">itype</span><span class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">chunks</span> <span class="o">=</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">)</span>
     <span class="n">indptrs</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">primary</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
-    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="n">block_size</span> <span class="o">=</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">choose_block_size_for_1d_iteration</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="n">primary</span><span class="p">,</span> <span class="n">memory</span><span class="o">=</span><span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">)</span>
-    <span class="n">limit</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">primary</span><span class="p">]</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">subset</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
     <span class="n">subset</span><span class="p">[</span><span class="n">secondary</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">secondary</span><span class="p">])</span>
 
@@ -284,7 +286,10 @@
                 <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">counter</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                     <span class="n">icollected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                    <span class="n">dcollected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ut</span><span class="o">.</span><span class="n">sanitize_for_writing</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">details</span><span class="o">.</span><span class="n">placeholder</span><span class="p">))</span>
+                    <span class="n">vals</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">masked</span><span class="p">:</span>
+                        <span class="n">vals</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">replace_mask_with_placeholder</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">details</span><span class="o">.</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">dhandle</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                    <span class="n">dcollected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
                 <span class="n">indptrs</span><span class="p">[</span><span class="n">start</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">counter</span>
 
             <span class="c1"># Collecting everything in memory for a single write operation, avoid</span>
@@ -311,20 +316,9 @@
         <span class="n">handle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;indices&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">itype</span><span class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">chunks</span> <span class="o">=</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">)</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;indptr&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;u8&quot;</span><span class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">chunks</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">is_masked</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
-            <span class="n">handle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">chunks</span> <span class="o">=</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="n">handle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">chunks</span> <span class="o">=</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dhandle</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">non_zero</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">chunks</span> <span class="o">=</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">details</span><span class="o">.</span><span class="n">placeholder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">dhandle</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;missing-value-placeholder&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-
-            <span class="n">step</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">compressed_sparse_matrix_buffer_size</span> <span class="o">/</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">))</span> <span class="o">*</span> <span class="n">compressed_sparse_matrix_chunk_size</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">details</span><span class="o">.</span><span class="n">non_zero</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span> 
-                <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">details</span><span class="o">.</span><span class="n">non_zero</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">step</span><span class="p">)</span>
-                <span class="n">block</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">end</span><span class="p">]</span> <span class="c1"># might be a view, so sanitization (and possible copying) is necessary.</span>
-                <span class="n">dhandle</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">sanitize_for_writing</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">details</span><span class="o">.</span><span class="n">placeholder</span><span class="p">)</span>
+        <span class="c1"># Currently, it seems like scipy&#39;s sparse matrices are not intended</span>
+        <span class="c1"># to be masked, so we&#39;ll just ignore it completely.</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">chunks</span> <span class="o">=</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">)</span>
 
 
     <span class="nd">@_h5_write_sparse_matrix</span><span class="o">.</span><span class="n">register</span>
@@ -365,13 +359,13 @@
 
         <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
             <span class="n">tt</span> <span class="o">=</span> <span class="s2">&quot;integer&quot;</span>
-            <span class="n">opts</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">optimize_integer_storage</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">opts</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">optimize_integer_storage</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">buffer_size</span> <span class="o">=</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">numpy</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
             <span class="n">tt</span> <span class="o">=</span> <span class="s2">&quot;number&quot;</span>
-            <span class="n">opts</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">optimize_float_storage</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">opts</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">optimize_float_storage</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">buffer_size</span> <span class="o">=</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
             <span class="n">tt</span> <span class="o">=</span> <span class="s2">&quot;boolean&quot;</span>
-            <span class="n">opts</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">optimize_boolean_storage</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">opts</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">optimize_boolean_storage</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">buffer_size</span> <span class="o">=</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot save sparse matrix of type &#39;&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
 
@@ -568,7 +562,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>

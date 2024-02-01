@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>dolomite_matrix.DelayedMask - dolomite-matrix 0.1.0 documentation</title>
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>dolomite_matrix.DelayedMask - dolomite-matrix 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -122,7 +122,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">dolomite-matrix 0.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">dolomite-matrix 0.2.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,7 +145,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">dolomite-matrix 0.1.0 documentation</span>
+  <span class="sidebar-brand-text">dolomite-matrix 0.2.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -279,14 +279,12 @@
 <div class="viewcode-block" id="extract_dense_array_DelayedMask">
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.DelayedMask.extract_dense_array_DelayedMask">[docs]</a>
 <span class="nd">@delayedarray</span><span class="o">.</span><span class="n">extract_dense_array</span><span class="o">.</span><span class="n">register</span>
-<span class="k">def</span> <span class="nf">extract_dense_array_DelayedMask</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">DelayedMask</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">extract_dense_array_DelayedMask</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">DelayedMask</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:meth:`~delayedarray.extract_dense_array.extract_dense_array`.&quot;&quot;&quot;</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">extract_dense_array</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_seed</span><span class="p">,</span> <span class="n">subset</span><span class="p">)</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="n">_create_mask</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">_placeholder</span><span class="p">)</span> <span class="c1"># do this before type coercion, as the placeholder is assumed to be of the same underlying seed type.</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">out</span></div>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span></div>
 
 
 
@@ -295,9 +293,7 @@
         <span class="n">indices</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">contents</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">_create_mask</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">placeholder</span><span class="p">)</span> <span class="c1"># do this before type coercion, again.</span>
         <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span>
+        <span class="k">return</span> <span class="n">indices</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
@@ -311,13 +307,13 @@
 <div class="viewcode-block" id="extract_sparse_array_DelayedMask">
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.DelayedMask.extract_sparse_array_DelayedMask">[docs]</a>
 <span class="nd">@delayedarray</span><span class="o">.</span><span class="n">extract_sparse_array</span><span class="o">.</span><span class="n">register</span>
-<span class="k">def</span> <span class="nf">extract_sparse_array_DelayedMask</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">DelayedMask</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">extract_sparse_array_DelayedMask</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">DelayedMask</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:meth:`~delayedarray.extract_sparse_array.extract_sparse_array`.&quot;&quot;&quot;</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">extract_sparse_array</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_seed</span><span class="p">,</span> <span class="n">subset</span><span class="p">)</span>
     <span class="n">contents</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">contents</span>
     <span class="k">if</span> <span class="n">contents</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">contents</span> <span class="o">=</span> <span class="n">_mask_SparseNdarray</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">_placeholder</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">_dtype</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">SparseNdarray</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">contents</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">_dtype</span><span class="p">,</span> <span class="n">index_dtype</span><span class="o">=</span><span class="n">out</span><span class="o">.</span><span class="n">index_dtype</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">SparseNdarray</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">contents</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">_dtype</span><span class="p">,</span> <span class="n">index_dtype</span><span class="o">=</span><span class="n">out</span><span class="o">.</span><span class="n">index_dtype</span><span class="p">,</span> <span class="n">is_masked</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
 
@@ -334,12 +330,12 @@
 
 
 
-<div class="viewcode-block" id="chunk_shape_DelayedMask">
-<a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.DelayedMask.chunk_shape_DelayedMask">[docs]</a>
-<span class="nd">@delayedarray</span><span class="o">.</span><span class="n">chunk_shape</span><span class="o">.</span><span class="n">register</span>
-<span class="k">def</span> <span class="nf">chunk_shape_DelayedMask</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">DelayedMask</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:meth:`~delayedarray.chunk_shape.chunk_shape`.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">chunk_shape</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span></div>
+<div class="viewcode-block" id="chunk_grid_DelayedMask">
+<a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.DelayedMask.chunk_grid_DelayedMask">[docs]</a>
+<span class="nd">@delayedarray</span><span class="o">.</span><span class="n">chunk_grid</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">chunk_grid_DelayedMask</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">DelayedMask</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:meth:`~delayedarray.chunk_grid.chunk_grid`.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">chunk_grid</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span></div>
 
 
 
@@ -350,6 +346,14 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:meth:`~delayedarray.is_sparse.is_sparse`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span></div>
 
+
+
+<div class="viewcode-block" id="is_masked_DelayedMask">
+<a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.DelayedMask.is_masked_DelayedMask">[docs]</a>
+<span class="nd">@delayedarray</span><span class="o">.</span><span class="n">is_masked</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">is_masked_DelayedMask</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">DelayedMask</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:meth:`~delayedarray.is_masked.is_masked`.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
 
 </pre></div>
         </article>
@@ -383,7 +387,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
