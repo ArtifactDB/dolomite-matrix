@@ -121,7 +121,7 @@ def _save_dense_array(
         else:
             # Block processing of a dataset is always Fortran order, but HDF5 uses C order.
             # So, we save the blocks in transposed form for efficiency.
-            ghandle.create_dataset("transposed", data=1, dtype="i1")
+            ghandle.attrs.create("transposed", data=1, dtype="i1")
             dhandle = ghandle.create_dataset("data", shape=(*reversed(x.shape),), chunks=(*reversed(dense_array_chunk_dimensions),), dtype=opts.type, compression="gzip")
             _blockwise_write_to_hdf5(dhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, is_string=(tt == "string"), memory=dense_array_buffer_size)
             if opts.placeholder is not None:
