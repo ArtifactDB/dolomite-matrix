@@ -40,7 +40,7 @@ def read_compressed_sparse_matrix(path: str, metadata: Dict[str, Any], **kwargs)
             if not numpy.issubdtype(dhandle.dtype, numpy.floating):
                 dtype = numpy.dtype("float64")
 
-        layout = ghandle.attrs["layout"]
+        layout = ghandle.attrs["layout"].decode("UTF8")
         shape = (*[int(y) for y in ghandle["shape"]],)
 
         placeholder = None
