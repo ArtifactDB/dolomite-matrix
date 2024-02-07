@@ -44,8 +44,8 @@ def read_dense_array(path: str, metadata: Dict[str, Any], **kwargs) -> ReloadedA
                 dtype = numpy.dtype("float64")
 
         transposed = False
-        if "transposed" in ghandle:
-            transposed = (ghandle["transposed"][()] != 0)
+        if "transposed" in ghandle.attrs:
+            transposed = (ghandle.attrs["transposed"] != 0)
 
         placeholder = None
         if "missing-value-placeholder" in dhandle.attrs:
