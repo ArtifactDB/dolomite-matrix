@@ -114,9 +114,9 @@ def _save_dense_array(
             if x.flags.f_contiguous:
                 x = x.T
                 dense_array_chunk_dimensions = (*reversed(dense_array_chunk_dimensions),)
-                ghandle.create_dataset("transposed", data=1, dtype="i1")
+                ghandle.attrs.create("transposed", data=1, dtype="i1")
             else:
-                ghandle.create_dataset("transposed", data=0, dtype="i1")
+                ghandle.attrs.create("transposed", data=0, dtype="i1")
             dhandle = ghandle.create_dataset("data", data=x, chunks=dense_array_chunk_dimensions, dtype=opts.type, compression="gzip")
         else:
             # Block processing of a dataset is always Fortran order, but HDF5 uses C order.
