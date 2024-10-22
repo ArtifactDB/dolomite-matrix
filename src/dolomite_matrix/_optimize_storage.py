@@ -242,7 +242,7 @@ def optimize_integer_storage(x, buffer_size: int = 1e8) -> _OptimizedStoragePara
             elif upper < 2**31 - 1: # Yes, this is deliberate, as integer storage maxes out at 32-bit signed integers.
                 return _OptimizedStorageParameters(type="i4", placeholder=2**31-1, non_zero=attr.non_zero)
 
-        return _OptimizedStorageParameters(type="f8", placeholder=numpy.NaN, non_zero=attr.non_zero)
+        return _OptimizedStorageParameters(type="f8", placeholder=numpy.nan, non_zero=attr.non_zero)
 
     else:
         # If it's infinite, that means that 'x' is of length zero, otherwise
@@ -497,7 +497,7 @@ def optimize_float_storage(x, buffer_size: int = 1e8) -> _OptimizedStorageParame
 
         placeholder = None
         if not attr.has_nan:
-            placeholder = numpy.NaN
+            placeholder = numpy.nan
         elif not attr.has_positive_inf:
             placeholder = numpy.inf
         elif not attr.has_negative_inf:
