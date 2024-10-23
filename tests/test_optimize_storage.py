@@ -270,7 +270,7 @@ def test_optimize_float_storage_dense():
     assert opt.type == "f8"
     assert opt.placeholder is None
 
-    y = numpy.array([numpy.NaN,2,3])
+    y = numpy.array([numpy.nan,2,3])
     opt = optim.optimize_float_storage(y)
     assert opt.type == "f8"
     assert opt.placeholder is None
@@ -354,33 +354,33 @@ def test_optimize_float_storage_dense_MaskedArray():
     assert opt.type == "f8"
     assert numpy.isnan(opt.placeholder)
 
-    y = numpy.ma.MaskedArray([numpy.NaN,2,3], mask=[False, True, False])
+    y = numpy.ma.MaskedArray([numpy.nan,2,3], mask=[False, True, False])
     opt = optim.optimize_float_storage(y)
     assert opt.type == "f8"
     assert opt.placeholder == numpy.inf
 
-    y = numpy.ma.MaskedArray([numpy.NaN,2,numpy.inf], mask=[False, True, False])
+    y = numpy.ma.MaskedArray([numpy.nan,2,numpy.inf], mask=[False, True, False])
     opt = optim.optimize_float_storage(y)
     assert opt.type == "f8"
     assert opt.placeholder == -numpy.inf
 
     fstats = numpy.finfo(numpy.float64)
-    y = numpy.ma.MaskedArray([numpy.NaN, 2, numpy.inf, -numpy.inf], mask=[False, True, False, False])
+    y = numpy.ma.MaskedArray([numpy.nan, 2, numpy.inf, -numpy.inf], mask=[False, True, False, False])
     opt = optim.optimize_float_storage(y)
     assert opt.type == "f8"
     assert opt.placeholder == fstats.min
 
-    y = numpy.ma.MaskedArray([numpy.NaN, 2, numpy.inf, -numpy.inf, fstats.min], mask=[False, True, False, False, False])
+    y = numpy.ma.MaskedArray([numpy.nan, 2, numpy.inf, -numpy.inf, fstats.min], mask=[False, True, False, False, False])
     opt = optim.optimize_float_storage(y)
     assert opt.type == "f8"
     assert opt.placeholder == fstats.max
 
-    y = numpy.ma.MaskedArray([numpy.NaN, 2, numpy.inf, -numpy.inf, fstats.min, fstats.max], mask=[False, True, False, False, False, False])
+    y = numpy.ma.MaskedArray([numpy.nan, 2, numpy.inf, -numpy.inf, fstats.min, fstats.max], mask=[False, True, False, False, False, False])
     opt = optim.optimize_float_storage(y)
     assert opt.type == "f8"
     assert opt.placeholder == 0
 
-    y = numpy.ma.MaskedArray([numpy.NaN, 2, numpy.inf, -numpy.inf, fstats.min, fstats.max, 0], mask=[False, True, False, False, False, False, False])
+    y = numpy.ma.MaskedArray([numpy.nan, 2, numpy.inf, -numpy.inf, fstats.min, fstats.max, 0], mask=[False, True, False, False, False, False, False])
     opt = optim.optimize_float_storage(y)
     assert opt.type == "f8"
     assert opt.placeholder == fstats.min / 2 

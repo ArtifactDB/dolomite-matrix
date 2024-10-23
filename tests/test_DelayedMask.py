@@ -32,8 +32,8 @@ def test_DelayedMask_dense():
 
 
 def test_DelayedMask_dense_NaN():
-    y = numpy.array([[1,2,numpy.NaN],[4,5,6]])
-    m = dm.DelayedMask(y, numpy.NaN)
+    y = numpy.array([[1,2,numpy.nan],[4,5,6]])
+    m = dm.DelayedMask(y, numpy.nan)
     block = delayedarray.to_dense_array(m)
     assert numpy.ma.is_masked(block)
     assert numpy.ma.is_masked(block[0,2])
