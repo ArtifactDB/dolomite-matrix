@@ -17,11 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup git creds
-        run: |
-          git config --global user.email "gituser@biocpy"
-          git config --global user.name "Biocpy test user"
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
