@@ -21,11 +21,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install tox
 
-      - name: Setup git creds
-        run: |
-          git config --global user.name jkanche
-          git config --global user.email jayaram.kancherla@gmail.com
-
       - name: Test with tox
         run: |
           tox
