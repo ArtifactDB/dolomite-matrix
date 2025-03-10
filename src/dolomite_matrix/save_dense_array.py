@@ -80,7 +80,7 @@ def _blockwise_write_to_hdf5_vls(phandle: h5py.Dataset, hhandle: h5py.Dataset, c
         # comparison HDF5 uses C order. To avoid any rearrangement of data
         # by h5py, we save it as a transposed array for efficiency.
         coords = [slice(start, end) for start, end in reversed(pos)]
-        phandle[(*coords,)] = numpy.reshape(current_pointers, shape=(*reversed(block.shape),), order="C")
+        phandle[(*coords,)] = numpy.reshape(current_pointers, newshape=(*reversed(block.shape),), order="C")
         heap_counter += len(current_heap)
         hhandle[old_heap:heap_counter] = current_heap
 
@@ -176,7 +176,7 @@ def _save_dense_array(
             if not dense_array_string_vls:
                 outtype = opts.type
                 if tt == "string":
-                    outtype = h5py.string_dtype(encoding = "utf8", length = max_len)
+                    outtype = h5py.string_dtype(encoding = "utf8", length = max(1, max_len))
                 dhandle = ghandle.create_dataset("data", shape=revshape, chunks=revchunks, dtype=outtype, compression="gzip")
                 _blockwise_write_to_hdf5(dhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, buffer_size=dense_array_buffer_size) 
                 if opts.placeholder is not None:

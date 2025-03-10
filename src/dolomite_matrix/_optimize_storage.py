@@ -654,7 +654,6 @@ def _collect_string_attributes_from_ndarray(x: numpy.ndarray, buffer_size: int) 
 
 def optimize_string_storage(x, buffer_size: int = 1e8) -> _OptimizedStorageParameters:
     attr = collect_string_attributes(x, buffer_size = buffer_size)
-    attr.max_len = max(1, attr.max_len)
 
     placeholder = None
     if attr.num_missing:

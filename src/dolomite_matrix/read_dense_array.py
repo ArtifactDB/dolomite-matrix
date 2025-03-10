@@ -76,7 +76,7 @@ def _read_vls_array(ghandle: h5py.Group, transposed: bool) -> numpy.ndarray:
         offset, length = val
         collected.append(bytes(heap[offset:offset + length]).decode("UTF-8"))
 
-    payload = numpy.reshape(collected, shape=phandle.shape, order="C")
+    payload = numpy.reshape(collected, newshape=phandle.shape, order="C")
 
     if "missing-value-placeholder" in phandle.attrs:
         placeholder = phandle.attrs["missing-value-placeholder"]
