@@ -494,36 +494,36 @@ def test_optimize_float_storage_Any(buffer_size):
 def test_optimize_string_storage_dense():
     y = numpy.array(["A","BB","CCC"])
     opt = optim.optimize_string_storage(y)
-    assert opt.type == "S3"
+    assert opt.type[0] == 3
     assert opt.placeholder is None
 
     # Empty
     y = numpy.array([], dtype=numpy.str_)
     opt = optim.optimize_string_storage(y)
-    assert opt.type == "S1"
+    assert opt.type[0] == 0
     assert opt.placeholder is None
 
 
 def test_optimize_string_storage_dense_MaskedArray():
     y = numpy.ma.MaskedArray(["A","BB","CCC"], mask=[True,False,False])
     opt = optim.optimize_string_storage(y)
-    assert opt.type == "S3"
+    assert opt.type[0] == 3
     assert opt.placeholder == "NA"
 
     y = numpy.ma.MaskedArray(["A","NA","CCC"], mask=[True,False,False])
     opt = optim.optimize_string_storage(y)
-    assert opt.type == "S3"
+    assert opt.type[0] == 3
     assert opt.placeholder == "NA_"
 
     y = numpy.ma.MaskedArray(["A","NA","NA_","CCC"], mask=[True,False,False,False])
     opt = optim.optimize_string_storage(y)
-    assert opt.type == "S4"
+    assert opt.type[0] == 4
     assert opt.placeholder == "NA__"
 
     # All masked.
-    y = numpy.ma.MaskedArray(["A","BB","CCC"], mask=[True,False,False])
+    y = numpy.ma.MaskedArray(["A","BB","CCC"], mask=[True,True,True])
     opt = optim.optimize_string_storage(y)
-    assert opt.type == "S3"
+    assert opt.type[0] == 2
     assert opt.placeholder == "NA"
 
 
@@ -531,7 +531,7 @@ def test_optimize_string_storage_dense_MaskedArray():
 def test_optimize_string_storage_Any(buffer_size):
     y = delayedarray.DelayedArray(numpy.array([["A","BB","CCC"],["DDDD","EEEEE","FFFFFF"]]))
     opt = optim.optimize_string_storage(y, buffer_size = buffer_size)
-    assert opt.type == "S6"
+    assert opt.type[0] == 6
     assert opt.placeholder is None
 
 

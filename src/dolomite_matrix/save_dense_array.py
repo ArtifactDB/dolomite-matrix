@@ -46,6 +46,50 @@ def _blockwise_write_to_hdf5(dhandle: h5py.Dataset, chunk_shape: Tuple, x: Any, 
     return
 
 
+def _blockwise_write_to_hdf5_vls(phandle: h5py.Dataset, hhandle: h5py.Dataset, chunk_shape: Tuple, x: Any, placeholder: Any, buffer_size: int):
+    masked = delayedarray.is_masked(x)
+    if placeholder is not None:
+        placeholder = placeholder.encode("UTF8")
+
+    heap_counter = 0
+
+    def _blockwise_dense_writer(pos: Tuple, block):
+        current_strings = numpy.ravel(block, order="F").astype("S")
+        current_pointers = numpy.ndarray(current_strings.shape, dtype=numpy.dtype([('offset', 'u8'), ('length', 'u8')]))
+        current_heap = []
+
+        nonlocal heap_counter
+        old_heap = heap_counter
+
+        if placeholder is None:
+            for i, x in enumerate(current_strings):
+                current_pointers[i] = (heap_counter + len(current_heap), len(x))
+                current_heap += list(x)
+        else:
+            for i, x in enumerate(current_strings):
+                if current_strings.mask[i]:
+                    encoded = placeholder
+                else:
+                    encoded = x
+                current_pointers[i] = (heap_counter + len(current_heap), len(encoded))
+                current_heap += list(encoded)
+
+        # Block processing is inherently Fortran-order based (i.e., first
+        # dimension is assumed to change the fastest), and the blocks
+        # themselves are also in F-contiguous layout (i.e., column-major). By
+        # comparison HDF5 uses C order. To avoid any rearrangement of data
+        # by h5py, we save it as a transposed array for efficiency.
+        coords = [slice(start, end) for start, end in reversed(pos)]
+        phandle[(*coords,)] = numpy.reshape(current_pointers, (*reversed(block.shape),), order="C")
+        heap_counter += len(current_heap)
+        hhandle[old_heap:heap_counter] = current_heap
+
+    # Cost factor doesn't really matter here as we're not choosing between grids.
+    grid = delayedarray.chunk_shape_to_grid(chunk_shape, x.shape, cost_factor=10)
+    delayedarray.apply_over_blocks(x, _blockwise_dense_writer, grid = grid, buffer_size = buffer_size)
+    return
+
+
 ###################################################
 ###################################################
 
@@ -56,6 +100,7 @@ def _save_dense_array(
     dense_array_chunk_dimensions: Optional[Tuple[int, ...]] = None, 
     dense_array_chunk_args: Dict = {},
     dense_array_buffer_size: int = 1e8, 
+    dense_array_string_vls: bool = False,
     **kwargs
 ):
     os.mkdir(path)
@@ -75,16 +120,27 @@ def _save_dense_array(
     if numpy.issubdtype(x.dtype, numpy.integer):
         tt = "integer"
         opts = optim.optimize_integer_storage(x, buffer_size = dense_array_buffer_size)
+
     elif numpy.issubdtype(x.dtype, numpy.floating):
         tt = "number"
         opts = optim.optimize_float_storage(x, buffer_size = dense_array_buffer_size)
+
     elif x.dtype == numpy.bool_:
         tt = "boolean"
         opts = optim.optimize_boolean_storage(x, buffer_size = dense_array_buffer_size)
+
     elif numpy.issubdtype(x.dtype, numpy.str_):
-        tt = "string"
         opts = optim.optimize_string_storage(x, buffer_size = dense_array_buffer_size)
+        max_len, total_len = opts.type
+        if dense_array_string_vls is None:
+            # i.e., is it worth replacing fixed-length strings with pointers to a VLS array?
+            dense_array_string_vls = x.size * max_len > x.size * 16 + total_len 
+        if dense_array_string_vls:
+            tt = "vls"
+        else:
+            tt = "string"
         blockwise = True
+
     else:
         raise NotImplementedError("cannot save dense array of type '" + x.dtype.name + "'")
 
@@ -108,17 +164,33 @@ def _save_dense_array(
             else:
                 ghandle.attrs.create("transposed", data=0, dtype="i1")
             dhandle = ghandle.create_dataset("data", data=x, chunks=dense_array_chunk_dimensions, dtype=opts.type, compression="gzip")
+
         else:
             # Block processing of a dataset is always Fortran order, but HDF5 uses C order.
             # So, we save the blocks in transposed form for efficiency.
             ghandle.attrs.create("transposed", data=1, dtype="i1")
-            dhandle = ghandle.create_dataset("data", shape=(*reversed(x.shape),), chunks=(*reversed(dense_array_chunk_dimensions),), dtype=opts.type, compression="gzip")
-            _blockwise_write_to_hdf5(dhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, buffer_size=dense_array_buffer_size) 
-            if opts.placeholder is not None:
-                dhandle.attrs.create("missing-value-placeholder", data=opts.placeholder, dtype=opts.type)
+            revshape = (*reversed(x.shape),)
+            revchunks = (*reversed(dense_array_chunk_dimensions),)
+            maxlen, totallen = opts.type
+
+            if not dense_array_string_vls:
+                outtype = opts.type
+                if tt == "string":
+                    outtype = h5py.string_dtype(encoding = "utf8", length = max(1, max_len))
+                dhandle = ghandle.create_dataset("data", shape=revshape, chunks=revchunks, dtype=outtype, compression="gzip")
+                _blockwise_write_to_hdf5(dhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, buffer_size=dense_array_buffer_size) 
+                if opts.placeholder is not None:
+                    dhandle.attrs.create("missing-value-placeholder", data=opts.placeholder, dtype=outtype)
+
+            elif tt == "vls":
+                phandle = ghandle.create_dataset("pointers", shape=revshape, chunks=revchunks, dtype=numpy.dtype([('offset', 'u8'), ('length', 'u8')]), compression="gzip")
+                hhandle = ghandle.create_dataset("heap", shape=(total_len,), dtype=numpy.dtype('u1'), compression="gzip", chunks=True)
+                _blockwise_write_to_hdf5_vls(phandle, hhandle, chunk_shape=dense_array_chunk_dimensions, x=x, placeholder=opts.placeholder, buffer_size=dense_array_buffer_size) 
+                if opts.placeholder is not None:
+                    phandle.attrs["missing-value-placeholder"] = opts.placeholder
 
     with open(os.path.join(path, "OBJECT"), "w") as handle:
-        handle.write('{ "type": "dense_array", "dense_array": { "version": "1.0" } }')
+        handle.write('{ "type": "dense_array", "dense_array": { "version": "1.1" } }')
 
 
 ###################################################
@@ -132,7 +204,8 @@ def save_dense_array_from_ndarray(
     path: str, 
     dense_array_chunk_dimensions: Optional[Tuple[int, ...]] = None, 
     dense_array_chunk_args: Dict = {},
-    dense_array_buffer_size: int = 1e8, 
+    dense_array_buffer_size: int = 1e8,
+    dense_array_string_vls: bool = False,
     **kwargs
 ):
     """
@@ -169,5 +242,6 @@ def save_dense_array_from_ndarray(
         dense_array_chunk_dimensions=dense_array_chunk_dimensions,
         dense_array_chunk_args = dense_array_chunk_args,
         dense_array_buffer_size = dense_array_buffer_size,
+        dense_array_string_vls = dense_array_string_vls,
         **kwargs
     )
