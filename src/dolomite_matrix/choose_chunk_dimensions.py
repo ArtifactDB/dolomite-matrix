@@ -40,7 +40,7 @@ def choose_chunk_dimensions(shape: Tuple[int, ...], size: int, min_extent: int =
         proposed = int(num_elements / otherdim)
         if proposed > s:
             proposed = s
-        elif proposed < min_extent:
+        elif proposed < min_extent and min_extent <= s:
             proposed = min_extent
 
         chunks.append(proposed)

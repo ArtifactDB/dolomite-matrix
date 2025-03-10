@@ -30,9 +30,16 @@ def read_dense_array(path: str, metadata: Dict[str, Any], **kwargs) -> ReloadedA
 
     with h5py.File(fpath, "r") as handle:
         ghandle = handle[name]
-        dhandle = ghandle["data"]
+
+        transposed = False
+        if "transposed" in ghandle.attrs:
+            transposed = (ghandle.attrs["transposed"] != 0)
 
         tt = ghandle.attrs["type"]
+        if tt == "vls":
+            return ReloadedArray(_read_vls_array(ghandle, transposed), path)
+
+        dhandle = ghandle["data"]
         dtype = None
         if tt == "boolean":
             dtype = numpy.dtype("bool")
@@ -42,10 +49,6 @@ def read_dense_array(path: str, metadata: Dict[str, Any], **kwargs) -> ReloadedA
         elif tt == "float":
             if not numpy.issubdtype(dhandle.dtype, numpy.floating):
                 dtype = numpy.dtype("float64")
-
-        transposed = False
-        if "transposed" in ghandle.attrs:
-            transposed = (ghandle.attrs["transposed"] != 0)
 
         placeholder = None
         if "missing-value-placeholder" in dhandle.attrs:
@@ -60,3 +63,27 @@ def read_dense_array(path: str, metadata: Dict[str, Any], **kwargs) -> ReloadedA
         seed = DelayedMask(core, placeholder=placeholder, dtype=dtype)
 
     return ReloadedArray(seed, path)
+
+
+# TODO: make this into a delayedarray.
+def _read_vls_array(ghandle: h5py.Group, transposed: bool) -> numpy.ndarray:
+    phandle = ghandle["pointers"]
+    pointers = phandle[:].ravel(order="C")
+    heap = ghandle["heap"][:]
+
+    collected = []
+    for i, val in enumerate(pointers):
+        offset, length = val
+        collected.append(bytes(heap[offset:offset + length]).decode("UTF-8"))
+
+    payload = numpy.reshape(collected, shape=phandle.shape, order="C")
+
+    if "missing-value-placeholder" in phandle.attrs:
+        placeholder = phandle.attrs["missing-value-placeholder"]
+        if isinstance(placeholder, bytes):
+            placeholder = placeholder.decode("UTF-8")
+        payload = numpy.ma.array(payload, mask=(payload==placeholder))
+
+    if transposed:
+        payload = payload.T
+    return payload

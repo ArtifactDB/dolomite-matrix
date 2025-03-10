@@ -4,7 +4,6 @@ from functools import reduce, singledispatch
 from typing import Any, Callable, List, Optional, Tuple
 
 import dolomite_base as dl
-import h5py
 import numpy
 from delayedarray import SparseNdarray, apply_over_blocks, is_sparse, is_masked
 
@@ -558,42 +557,50 @@ def optimize_float_storage(x, buffer_size: int = 1e8) -> _OptimizedStorageParame
 
 @dataclass
 class _StringAttributes:
-    missing: bool
+    num_missing: int
     has_na1: Optional[bool]
     has_na2: Optional[bool]
     max_len: int
+    total_len: int
 
 
-def _simple_string_collector(x: numpy.ndarray, check_missing: None) -> _StringAttributes:
+def _simple_string_collector(x: numpy.ndarray, check_missing: bool) -> _StringAttributes:
     if x.size == 0:
         return _StringAttributes(
-            missing = False,
+            num_missing = 0,
             has_na1 = False,
             has_na2 = False,
             max_len = 0,
+            total_len = 0,
         )
 
-    missing = False
+    num_missing = 0 
     if check_missing:
-        if x.mask.all():
+        num_missing = numpy.count_nonzero(x.mask)
+        if num_missing == x.mask.size:
             return _StringAttributes(
-                missing = True,
+                num_missing = num_missing,
                 has_na1 = False,
                 has_na2 = False,
                 max_len = 0,
+                total_len = 0,
             )
-        if x.mask.any():
-            missing = True
 
     max_len = 0
-    if missing:
+    total_len = 0
+    if num_missing:
         for y in x.ravel():
             if not numpy.ma.is_masked(y):
                 candidate = len(y.encode("UTF8"))
                 if max_len < candidate:
                     max_len = candidate
+                total_len += candidate
     else:
-        max_len = max(len(y.encode("UTF8")) for y in x.ravel())
+        for y in x.ravel():
+            candidate = len(y.encode("UTF8"))
+            if max_len < candidate:
+                max_len = candidate
+            total_len += candidate
 
     if check_missing:
         has_na1 = x.dtype.type("NA") in x
@@ -603,10 +610,11 @@ def _simple_string_collector(x: numpy.ndarray, check_missing: None) -> _StringAt
         has_na2 = None
 
     return _StringAttributes(
-        missing = missing,
+        num_missing = num_missing,
         has_na1 = has_na1,
         has_na2 = has_na2,
         max_len = max_len,
+        total_len = total_len,
     )
 
 
@@ -622,19 +630,20 @@ def collect_string_attributes(x: Any, buffer_size: int) -> _StringAttributes:
 
 def _combine_string_attributes(x: List[_StringAttributes], check_missing: bool) -> _StringAttributes:
     if check_missing:
-        missing = _aggregate_any(x, "missing")
+        num_missing = _aggregate_sum(x, "missing")
         has_na1 = _aggregate_any(x, "has_na1")
         has_na2 = _aggregate_any(x, "has_na2")
     else:
-        missing = False
+        num_missing = 0
         has_na1 = None
         has_na2 = None
 
     return _StringAttributes(
-        missing = missing,
+        num_missing = num_missing,
         has_na1 = has_na1,
         has_na2 = has_na2,
         max_len = _aggregate_max(x, "max_len"),
+        total_len = _aggregate_sum(x, "total_len"),
     )
 
 
@@ -648,7 +657,7 @@ def optimize_string_storage(x, buffer_size: int = 1e8) -> _OptimizedStorageParam
     attr.max_len = max(1, attr.max_len)
 
     placeholder = None
-    if attr.missing:
+    if attr.num_missing:
         if not attr.has_na1:
             placeholder = "NA"
         elif not attr.has_na2:
@@ -656,10 +665,11 @@ def optimize_string_storage(x, buffer_size: int = 1e8) -> _OptimizedStorageParam
         else:
             uniq = _unique_values(x)
             placeholder = dl.choose_missing_string_placeholder(uniq)
-        attr.max_len = max(len(placeholder.encode("UTF8")), attr.max_len)
+        placeholder_len = len(placeholder.encode("UTF8"))
+        attr.max_len = max(placeholder_len, attr.max_len)
+        attr.total_len += placeholder_len * attr.num_missing
 
-    strtype = h5py.string_dtype(encoding = "utf8", length = attr.max_len)
-    return _OptimizedStorageParameters(type = strtype, placeholder = placeholder, non_zero = 0)
+    return _OptimizedStorageParameters(type = (attr.max_len, attr.total_len), placeholder = placeholder, non_zero = 0)
 
 
 ###################################################
