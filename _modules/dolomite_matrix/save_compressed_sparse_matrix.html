@@ -4,9 +4,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>dolomite_matrix.save_compressed_sparse_matrix - dolomite-matrix 0.4.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>dolomite_matrix.save_compressed_sparse_matrix - dolomite-matrix 0.4.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
     
@@ -165,7 +165,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">dolomite-matrix 0.4.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">dolomite-matrix 0.4.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,7 +189,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">dolomite-matrix 0.4.0 documentation</span>
+  <span class="sidebar-brand-text">dolomite-matrix 0.4.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -242,28 +242,28 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for dolomite_matrix.save_compressed_sparse_matrix</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">singledispatch</span>
-<span class="kn">from</span> <span class="nn">dolomite_base</span> <span class="kn">import</span> <span class="n">save_object</span><span class="p">,</span> <span class="n">validate_saves</span>
-<span class="kn">from</span> <span class="nn">delayedarray</span> <span class="kn">import</span> <span class="n">SparseNdarray</span><span class="p">,</span> <span class="n">chunk_grid</span> 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">import</span> <span class="nn">delayedarray</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">singledispatch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dolomite_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_object</span><span class="p">,</span> <span class="n">validate_saves</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">delayedarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparseNdarray</span><span class="p">,</span> <span class="n">chunk_grid</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">delayedarray</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_utils</span> <span class="k">as</span> <span class="n">ut</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_optimize_storage</span> <span class="k">as</span> <span class="n">optim</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_utils</span> <span class="k">as</span> <span class="n">ut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_optimize_storage</span> <span class="k">as</span> <span class="n">optim</span>
 
 
 <span class="n">has_scipy</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">scipy.sparse</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span>
     <span class="n">has_scipy</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="k">pass</span>
 
 
-<span class="k">def</span> <span class="nf">_choose_index_type</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_choose_index_type</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="mi">8</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;u1&quot;</span>
     <span class="k">elif</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span><span class="p">:</span>
@@ -279,7 +279,7 @@
 
 
 <span class="nd">@singledispatch</span>
-<span class="k">def</span> <span class="nf">_h5_write_sparse_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_h5_write_sparse_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">):</span>
     <span class="n">chunks</span> <span class="o">=</span> <span class="n">chunk_grid</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">chunks_per_col</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="o">.</span><span class="n">boundaries</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">chunks_per_row</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="o">.</span><span class="n">boundaries</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -346,7 +346,7 @@
 
 
 <span class="k">if</span> <span class="n">has_scipy</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">_write_compressed_sparse_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">,</span> <span class="n">by_column</span><span class="p">):</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_compressed_sparse_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">,</span> <span class="n">by_column</span><span class="p">):</span> 
         <span class="k">if</span> <span class="n">by_column</span><span class="p">:</span>
             <span class="n">primary</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">secondary</span> <span class="o">=</span> <span class="mi">0</span>
@@ -367,7 +367,7 @@
 
 
     <span class="nd">@_h5_write_sparse_matrix</span><span class="o">.</span><span class="n">register</span>
-    <span class="k">def</span> <span class="nf">_h5_write_sparse_matrix_from_csc_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">,</span>  <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_h5_write_sparse_matrix_from_csc_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">,</span>  <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">):</span>
         <span class="n">_write_compressed_sparse_matrix</span><span class="p">(</span>
             <span class="n">x</span><span class="p">,</span>
             <span class="n">handle</span><span class="p">,</span> 
@@ -379,7 +379,7 @@
 
 
     <span class="nd">@_h5_write_sparse_matrix</span><span class="o">.</span><span class="n">register</span>
-    <span class="k">def</span> <span class="nf">_h5_write_sparse_matrix_from_csr_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_h5_write_sparse_matrix_from_csr_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">):</span>
         <span class="n">_write_compressed_sparse_matrix</span><span class="p">(</span>
             <span class="n">x</span><span class="p">,</span>
             <span class="n">handle</span><span class="p">,</span> 
@@ -394,7 +394,7 @@
 <span class="c1">###############################################</span>
 
 
-<span class="k">def</span> <span class="nf">_save_compressed_sparse_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_compressed_sparse_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;only 2-dimensional sparse arrays are currently supported&quot;</span><span class="p">)</span>
@@ -432,7 +432,7 @@
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_Sparse2darray">[docs]</a>
 <span class="nd">@save_object</span><span class="o">.</span><span class="n">register</span>
 <span class="nd">@validate_saves</span>
-<span class="k">def</span> <span class="nf">save_compresssed_sparse_matrix_from_Sparse2darray</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">SparseNdarray</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_compresssed_sparse_matrix_from_Sparse2darray</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">SparseNdarray</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Method for saving a :py:class:`~delayedarray.SparseNdarray.SparseNdarray`</span>
 <span class="sd">    to disk, see :py:meth:`~dolomite_base.save_object.save_object` for details.</span>
@@ -470,7 +470,7 @@
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_csc_matrix">[docs]</a>
     <span class="nd">@save_object</span><span class="o">.</span><span class="n">register</span>
     <span class="nd">@validate_saves</span>
-    <span class="k">def</span> <span class="nf">save_compresssed_sparse_matrix_from_scipy_csc_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_compresssed_sparse_matrix_from_scipy_csc_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method for saving :py:class:`~scipy.sparse.csc_matrix` objects to disk,</span>
 <span class="sd">        see :py:meth:`~dolomite_base.stage_object.stage_object` for details.</span>
@@ -507,7 +507,7 @@
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_csr_matrix">[docs]</a>
     <span class="nd">@save_object</span><span class="o">.</span><span class="n">register</span>
     <span class="nd">@validate_saves</span>
-    <span class="k">def</span> <span class="nf">save_compresssed_sparse_matrix_from_scipy_csr_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_compresssed_sparse_matrix_from_scipy_csr_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method for saving :py:class:`~scipy.sparse.csr_matrix` objects to disk,</span>
 <span class="sd">        see :py:meth:`~dolomite_base.stage_object.stage_object` for details.</span>
@@ -544,7 +544,7 @@
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.save_compressed_sparse_matrix.save_compresssed_sparse_matrix_from_scipy_coo_matrix">[docs]</a>
     <span class="nd">@save_object</span><span class="o">.</span><span class="n">register</span>
     <span class="nd">@validate_saves</span>
-    <span class="k">def</span> <span class="nf">save_compresssed_sparse_matrix_from_scipy_coo_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_compresssed_sparse_matrix_from_scipy_coo_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">compressed_sparse_matrix_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method for saving :py:class:`~scipy.sparse.coo_matrix` objects to disk,</span>
 <span class="sd">        see :py:meth:`~dolomite_base.stage_object.stage_object` for details.</span>
@@ -607,7 +607,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=6c02275b"></script>
+</div><script src="../../_static/documentation_options.js?v=c87aa342"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>

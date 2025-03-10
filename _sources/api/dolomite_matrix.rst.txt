@@ -9,77 +9,77 @@ dolomite\_matrix.DelayedMask module
 
 .. automodule:: dolomite_matrix.DelayedMask
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 dolomite\_matrix.ReloadedArray module
 -------------------------------------
 
 .. automodule:: dolomite_matrix.ReloadedArray
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 dolomite\_matrix.WrapperArraySeed module
 ----------------------------------------
 
 .. automodule:: dolomite_matrix.WrapperArraySeed
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 dolomite\_matrix.choose\_chunk\_dimensions module
 -------------------------------------------------
 
 .. automodule:: dolomite_matrix.choose_chunk_dimensions
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 dolomite\_matrix.read\_compressed\_sparse\_matrix module
 --------------------------------------------------------
 
 .. automodule:: dolomite_matrix.read_compressed_sparse_matrix
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 dolomite\_matrix.read\_dense\_array module
 ------------------------------------------
 
 .. automodule:: dolomite_matrix.read_dense_array
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 dolomite\_matrix.save\_compressed\_sparse\_matrix module
 --------------------------------------------------------
 
 .. automodule:: dolomite_matrix.save_compressed_sparse_matrix
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 dolomite\_matrix.save\_delayed\_array module
 --------------------------------------------
 
 .. automodule:: dolomite_matrix.save_delayed_array
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 dolomite\_matrix.save\_dense\_array module
 ------------------------------------------
 
 .. automodule:: dolomite_matrix.save_dense_array
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: dolomite_matrix
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

@@ -4,9 +4,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>dolomite_matrix.save_dense_array - dolomite-matrix 0.4.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>dolomite_matrix.save_dense_array - dolomite-matrix 0.4.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
     
@@ -165,7 +165,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">dolomite-matrix 0.4.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">dolomite-matrix 0.4.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,7 +189,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">dolomite-matrix 0.4.0 documentation</span>
+  <span class="sidebar-brand-text">dolomite-matrix 0.4.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -242,23 +242,23 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for dolomite_matrix.save_dense_array</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dolomite_base</span> <span class="kn">import</span> <span class="n">save_object</span><span class="p">,</span> <span class="n">validate_saves</span>
-<span class="kn">import</span> <span class="nn">delayedarray</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dolomite_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_object</span><span class="p">,</span> <span class="n">validate_saves</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">delayedarray</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
 
-<span class="kn">from</span> <span class="nn">.choose_chunk_dimensions</span> <span class="kn">import</span> <span class="n">choose_chunk_dimensions</span> 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_optimize_storage</span> <span class="k">as</span> <span class="n">optim</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_utils</span> <span class="k">as</span> <span class="n">ut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.choose_chunk_dimensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">choose_chunk_dimensions</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_optimize_storage</span> <span class="k">as</span> <span class="n">optim</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_utils</span> <span class="k">as</span> <span class="n">ut</span>
 
 
 <span class="c1">###################################################</span>
 <span class="c1">###################################################</span>
 
 
-<span class="k">def</span> <span class="nf">_blockwise_write_to_hdf5</span><span class="p">(</span><span class="n">dhandle</span><span class="p">:</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">placeholder</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">buffer_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_blockwise_write_to_hdf5</span><span class="p">(</span><span class="n">dhandle</span><span class="p">:</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">placeholder</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">buffer_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="n">masked</span> <span class="o">=</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">is_masked</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">is_string</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dhandle</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bytes_</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">placeholder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -267,7 +267,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">placeholder</span> <span class="o">=</span> <span class="n">dhandle</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">placeholder</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_blockwise_dense_writer</span><span class="p">(</span><span class="n">pos</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_blockwise_dense_writer</span><span class="p">(</span><span class="n">pos</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">masked</span><span class="p">:</span>
             <span class="n">block</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">replace_mask_with_placeholder</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">placeholder</span><span class="p">,</span> <span class="n">dhandle</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 
@@ -290,16 +290,61 @@
     <span class="k">return</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_blockwise_write_to_hdf5_vls</span><span class="p">(</span><span class="n">phandle</span><span class="p">:</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">hhandle</span><span class="p">:</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">placeholder</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">buffer_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">masked</span> <span class="o">=</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">is_masked</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">placeholder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">placeholder</span> <span class="o">=</span> <span class="n">placeholder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF8&quot;</span><span class="p">)</span>
+
+    <span class="n">heap_counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_blockwise_dense_writer</span><span class="p">(</span><span class="n">pos</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+        <span class="n">current_strings</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">)</span>
+        <span class="n">current_pointers</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">current_strings</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;offset&#39;</span><span class="p">,</span> <span class="s1">&#39;u8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="s1">&#39;u8&#39;</span><span class="p">)]))</span>
+        <span class="n">current_heap</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">nonlocal</span> <span class="n">heap_counter</span>
+        <span class="n">old_heap</span> <span class="o">=</span> <span class="n">heap_counter</span>
+
+        <span class="k">if</span> <span class="n">placeholder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">current_strings</span><span class="p">):</span>
+                <span class="n">current_pointers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">heap_counter</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_heap</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+                <span class="n">current_heap</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">current_strings</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">current_strings</span><span class="o">.</span><span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">encoded</span> <span class="o">=</span> <span class="n">placeholder</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">encoded</span> <span class="o">=</span> <span class="n">x</span>
+                <span class="n">current_pointers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">heap_counter</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_heap</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoded</span><span class="p">))</span>
+                <span class="n">current_heap</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+
+        <span class="c1"># Block processing is inherently Fortran-order based (i.e., first</span>
+        <span class="c1"># dimension is assumed to change the fastest), and the blocks</span>
+        <span class="c1"># themselves are also in F-contiguous layout (i.e., column-major). By</span>
+        <span class="c1"># comparison HDF5 uses C order. To avoid any rearrangement of data</span>
+        <span class="c1"># by h5py, we save it as a transposed array for efficiency.</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">pos</span><span class="p">)]</span>
+        <span class="n">phandle</span><span class="p">[(</span><span class="o">*</span><span class="n">coords</span><span class="p">,)]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">current_pointers</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="nb">reversed</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">shape</span><span class="p">),),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="n">heap_counter</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_heap</span><span class="p">)</span>
+        <span class="n">hhandle</span><span class="p">[</span><span class="n">old_heap</span><span class="p">:</span><span class="n">heap_counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_heap</span>
+
+    <span class="c1"># Cost factor doesn&#39;t really matter here as we&#39;re not choosing between grids.</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">chunk_shape_to_grid</span><span class="p">(</span><span class="n">chunk_shape</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">cost_factor</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">delayedarray</span><span class="o">.</span><span class="n">apply_over_blocks</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">_blockwise_dense_writer</span><span class="p">,</span> <span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="p">,</span> <span class="n">buffer_size</span> <span class="o">=</span> <span class="n">buffer_size</span><span class="p">)</span>
+    <span class="k">return</span>
+
+
 <span class="c1">###################################################</span>
 <span class="c1">###################################################</span>
 
 
-<span class="k">def</span> <span class="nf">_save_dense_array</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_dense_array</span><span class="p">(</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
     <span class="n">dense_array_chunk_dimensions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
     <span class="n">dense_array_chunk_args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
     <span class="n">dense_array_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> 
+    <span class="n">dense_array_string_vls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
     <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -319,16 +364,27 @@
     <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
         <span class="n">tt</span> <span class="o">=</span> <span class="s2">&quot;integer&quot;</span>
         <span class="n">opts</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">optimize_integer_storage</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">buffer_size</span> <span class="o">=</span> <span class="n">dense_array_buffer_size</span><span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">numpy</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
         <span class="n">tt</span> <span class="o">=</span> <span class="s2">&quot;number&quot;</span>
         <span class="n">opts</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">optimize_float_storage</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">buffer_size</span> <span class="o">=</span> <span class="n">dense_array_buffer_size</span><span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
         <span class="n">tt</span> <span class="o">=</span> <span class="s2">&quot;boolean&quot;</span>
         <span class="n">opts</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">optimize_boolean_storage</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">buffer_size</span> <span class="o">=</span> <span class="n">dense_array_buffer_size</span><span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">numpy</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">str_</span><span class="p">):</span>
-        <span class="n">tt</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
         <span class="n">opts</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">optimize_string_storage</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">buffer_size</span> <span class="o">=</span> <span class="n">dense_array_buffer_size</span><span class="p">)</span>
+        <span class="n">max_len</span><span class="p">,</span> <span class="n">total_len</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">type</span>
+        <span class="k">if</span> <span class="n">dense_array_string_vls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># i.e., is it worth replacing fixed-length strings with pointers to a VLS array?</span>
+            <span class="n">dense_array_string_vls</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">max_len</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="mi">16</span> <span class="o">+</span> <span class="n">total_len</span> 
+        <span class="k">if</span> <span class="n">dense_array_string_vls</span><span class="p">:</span>
+            <span class="n">tt</span> <span class="o">=</span> <span class="s2">&quot;vls&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tt</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
         <span class="n">blockwise</span> <span class="o">=</span> <span class="kc">True</span>
+
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot save dense array of type &#39;&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
 
@@ -352,17 +408,33 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ghandle</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;transposed&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;i1&quot;</span><span class="p">)</span>
             <span class="n">dhandle</span> <span class="o">=</span> <span class="n">ghandle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">dense_array_chunk_dimensions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Block processing of a dataset is always Fortran order, but HDF5 uses C order.</span>
             <span class="c1"># So, we save the blocks in transposed form for efficiency.</span>
             <span class="n">ghandle</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;transposed&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;i1&quot;</span><span class="p">)</span>
-            <span class="n">dhandle</span> <span class="o">=</span> <span class="n">ghandle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="nb">reversed</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">),),</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="nb">reversed</span><span class="p">(</span><span class="n">dense_array_chunk_dimensions</span><span class="p">),),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span><span class="p">)</span>
-            <span class="n">_blockwise_write_to_hdf5</span><span class="p">(</span><span class="n">dhandle</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="o">=</span><span class="n">dense_array_chunk_dimensions</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="n">dense_array_buffer_size</span><span class="p">)</span> 
-            <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">placeholder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">dhandle</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;missing-value-placeholder&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+            <span class="n">revshape</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="nb">reversed</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">),)</span>
+            <span class="n">revchunks</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="nb">reversed</span><span class="p">(</span><span class="n">dense_array_chunk_dimensions</span><span class="p">),)</span>
+            <span class="n">maxlen</span><span class="p">,</span> <span class="n">totallen</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">type</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dense_array_string_vls</span><span class="p">:</span>
+                <span class="n">outtype</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">type</span>
+                <span class="k">if</span> <span class="n">tt</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span><span class="p">:</span>
+                    <span class="n">outtype</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">string_dtype</span><span class="p">(</span><span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf8&quot;</span><span class="p">,</span> <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_len</span><span class="p">))</span>
+                <span class="n">dhandle</span> <span class="o">=</span> <span class="n">ghandle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">revshape</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">revchunks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">outtype</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span><span class="p">)</span>
+                <span class="n">_blockwise_write_to_hdf5</span><span class="p">(</span><span class="n">dhandle</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="o">=</span><span class="n">dense_array_chunk_dimensions</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="n">dense_array_buffer_size</span><span class="p">)</span> 
+                <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">placeholder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">dhandle</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;missing-value-placeholder&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">outtype</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">tt</span> <span class="o">==</span> <span class="s2">&quot;vls&quot;</span><span class="p">:</span>
+                <span class="n">phandle</span> <span class="o">=</span> <span class="n">ghandle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;pointers&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">revshape</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">revchunks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;offset&#39;</span><span class="p">,</span> <span class="s1">&#39;u8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="s1">&#39;u8&#39;</span><span class="p">)]),</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span><span class="p">)</span>
+                <span class="n">hhandle</span> <span class="o">=</span> <span class="n">ghandle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;heap&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">total_len</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;u1&#39;</span><span class="p">),</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">_blockwise_write_to_hdf5_vls</span><span class="p">(</span><span class="n">phandle</span><span class="p">,</span> <span class="n">hhandle</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="o">=</span><span class="n">dense_array_chunk_dimensions</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="n">dense_array_buffer_size</span><span class="p">)</span> 
+                <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">placeholder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">phandle</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;missing-value-placeholder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">placeholder</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;OBJECT&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;{ &quot;type&quot;: &quot;dense_array&quot;, &quot;dense_array&quot;: { &quot;version&quot;: &quot;1.0&quot; } }&#39;</span><span class="p">)</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;{ &quot;type&quot;: &quot;dense_array&quot;, &quot;dense_array&quot;: { &quot;version&quot;: &quot;1.1&quot; } }&#39;</span><span class="p">)</span>
 
 
 <span class="c1">###################################################</span>
@@ -373,12 +445,13 @@
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.save_dense_array.save_dense_array_from_ndarray">[docs]</a>
 <span class="nd">@save_object</span><span class="o">.</span><span class="n">register</span>
 <span class="nd">@validate_saves</span>
-<span class="k">def</span> <span class="nf">save_dense_array_from_ndarray</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_dense_array_from_ndarray</span><span class="p">(</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
     <span class="n">dense_array_chunk_dimensions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
     <span class="n">dense_array_chunk_args</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
-    <span class="n">dense_array_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span> 
+    <span class="n">dense_array_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e8</span><span class="p">,</span>
+    <span class="n">dense_array_string_vls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -415,6 +488,7 @@
         <span class="n">dense_array_chunk_dimensions</span><span class="o">=</span><span class="n">dense_array_chunk_dimensions</span><span class="p">,</span>
         <span class="n">dense_array_chunk_args</span> <span class="o">=</span> <span class="n">dense_array_chunk_args</span><span class="p">,</span>
         <span class="n">dense_array_buffer_size</span> <span class="o">=</span> <span class="n">dense_array_buffer_size</span><span class="p">,</span>
+        <span class="n">dense_array_string_vls</span> <span class="o">=</span> <span class="n">dense_array_string_vls</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span></div>
 
@@ -450,7 +524,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=6c02275b"></script>
+</div><script src="../../_static/documentation_options.js?v=c87aa342"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>

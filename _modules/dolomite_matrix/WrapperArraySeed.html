@@ -4,9 +4,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>dolomite_matrix.WrapperArraySeed - dolomite-matrix 0.4.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>dolomite_matrix.WrapperArraySeed - dolomite-matrix 0.4.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
     
@@ -165,7 +165,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">dolomite-matrix 0.4.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">dolomite-matrix 0.4.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,7 +189,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">dolomite-matrix 0.4.0 documentation</span>
+  <span class="sidebar-brand-text">dolomite-matrix 0.4.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -242,14 +242,14 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for dolomite_matrix.WrapperArraySeed</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">import</span> <span class="nn">delayedarray</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">delayedarray</span>
 
 
 <div class="viewcode-block" id="WrapperArraySeed">
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.WrapperArraySeed.WrapperArraySeed">[docs]</a>
-<span class="k">class</span> <span class="nc">WrapperArraySeed</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WrapperArraySeed</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for a DelayedArray seed, which forwards all of the required</span>
 <span class="sd">    operations to the seed object. This is expected to be used as a base for</span>
@@ -259,7 +259,7 @@
 
 <div class="viewcode-block" id="WrapperArraySeed.__init__">
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.WrapperArraySeed.WrapperArraySeed.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            seed: The underlying seed instance to be wrapped.</span>
@@ -268,7 +268,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">seed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">seed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            The underlying seed instance.</span>
@@ -276,7 +276,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            The shape of the seed.</span>
@@ -284,7 +284,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="o">.</span><span class="n">shape</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            The type of the seed.</span>
@@ -296,7 +296,7 @@
 <div class="viewcode-block" id="is_sparse_WrapperArraySeed">
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.WrapperArraySeed.is_sparse_WrapperArraySeed">[docs]</a>
 <span class="nd">@delayedarray</span><span class="o">.</span><span class="n">is_sparse</span><span class="o">.</span><span class="n">register</span>
-<span class="k">def</span> <span class="nf">is_sparse_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_sparse_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:func:`~delayedarray.is_sparse.is_sparse` for details.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span></div>
 
@@ -305,7 +305,7 @@
 <div class="viewcode-block" id="is_masked_WrapperArraySeed">
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.WrapperArraySeed.is_masked_WrapperArraySeed">[docs]</a>
 <span class="nd">@delayedarray</span><span class="o">.</span><span class="n">is_masked</span><span class="o">.</span><span class="n">register</span>
-<span class="k">def</span> <span class="nf">is_masked_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_masked_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:func:`~delayedarray.is_masked.is_masked` for details.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">is_masked</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span></div>
 
@@ -314,7 +314,7 @@
 <div class="viewcode-block" id="chunk_grid_WrapperArraySeed">
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.WrapperArraySeed.chunk_grid_WrapperArraySeed">[docs]</a>
 <span class="nd">@delayedarray</span><span class="o">.</span><span class="n">chunk_grid</span><span class="o">.</span><span class="n">register</span>
-<span class="k">def</span> <span class="nf">chunk_grid_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">chunk_grid_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:func:`~delayedarray.chunk_grid.chunk_grid` for details.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">chunk_grid</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span></div>
 
@@ -323,7 +323,7 @@
 <div class="viewcode-block" id="extract_dense_array_WrapperArraySeed">
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.WrapperArraySeed.extract_dense_array_WrapperArraySeed">[docs]</a>
 <span class="nd">@delayedarray</span><span class="o">.</span><span class="n">extract_dense_array</span><span class="o">.</span><span class="n">register</span>
-<span class="k">def</span> <span class="nf">extract_dense_array_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_dense_array_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:func:`~delayedarray.extract_dense_array.extract_dense_array` for details.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">extract_dense_array</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_seed</span><span class="p">,</span> <span class="n">subset</span><span class="p">)</span></div>
 
@@ -332,7 +332,7 @@
 <div class="viewcode-block" id="extract_sparse_array_WrapperArraySeed">
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.WrapperArraySeed.extract_sparse_array_WrapperArraySeed">[docs]</a>
 <span class="nd">@delayedarray</span><span class="o">.</span><span class="n">extract_sparse_array</span><span class="o">.</span><span class="n">register</span>
-<span class="k">def</span> <span class="nf">extract_sparse_array_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">SparseNdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_sparse_array_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">SparseNdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:func:`~delayedarray.extract_sparse_array.extract_sparse_array` for details.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">extract_sparse_array</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_seed</span><span class="p">,</span> <span class="n">subset</span><span class="p">)</span></div>
 
@@ -341,7 +341,7 @@
 <div class="viewcode-block" id="create_dask_array_WrapperArraySeed">
 <a class="viewcode-back" href="../../api/dolomite_matrix.html#dolomite_matrix.WrapperArraySeed.create_dask_array_WrapperArraySeed">[docs]</a>
 <span class="nd">@delayedarray</span><span class="o">.</span><span class="n">create_dask_array</span><span class="o">.</span><span class="n">register</span>
-<span class="k">def</span> <span class="nf">create_dask_array_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_dask_array_WrapperArraySeed</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">WrapperArraySeed</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See :py:func:`~delayedarray.create_dask_array.create_dask_array` for details.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">delayedarray</span><span class="o">.</span><span class="n">create_dask_array</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_seed</span><span class="p">)</span></div>
 
@@ -377,7 +377,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=6c02275b"></script>
+</div><script src="../../_static/documentation_options.js?v=c87aa342"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
