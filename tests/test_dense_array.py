@@ -189,11 +189,17 @@ def test_dense_array_vls_2d():
     collection = []
     for i, n in enumerate(N):
         collection.append(letters[ix[i]] * n)
-    x = numpy.reshape(collection, newshape=(40, 30))
+    x = numpy.reshape(collection, (40, 30))
 
     for buffer_size in [200, 500, 1000, 2000]:
         dir = os.path.join(mkdtemp(), "foobar")
-        save_object(x, dir, dense_array_buffer_size=x.dtype.itemsize * buffer_size, dense_array_string_vls=True)
+        save_object(
+            x,
+            dir,
+            dense_array_chunk_dimensions=(11, 7),
+            dense_array_buffer_size=x.dtype.itemsize * buffer_size,
+            dense_array_string_vls=True
+        )
         roundtrip = read_object(dir)
         assert roundtrip.shape == x.shape
         assert roundtrip.dtype == x.dtype
@@ -207,7 +213,7 @@ def test_dense_array_vls_missing():
     for i, n in enumerate(N):
         collection.append(letters[ix[i]] * n)
 
-    x = numpy.reshape(collection, newshape=(40, 30))
+    x = numpy.reshape(collection, (40, 30))
     x = numpy.ma.array(x, mask=numpy.random.rand(1200) > 0.8)
 
     dir = os.path.join(mkdtemp(), "foobar")
@@ -227,7 +233,7 @@ def test_dense_array_vls_auto():
     collection = []
     for i, n in enumerate(N):
         collection.append(letters[ix[i]] * n)
-    x = numpy.reshape(collection, newshape=(40, 30))
+    x = numpy.reshape(collection, (40, 30))
 
     dir = os.path.join(mkdtemp(), "foobar")
     save_object(x, dir, dense_array_string_vls=None)
@@ -243,11 +249,17 @@ def test_dense_array_vls_3d():
     collection = []
     for i, n in enumerate(N):
         collection.append(letters[ix[i]] * n)
-    x = numpy.reshape(collection, newshape=(20, 30, 50))
+    x = numpy.reshape(collection, (20, 30, 50))
 
     for buffer_size in [200, 500, 1000, 2000]:
         dir = os.path.join(mkdtemp(), "foobar")
-        save_object(x, dir, dense_array_buffer_size=x.dtype.itemsize * buffer_size, dense_array_string_vls=True)
+        save_object(
+            x,
+            dir,
+            dense_array_chunk_dimensions=(6, 6, 6),
+            dense_array_buffer_size=x.dtype.itemsize * buffer_size,
+            dense_array_string_vls=True
+        )
         roundtrip = read_object(dir)
         assert roundtrip.shape == x.shape
         assert roundtrip.dtype == x.dtype
